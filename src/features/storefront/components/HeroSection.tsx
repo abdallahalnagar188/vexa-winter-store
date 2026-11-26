@@ -7,40 +7,15 @@ import {
   useScroll,
   useTransform,
 } from 'framer-motion';
-import {
-  ArrowLeft,
-  ArrowRight,
-  Banknote,
-  ChevronDown,
-  Flame,
-  Layers,
-  MapPin,
-  ShieldCheck,
-} from 'lucide-react';
+import { ArrowRight, Banknote, Layers, MapPin, Sparkles } from 'lucide-react';
 import { useDir } from '@/shared/hooks/useDir';
-import { Button } from '@/shared/components/ui/Button';
 import type { HomepageHero } from '@/shared/types/domain';
 
-const HERO_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
-const SLIDE_DURATION_MS = 6500;
+const LUXURY_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const SLIDE_DURATION_MS = 7000;
 
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, ease: HERO_EASE },
-  },
-};
+const FILM_GRAIN_SVG =
+  "data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E";
 
 const FALLBACK_HERO: HomepageHero = {
   id: 'fallback',
@@ -78,66 +53,6 @@ const FALLBACK_HERO: HomepageHero = {
   updated_at: '',
 };
 
-function StatValueDisplay({ value, reducedMotion }: { value: string; reducedMotion: boolean }) {
-  const match = /^(\d+)(.*)$/.exec(value.trim());
-  const numericTarget = match ? parseInt(match[1]!, 10) : null;
-  const suffix = match ? match[2] ?? '' : '';
-
-  const [displayNum, setDisplayNum] = useState<number>(() =>
-    numericTarget !== null ? (reducedMotion ? numericTarget : 0) : 0,
-  );
-  const ref = useRef<HTMLSpanElement>(null);
-  const startedRef = useRef(false);
-
-  useEffect(() => {
-    if (numericTarget === null) return;
-    if (reducedMotion) {
-      setDisplayNum(numericTarget);
-      return;
-    }
-
-    const el = ref.current;
-    if (!el) return;
-
-    const run = () => {
-      if (startedRef.current) return;
-      startedRef.current = true;
-      const start = performance.now();
-      const duration = 650;
-      const tick = (now: number) => {
-        const progress = Math.min(1, (now - start) / duration);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        setDisplayNum(Math.round(eased * numericTarget));
-        if (progress < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
-    };
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          run();
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.2 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [numericTarget, reducedMotion]);
-
-  if (numericTarget === null) {
-    return <span>{value}</span>;
-  }
-
-  return (
-    <span ref={ref} className="tabular-nums">
-      {displayNum}
-      {suffix}
-    </span>
-  );
-}
-
 interface HeroSectionProps {
   heroes?: HomepageHero[];
 }
@@ -146,26 +61,37 @@ export function HeroSection({ heroes = [] }: HeroSectionProps) {
   const { isRtl, lang } = useDir();
   const isAr = lang === 'ar';
   const prefersReducedMotion = Boolean(useReducedMotion());
-  const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
 
   const activeHeroes = heroes.length > 0 ? heroes : [FALLBACK_HERO];
   const [slideIdx, setSlideIdx] = useState(0);
-  const hero = activeHeroes[slideIdx % activeHeroes.length] ?? FALLBACK_HERO;
+  const [paused, setPaused] = useState(false);
 
+  const safeIdx = slideIdx % activeHeroes.length;
+  const hero = activeHeroes[safeIdx] ?? FALLBACK_HERO;
+
+  // Auto-advance multi-slide hero with pause-on-hover
   useEffect(() => {
-    if (activeHeroes.length <= 1 || prefersReducedMotion) return;
-    const timer = window.setInterval(() => {
+    if (activeHeroes.length <= 1 || paused || prefersReducedMotion) return;
+    const id = window.setInterval(() => {
       setSlideIdx((prev) => (prev + 1) % activeHeroes.length);
     }, SLIDE_DURATION_MS);
-    return () => window.clearInterval(timer);
-  }, [activeHeroes.length, prefersReducedMotion]);
+    return () => window.clearInterval(id);
+  }, [activeHeroes.length, paused, prefersReducedMotion]);
 
-  const sectionRef = useRef<HTMLElement>(null);
+  // Multi-speed scroll parallax
+  const stageRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
-    target: sectionRef,
+    target: stageRef,
     offset: ['start start', 'end start'],
   });
-  const ambientParallaxY = useTransform(scrollYProgress, [0, 1], [0, prefersReducedMotion ? 0 : 28]);
+
+  const watermarkX = useTransform(
+    scrollYProgress,
+    [0, 1],
+    [0, prefersReducedMotion ? 0 : isRtl ? 70 : -70],
+  );
+  const ambientY = useTransform(scrollYProgress, [0, 1], [0, prefersReducedMotion ? 0 : 48]);
+  const visualY = useTransform(scrollYProgress, [0, 1], [0, prefersReducedMotion ? 0 : 28]);
 
   const badge = isAr ? hero.badge_ar : hero.badge_en || hero.badge_ar;
   const title = isAr ? hero.title_ar : hero.title_en || hero.title_ar;
@@ -183,220 +109,301 @@ export function HeroSection({ heroes = [] }: HeroSectionProps) {
 
   return (
     <section
-      ref={sectionRef}
-      className="relative overflow-hidden bg-[#F4F2EC] text-[#132238]"
+      ref={stageRef}
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      className="relative flex min-h-[82vh] flex-col justify-between overflow-hidden bg-[#090D16] text-white lg:min-h-[88vh]"
     >
-      <div className="relative mx-auto max-w-7xl px-4 pt-6 pb-8 sm:px-6 sm:pt-10 sm:pb-12 lg:py-16">
-        <div className="grid items-center gap-10 lg:grid-cols-12 lg:gap-12">
-          {/* Editorial Copy Column */}
+      {/* 1. Ambient Studio Mesh Gradients */}
+      <motion.div
+        aria-hidden="true"
+        style={{ y: ambientY }}
+        className="pointer-events-none absolute inset-0 overflow-hidden"
+      >
+        <motion.div
+          animate={
+            prefersReducedMotion
+              ? undefined
+              : { x: [0, 30, -15, 0], y: [0, -25, 20, 0], scale: [1, 1.08, 0.96, 1] }
+          }
+          transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -top-32 start-1/4 h-[480px] w-[480px] rounded-full bg-[#F97316]/18 blur-[120px]"
+        />
+        <motion.div
+          animate={
+            prefersReducedMotion
+              ? undefined
+              : { x: [0, -25, 20, 0], y: [0, 30, -15, 0], scale: [1, 0.94, 1.06, 1] }
+          }
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute -bottom-32 end-1/4 h-[520px] w-[520px] rounded-full bg-[#1E293B]/75 blur-[130px]"
+        />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_35%,rgba(148,163,184,0.12),transparent_55%)]" />
+      </motion.div>
+
+      {/* 2. Subtle Editorial Film Grain Overlay */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-[0.03]"
+        style={{ backgroundImage: `url("${FILM_GRAIN_SVG}")` }}
+      />
+
+      {/* 3. Oversized Background Watermark Typography */}
+      <motion.div
+        aria-hidden="true"
+        style={{ x: watermarkX }}
+        className="pointer-events-none absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 select-none overflow-hidden"
+      >
+        <motion.p
+          animate={prefersReducedMotion ? undefined : { x: isRtl ? ['0%', '4%', '0%'] : ['0%', '-4%', '0%'] }}
+          transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+          className="whitespace-nowrap text-center font-display text-[22vw] font-black uppercase leading-none tracking-tighter text-white/[0.04] lg:text-[16vw]"
+          style={{ WebkitTextStroke: '1px rgba(255,255,255,0.05)' }}
+        >
+          VEXA WINTER 26
+        </motion.p>
+      </motion.div>
+
+      {/* 4. Dramatic Primary Hero Visual (Full-bleed Asymmetric Stage with Gradient Masks) */}
+      <motion.div
+        style={{ y: visualY }}
+        className="relative z-10 flex flex-1 flex-col lg:block"
+      >
+        {/* Edge-to-Edge Visual Stage (Mobile top block -> Desktop right/end 58% full height) */}
+        <div className="relative h-[44vh] min-h-[320px] w-full overflow-hidden lg:absolute lg:inset-y-0 lg:end-0 lg:h-full lg:w-[58%]">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={hero.hero_image_url}
+              initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+              transition={{ duration: 0.65, ease: LUXURY_EASE }}
+              className="relative h-full w-full"
+            >
+              <motion.img
+                src={hero.hero_image_url}
+                alt={title}
+                fetchPriority="high"
+                initial={prefersReducedMotion ? { scale: 1 } : { scale: 1.08 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 7, ease: 'easeOut' }}
+                className="h-full w-full object-cover object-center"
+              />
+            </motion.div>
+          </AnimatePresence>
+
+          {/* Sleek 1px gradient frame accent */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-4 hidden rounded-3xl border border-white/10 lg:block"
+          />
+
+          {/* Seamless dark gradient masks blending visual into #090D16 stage */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#090D16] via-[#090D16]/35 to-[#090D16]/20"
+          />
+          <div
+            aria-hidden="true"
+            className={`pointer-events-none absolute inset-0 hidden lg:block ${
+              isRtl
+                ? 'bg-linear-to-l from-[#090D16] via-[#090D16]/60 to-transparent'
+                : 'bg-linear-to-r from-[#090D16] via-[#090D16]/60 to-transparent'
+            }`}
+          />
+
+          {/* Floating Dark-Glass Offer Pill */}
+          <motion.div
+            animate={prefersReducedMotion ? undefined : { y: [0, -8, 0] }}
+            transition={
+              prefersReducedMotion
+                ? undefined
+                : { duration: 4.5, repeat: Infinity, ease: 'easeInOut' }
+            }
+            className="absolute bottom-5 start-4 z-20 inline-flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 text-white shadow-2xl backdrop-blur-xl sm:bottom-8 sm:start-8"
+          >
+            <span className="relative flex h-2.5 w-2.5 shrink-0">
+              {!prefersReducedMotion && (
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F97316] opacity-75" />
+              )}
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#F97316]" />
+            </span>
+            <div className="min-w-0">
+              <p className="truncate text-xs font-extrabold text-white">{floatingTitle}</p>
+            </div>
+            <span className="shrink-0 rounded-full bg-[#F97316] px-2.5 py-0.5 font-display text-[11px] font-black text-white">
+              {floatingBadge}
+            </span>
+          </motion.div>
+
+          {/* Floating Glassmorphic Lookbook Thumbnail Switcher (when multi-slide or interactive) */}
+          {activeHeroes.length > 1 && (
+            <div className="absolute bottom-5 end-4 z-20 flex items-center gap-2 rounded-2xl border border-white/15 bg-black/40 p-1.5 backdrop-blur-xl sm:bottom-8 sm:end-8">
+              {activeHeroes.map((slide, idx) => {
+                const isActive = idx === safeIdx;
+                return (
+                  <button
+                    key={slide.id}
+                    type="button"
+                    onClick={() => setSlideIdx(idx)}
+                    aria-label={`Slide ${idx + 1}`}
+                    className={`relative h-12 w-10 cursor-pointer overflow-hidden rounded-xl border transition-all duration-300 ${
+                      isActive
+                        ? 'scale-105 border-[#F97316] ring-2 ring-[#F97316]/40'
+                        : 'border-white/15 opacity-55 hover:opacity-90'
+                    }`}
+                  >
+                    <img
+                      src={slide.hero_image_url}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* 5. Editorial Typography Overlay Column */}
+        <div className="relative z-20 mx-auto flex w-full max-w-7xl flex-1 items-end px-4 pb-10 pt-4 sm:px-6 lg:min-h-[76vh] lg:items-center lg:py-16">
           <AnimatePresence mode="wait">
             <motion.div
               key={hero.id}
-              variants={containerVariants}
-              initial={prefersReducedMotion ? 'visible' : 'hidden'}
+              initial="hidden"
               animate="visible"
-              exit={prefersReducedMotion ? undefined : { opacity: 0, y: -8, transition: { duration: 0.2 } }}
-              className="relative z-20 lg:col-span-7"
+              exit={prefersReducedMotion ? undefined : { opacity: 0, transition: { duration: 0.2 } }}
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.08 } },
+              }}
+              className="w-full max-w-2xl"
             >
+              {/* Season Badge */}
               <div className="overflow-hidden">
-                <motion.div variants={itemVariants}>
-                  <span className="inline-flex items-center gap-2 rounded-full bg-[#FF6B1A] px-4 py-1.5 text-xs font-extrabold tracking-wide text-white shadow-xs">
-                    <Flame className="h-3.5 w-3.5" />
-                    {badge}
+                <motion.div
+                  variants={{
+                    hidden: prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: '100%' },
+                    visible: { opacity: 1, y: '0%', transition: { duration: 0.55, ease: LUXURY_EASE } },
+                  }}
+                >
+                  <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-extrabold tracking-widest text-white backdrop-blur-md">
+                    <Sparkles className="h-3.5 w-3.5 text-[#F97316]" />
+                    <span>{badge}</span>
                   </span>
                 </motion.div>
               </div>
 
-              <div className="mt-6 overflow-hidden">
+              {/* Massive Masked Editorial Headline */}
+              <div className="mt-5 overflow-hidden">
                 <motion.h1
-                  variants={itemVariants}
-                  className="text-4xl font-black leading-[1.06] tracking-tight text-[#132238] sm:text-5xl lg:text-6xl xl:text-[4.25rem]"
+                  variants={{
+                    hidden: prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: '100%' },
+                    visible: { opacity: 1, y: '0%', transition: { duration: 0.7, ease: LUXURY_EASE } },
+                  }}
+                  className="text-5xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl"
                 >
                   {title}
                 </motion.h1>
               </div>
 
+              {/* Minimal Muted Subtitle */}
               <div className="mt-5 overflow-hidden">
                 <motion.p
-                  variants={itemVariants}
-                  className="max-w-xl text-base leading-relaxed text-[#132238]/80 sm:text-lg"
+                  variants={{
+                    hidden: prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: '100%' },
+                    visible: { opacity: 1, y: '0%', transition: { duration: 0.6, ease: LUXURY_EASE } },
+                  }}
+                  className="line-clamp-2 max-w-md text-sm leading-relaxed text-white/70 sm:text-base"
                 >
                   {subtitle}
                 </motion.p>
               </div>
 
-              <motion.div variants={itemVariants} className="mt-8 flex flex-wrap items-center gap-4">
-                <Link to={hero.primary_cta_link || '/shop'} className="group">
-                  <Button size="lg" variant="primary" className="min-h-13 px-8 text-base">
-                    <span>{primaryCta}</span>
-                    <ArrowIcon
-                      className={`h-4 w-4 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                        isRtl ? 'group-hover:-translate-x-1' : 'group-hover:translate-x-1'
-                      }`}
-                    />
-                  </Button>
-                </Link>
-                <Link to={hero.secondary_cta_link || '/track'}>
-                  <Button size="lg" variant="outline" className="min-h-13 px-7 text-base">
-                    {secondaryCta}
-                  </Button>
-                </Link>
-              </motion.div>
-
-              {/* Clean Minimal Trust Stats Bar */}
+              {/* Sleek CTA Group */}
               <motion.div
-                variants={itemVariants}
-                className="mt-10 grid max-w-xl grid-cols-3 divide-x divide-[#132238]/12 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF]/85 px-2 py-4 shadow-2xs sm:px-4 rtl:divide-x-reverse"
+                variants={{
+                  hidden: prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: LUXURY_EASE } },
+                }}
+                className="mt-8 flex flex-wrap items-center gap-3.5"
               >
-                <div className="flex flex-col items-start gap-1 px-2 sm:px-4">
-                  <div className="flex items-center gap-1.5 text-[#132238]/65">
-                    <Layers className="h-4 w-4 shrink-0 text-[#FF6B1A]" />
-                    <span className="truncate text-[11px] font-bold sm:text-xs">
-                      {isAr ? hero.stat_1_label_ar : hero.stat_1_label_en}
-                    </span>
-                  </div>
-                  <p className="font-display text-2xl font-black text-[#132238] sm:text-3xl">
-                    <StatValueDisplay
-                      value={hero.stat_1_value}
-                      reducedMotion={prefersReducedMotion}
-                    />
-                  </p>
-                </div>
+                <Link
+                  to={hero.primary_cta_link || '/shop'}
+                  className="group relative inline-flex min-h-13 items-center gap-2.5 overflow-hidden rounded-full bg-[#F97316] px-8 text-sm font-black text-white shadow-[0_10px_30px_-8px_rgba(249,115,22,0.55)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#EA580C] sm:text-base"
+                >
+                  {/* Hover Sheen Sweep */}
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full"
+                  />
+                  <span className="relative">{primaryCta}</span>
+                  <ArrowRight className="relative h-4 w-4 transition-transform duration-200 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
+                </Link>
 
-                <div className="flex flex-col items-start gap-1 px-2 sm:px-4">
-                  <div className="flex items-center gap-1.5 text-[#132238]/65">
-                    <MapPin className="h-4 w-4 shrink-0 text-[#FF6B1A]" />
-                    <span className="truncate text-[11px] font-bold sm:text-xs">
-                      {isAr ? hero.stat_2_label_ar : hero.stat_2_label_en}
-                    </span>
-                  </div>
-                  <p className="font-display text-2xl font-black text-[#FF6B1A] sm:text-3xl">
-                    <StatValueDisplay
-                      value={hero.stat_2_value}
-                      reducedMotion={prefersReducedMotion}
-                    />
-                  </p>
-                </div>
-
-                <div className="flex flex-col items-start gap-1 px-2 sm:px-4">
-                  <div className="flex items-center gap-1.5 text-[#132238]/65">
-                    <Banknote className="h-4 w-4 shrink-0 text-[#FF6B1A]" />
-                    <span className="truncate text-[11px] font-bold sm:text-xs">
-                      {isAr ? hero.stat_3_label_ar : hero.stat_3_label_en}
-                    </span>
-                  </div>
-                  <p className="font-display text-2xl font-black text-[#132238] sm:text-3xl">
-                    <StatValueDisplay
-                      value={hero.stat_3_value}
-                      reducedMotion={prefersReducedMotion}
-                    />
-                  </p>
-                </div>
+                <Link
+                  to={hero.secondary_cta_link || '/track'}
+                  className="inline-flex min-h-13 items-center justify-center rounded-full border border-white/15 bg-white/5 px-7 text-sm font-bold text-white backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/15 sm:text-base"
+                >
+                  {secondaryCta}
+                </Link>
               </motion.div>
-
-              {activeHeroes.length > 1 && (
-                <div className="mt-5 flex max-w-xs items-center gap-3">
-                  <div className="flex items-center gap-1.5">
-                    {activeHeroes.map((h, i) => (
-                      <button
-                        key={h.id}
-                        type="button"
-                        aria-label={`Slide ${i + 1}`}
-                        onClick={() => setSlideIdx(i)}
-                        className={`h-2 cursor-pointer rounded-full transition-all duration-300 ${
-                          i === slideIdx ? 'w-6 bg-[#FF6B1A]' : 'w-2 bg-[#132238]/25 hover:bg-[#132238]/50'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  {!prefersReducedMotion && (
-                    <div className="h-0.5 flex-1 overflow-hidden rounded-full bg-[#132238]/12">
-                      <motion.div
-                        key={slideIdx}
-                        initial={{ scaleX: 0 }}
-                        animate={{ scaleX: 1 }}
-                        transition={{ duration: SLIDE_DURATION_MS / 1000, ease: 'linear' }}
-                        style={{ transformOrigin: isRtl ? 'right' : 'left' }}
-                        className="h-full bg-[#FF6B1A]"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
             </motion.div>
           </AnimatePresence>
+        </div>
+      </motion.div>
 
-          {/* Framed Editorial Garment Showcase with Subtle Ambient Glow */}
-          <div className="relative z-10 lg:col-span-5">
-            <div className="relative mx-auto max-w-md lg:max-w-none">
-              {/* Subtle Ambient Glow / Gradient Mesh */}
-              <motion.div
-                aria-hidden="true"
-                style={{ y: ambientParallaxY }}
-                className="pointer-events-none absolute -inset-6 -z-10 rounded-[3rem] bg-[radial-gradient(circle_at_30%_25%,rgba(255,107,26,0.18),transparent_60%),radial-gradient(circle_at_75%_75%,rgba(19,34,56,0.14),transparent_65%)] blur-2xl"
-              />
+      {/* 6. Minimal Integrated Bottom Trust Bar + Slide Progress Line */}
+      <div className="relative z-20 border-t border-white/10 bg-black/25 backdrop-blur-md">
+        {activeHeroes.length > 1 && !prefersReducedMotion && (
+          <div className="h-[2px] w-full bg-white/10">
+            <motion.div
+              key={`${safeIdx}-${paused}`}
+              initial={{ scaleX: 0 }}
+              animate={paused ? undefined : { scaleX: 1 }}
+              transition={{ duration: SLIDE_DURATION_MS / 1000, ease: 'linear' }}
+              style={{ transformOrigin: isRtl ? 'right' : 'left' }}
+              className="h-full bg-[#F97316]"
+            />
+          </div>
+        )}
 
-              {/* Editorial Framed Product Card with Ken Burns Entrance */}
-              <div className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-[#132238]/10 bg-[radial-gradient(circle_at_center,#FFFFFF_0%,#F3F2EE_65%,#EAE6DC_100%)] shadow-[0_24px_48px_-12px_rgba(19,34,56,0.18)]">
-                <AnimatePresence mode="wait">
-                  <motion.img
-                    key={hero.hero_image_url}
-                    src={hero.hero_image_url}
-                    alt={title}
-                    fetchPriority="high"
-                    initial={prefersReducedMotion ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 1.06 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={prefersReducedMotion ? undefined : { opacity: 0 }}
-                    transition={{ duration: 1.2, ease: HERO_EASE }}
-                    className="h-full w-full object-cover object-center"
-                  />
-                </AnimatePresence>
-              </div>
-
-              {/* Glassmorphism Floating Spec Badge with Gentle Float */}
-              <motion.div
-                animate={prefersReducedMotion ? undefined : { y: [0, -6, 0] }}
-                transition={
-                  prefersReducedMotion
-                    ? undefined
-                    : { duration: 4, repeat: Infinity, ease: 'easeInOut' }
-                }
-                className="absolute bottom-4 start-3 z-20 inline-flex max-w-[calc(100%-1.5rem)] items-center gap-3 rounded-2xl border border-white/10 bg-slate-900/90 px-4 py-2.5 text-[#F4F2EC] shadow-xl backdrop-blur-md sm:bottom-6 sm:-start-5"
-              >
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#FF6B1A] text-white">
-                  <ShieldCheck className="h-4 w-4" />
-                </div>
-                <div className="min-w-0">
-                  <p className="truncate text-xs font-extrabold text-[#F4F2EC]">
-                    {floatingTitle}
-                  </p>
-                  <p className="truncate text-[11px] font-semibold text-[#ECE9E0]/75">
-                    {isAr ? hero.stat_3_label_ar : hero.stat_3_label_en}
-                  </p>
-                </div>
-                <span className="shrink-0 rounded-xl bg-[#FF6B1A] px-2.5 py-1 font-display text-[11px] font-black text-white">
-                  {floatingBadge}
-                </span>
-              </motion.div>
+        <div className="mx-auto grid max-w-7xl grid-cols-3 divide-x divide-white/10 px-4 py-3.5 sm:px-6 rtl:divide-x-reverse">
+          <div className="flex items-center justify-center gap-2.5 px-2 sm:justify-start sm:px-4">
+            <Layers className="h-4 w-4 shrink-0 text-white/60" />
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <span className="font-display text-sm font-black text-white sm:text-base">
+                {hero.stat_1_value}
+              </span>
+              <span className="hidden text-xs font-medium text-white/60 sm:inline">
+                {isAr ? hero.stat_1_label_ar : hero.stat_1_label_en}
+              </span>
             </div>
           </div>
-        </div>
 
-        {/* Scroll Indicator */}
-        <div className="mt-8 flex justify-center lg:mt-10">
-          <motion.a
-            href="#winter-campaign"
-            aria-label="Scroll to collection"
-            animate={prefersReducedMotion ? undefined : { y: [0, 4, 0] }}
-            transition={
-              prefersReducedMotion
-                ? undefined
-                : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }
-            }
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-[#132238]/20 bg-[#FFFFFF]/85 text-[#132238] shadow-2xs transition-colors duration-200 hover:border-[#FF6B1A] hover:text-[#FF6B1A]"
-          >
-            <ChevronDown className="h-4 w-4" />
-          </motion.a>
+          <div className="flex items-center justify-center gap-2.5 px-2 sm:px-4">
+            <MapPin className="h-4 w-4 shrink-0 text-[#F97316]" />
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <span className="font-display text-sm font-black text-white sm:text-base">
+                {hero.stat_2_value}
+              </span>
+              <span className="hidden text-xs font-medium text-white/60 sm:inline">
+                {isAr ? hero.stat_2_label_ar : hero.stat_2_label_en}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-center gap-2.5 px-2 sm:justify-end sm:px-4">
+            <Banknote className="h-4 w-4 shrink-0 text-white/60" />
+            <div className="flex flex-wrap items-baseline gap-x-2">
+              <span className="font-display text-sm font-black text-white sm:text-base">
+                {hero.stat_3_value}
+              </span>
+              <span className="hidden text-xs font-medium text-white/60 sm:inline">
+                {isAr ? hero.stat_3_label_ar : hero.stat_3_label_en}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

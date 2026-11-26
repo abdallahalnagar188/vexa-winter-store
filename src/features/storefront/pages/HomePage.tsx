@@ -67,11 +67,11 @@ export function HomePage() {
     <PageTransition>
       <HeroSection heroes={cmsQuery.data?.heroes} />
 
-      {/* Continuous Infinite Brand Marquee Separating Hero & Content */}
+      {/* Continuous Infinite Brand Marquee Seamlessly Connected to Dark Hero */}
       {marqueeItems.length > 0 && (
         <div
           aria-label="Brand highlights"
-          className="marquee-wrapper overflow-hidden border-y border-[#F4F2EC]/12 bg-[#132238] py-3 text-[#F4F2EC]"
+          className="marquee-wrapper overflow-hidden border-y border-white/10 bg-[#0B1120] py-3.5 text-white"
         >
           <div
             className={`flex w-max items-center ${
