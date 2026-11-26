@@ -29,6 +29,7 @@ import { Button } from '@/shared/components/ui/Button';
 import { Input } from '@/shared/components/ui/Input';
 import { Skeleton } from '@/shared/components/ui/Skeleton';
 import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
+import { isSafeUrl } from '@/shared/validation/url';
 import { cn } from '@/shared/components/ui/cn';
 
 type TabKey = 'hero' | 'marquee' | 'banner' | 'categories';
@@ -164,6 +165,14 @@ export function HomepageCmsPage() {
       toast.error('يرجى إدخال العنوان العربي وصورة الهيرو');
       return;
     }
+    if (
+      !isSafeUrl(heroDraft.hero_image_url) ||
+      !isSafeUrl(heroDraft.primary_cta_link ?? '/shop') ||
+      !isSafeUrl(heroDraft.secondary_cta_link ?? '/track')
+    ) {
+      toast.error('الروابط يجب أن تبدأ بـ / أو https:// فقط');
+      return;
+    }
     try {
       await mutations.upsertHero.mutateAsync({
         ...(selectedHeroId && selectedHeroId !== 'new' ? { id: selectedHeroId } : {}),
@@ -222,6 +231,10 @@ export function HomepageCmsPage() {
   const handleSaveBanner = async () => {
     if (!bannerDraft.title_ar?.trim() || !bannerDraft.background_image_url?.trim()) {
       toast.error('يرجى إدخال عنوان البانر وصورة الخلفية');
+      return;
+    }
+    if (!isSafeUrl(bannerDraft.background_image_url) || !isSafeUrl(bannerDraft.cta_link ?? '/shop')) {
+      toast.error('الروابط يجب أن تبدأ بـ / أو https:// فقط');
       return;
     }
     try {
@@ -323,6 +336,10 @@ export function HomepageCmsPage() {
   const handleAddCategoryCard = async () => {
     if (!newCard.category_slug.trim() || !newCard.title_ar.trim() || !newCard.cover_image_url.trim()) {
       toast.error('يرجى تحديد القسم والعنوان العربي وصورة الغلاف');
+      return;
+    }
+    if (!isSafeUrl(newCard.cover_image_url)) {
+      toast.error('رابط صورة الغلاف غير صالح');
       return;
     }
     try {

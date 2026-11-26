@@ -7,7 +7,11 @@ export function useAdminSession() {
 
   useEffect(() => {
     if (!isSupabaseConfigured) return;
-    const { data: listener } = supabase.auth.onAuthStateChange(() => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_OUT') {
+        queryClient.clear();
+        return;
+      }
       void queryClient.invalidateQueries({ queryKey: ['admin', 'session'] });
     });
     return () => listener.subscription.unsubscribe();

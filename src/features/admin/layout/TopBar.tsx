@@ -1,13 +1,16 @@
 import { LogOut, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/shared/components/ui/Button';
 
 export function TopBar({ onOpenMenu }: { onOpenMenu: () => void }) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
+    queryClient.clear();
     navigate('/admin/login', { replace: true });
   };
 

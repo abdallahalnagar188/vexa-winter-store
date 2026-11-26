@@ -2,7 +2,7 @@ create extension if not exists pgcrypto;
 
 -- ============ HELPERS ============
 create or replace function public.set_updated_at() returns trigger
-language plpgsql set search_path = public as $$
+language plpgsql set search_path = public, pg_temp as $$
 begin
   new.updated_at = now();
   return new;
@@ -15,7 +15,7 @@ create table if not exists public.admins (
 );
 
 create or replace function public.is_admin() returns boolean
-language sql stable security definer set search_path = public as $$
+language sql stable security definer set search_path = public, pg_temp as $$
   select exists (select 1 from public.admins where user_id = (select auth.uid()));
 $$;
 
@@ -171,7 +171,7 @@ create index if not exists order_status_history_order_idx on public.order_status
 
 -- ============ FUNCTIONS & RPCS ============
 create or replace function public.normalize_eg_phone(t text) returns text
-language sql immutable set search_path = public as $$
+language sql immutable set search_path = public, pg_temp as $$
   select case
     when s ~ '^\+?20[0-9]{10}$' then '0' || regexp_replace(s, '^\+?20', '')
     when s ~ '^0020[0-9]{10}$' then '0' || substr(s, 5)
@@ -185,7 +185,7 @@ language sql immutable set search_path = public as $$
 $$;
 
 create or replace function public.generate_order_ref() returns text
-language plpgsql set search_path = public as $$
+language plpgsql set search_path = public, pg_temp as $$
 declare v text;
 begin
   loop
@@ -197,7 +197,7 @@ end $$;
 
 create or replace function public.group_discount(p_product uuid, p_qty int, p_group_original int)
 returns table (tier_min_qty int, discount int)
-language sql stable set search_path = public as $$
+language sql stable set search_path = public, pg_temp as $$
   with scope as (
     select case
       when exists (select 1 from public.discount_tiers where is_active and product_id = p_product)
@@ -218,7 +218,7 @@ $$;
 
 create or replace function public.create_guest_order(p jsonb)
 returns jsonb
-language plpgsql security definer set search_path = public as $$
+language plpgsql security definer set search_path = public, pg_temp as $$
 declare
   v_key uuid := nullif(p->>'idempotency_key', '')::uuid;
   v_name text := btrim(coalesce(p->>'customer_name', ''));
@@ -358,7 +358,7 @@ begin
 end $$;
 
 create or replace function public.track_order(p_ref text, p_phone text)
-returns jsonb language sql stable security definer set search_path = public as $$
+returns jsonb language sql stable security definer set search_path = public, pg_temp as $$
   select jsonb_build_object(
     'order_ref', o.order_ref, 'status', o.status, 'created_at', o.created_at,
     'governorate', o.governorate_name, 'total_cod', o.total_cod,
@@ -370,15 +370,18 @@ returns jsonb language sql stable security definer set search_path = public as $
     )
   )
   from public.orders o
-  where o.order_ref = upper(btrim(p_ref)) and o.phone = public.normalize_eg_phone(p_phone);
+  where upper(btrim(coalesce(p_ref, ''))) ~ '^WNT-[0-9]{6}$'
+    and public.normalize_eg_phone(p_phone) ~ '^01[0125][0-9]{8}$'
+    and o.order_ref = upper(btrim(p_ref))
+    and o.phone = public.normalize_eg_phone(p_phone);
 $$;
 
 create or replace function public.admin_update_order_status(
   p_order_id uuid, p_new_status text, p_note text default null, p_restock boolean default true
-) returns void language plpgsql security definer set search_path = public as $$
+) returns void language plpgsql security definer set search_path = public, pg_temp as $$
 declare o public.orders%rowtype; ok boolean;
 begin
-  if not public.is_admin() then raise exception 'FORBIDDEN'; end if;
+  if not public.is_admin() then raise exception 'UNAUTHORIZED'; end if;
   select * into o from public.orders where id = p_order_id for update;
   if not found then raise exception 'NOT_FOUND'; end if;
 
@@ -400,10 +403,10 @@ begin
 end $$;
 
 create or replace function public.admin_delete_product(p_product_id uuid)
-returns jsonb language plpgsql security definer set search_path = public as $$
+returns jsonb language plpgsql security definer set search_path = public, pg_temp as $$
 declare v_paths jsonb;
 begin
-  if not public.is_admin() then raise exception 'FORBIDDEN'; end if;
+  if not public.is_admin() then raise exception 'UNAUTHORIZED'; end if;
   if exists (select 1 from public.order_items where product_id = p_product_id) then
     raise exception 'HAS_ORDERS';
   end if;
@@ -423,6 +426,7 @@ do $$ declare t text; begin
     'orders','order_items','order_status_history','admins'
   ] loop
     execute format('alter table public.%I enable row level security', t);
+    execute format('alter table public.%I force row level security', t);
     execute format('drop policy if exists %I on public.%I', 'admin all ' || t, t);
     execute format('create policy %I on public.%I for all to authenticated using (public.is_admin()) with check (public.is_admin())', 'admin all ' || t, t);
   end loop;
@@ -462,8 +466,11 @@ do $$ begin
 end $$;
 
 -- ============ SUPABASE STORAGE BUCKET: `products` ============
-insert into storage.buckets (id, name, public) values ('products', 'products', true)
-  on conflict (id) do nothing;
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('products', 'products', true, 5242880, array['image/webp', 'image/jpeg', 'image/png'])
+  on conflict (id) do update set
+    file_size_limit = excluded.file_size_limit,
+    allowed_mime_types = excluded.allowed_mime_types;
 
 drop policy if exists "public read products bucket" on storage.objects;
 create policy "public read products bucket" on storage.objects for select using (bucket_id = 'products');
@@ -726,26 +733,30 @@ create table if not exists public.homepage_category_cards (
 );
 
 alter table public.homepage_hero enable row level security;
+alter table public.homepage_hero force row level security;
 alter table public.homepage_marquee_items enable row level security;
+alter table public.homepage_marquee_items force row level security;
 alter table public.homepage_promo_banner enable row level security;
+alter table public.homepage_promo_banner force row level security;
 alter table public.homepage_category_cards enable row level security;
+alter table public.homepage_category_cards force row level security;
 
 drop policy if exists "hero_public_read" on public.homepage_hero;
-create policy "hero_public_read" on public.homepage_hero for select using (is_active or public.is_admin());
+create policy "hero_public_read" on public.homepage_hero for select to anon, authenticated using (is_active or public.is_admin());
 drop policy if exists "hero_admin_write" on public.homepage_hero;
-create policy "hero_admin_write" on public.homepage_hero for all using (public.is_admin()) with check (public.is_admin());
+create policy "hero_admin_write" on public.homepage_hero for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 drop policy if exists "marquee_public_read" on public.homepage_marquee_items;
-create policy "marquee_public_read" on public.homepage_marquee_items for select using (is_active or public.is_admin());
+create policy "marquee_public_read" on public.homepage_marquee_items for select to anon, authenticated using (is_active or public.is_admin());
 drop policy if exists "marquee_admin_write" on public.homepage_marquee_items;
-create policy "marquee_admin_write" on public.homepage_marquee_items for all using (public.is_admin()) with check (public.is_admin());
+create policy "marquee_admin_write" on public.homepage_marquee_items for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 drop policy if exists "banner_public_read" on public.homepage_promo_banner;
-create policy "banner_public_read" on public.homepage_promo_banner for select using (is_active or public.is_admin());
+create policy "banner_public_read" on public.homepage_promo_banner for select to anon, authenticated using (is_active or public.is_admin());
 drop policy if exists "banner_admin_write" on public.homepage_promo_banner;
-create policy "banner_admin_write" on public.homepage_promo_banner for all using (public.is_admin()) with check (public.is_admin());
+create policy "banner_admin_write" on public.homepage_promo_banner for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
 drop policy if exists "cat_cards_public_read" on public.homepage_category_cards;
-create policy "cat_cards_public_read" on public.homepage_category_cards for select using (is_active or public.is_admin());
+create policy "cat_cards_public_read" on public.homepage_category_cards for select to anon, authenticated using (is_active or public.is_admin());
 drop policy if exists "cat_cards_admin_write" on public.homepage_category_cards;
-create policy "cat_cards_admin_write" on public.homepage_category_cards for all using (public.is_admin()) with check (public.is_admin());
+create policy "cat_cards_admin_write" on public.homepage_category_cards for all to authenticated using (public.is_admin()) with check (public.is_admin());

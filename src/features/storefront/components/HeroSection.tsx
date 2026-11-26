@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Banknote, Layers, MapPin } from 'lucide-react';
 import { useDir } from '@/shared/hooks/useDir';
+import { sanitizeSafeUrl } from '@/shared/validation/url';
 import type { HomepageHero } from '@/shared/types/domain';
 
 const LUXURY_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -247,7 +248,7 @@ export function HeroSection({ heroes = [] }: HeroSectionProps) {
                 className="mt-8 flex flex-wrap items-center gap-3"
               >
                 <Link
-                  to={hero.primary_cta_link || '/shop'}
+                  to={sanitizeSafeUrl(hero.primary_cta_link, '/shop')}
                   className="group inline-flex min-h-13 items-center gap-2.5 rounded-[2px] bg-[#F97316] px-8 py-4 text-sm font-bold text-white transition-colors hover:bg-[#EA580C] sm:text-base"
                 >
                   <span>{primaryCta}</span>
@@ -255,7 +256,7 @@ export function HeroSection({ heroes = [] }: HeroSectionProps) {
                 </Link>
 
                 <Link
-                  to={hero.secondary_cta_link || '/track'}
+                  to={sanitizeSafeUrl(hero.secondary_cta_link, '/track')}
                   className="inline-flex min-h-13 items-center justify-center rounded-[2px] border border-white/30 px-8 py-4 text-sm font-bold text-white transition-colors hover:border-white hover:bg-white hover:text-slate-950 sm:text-base"
                 >
                   {secondaryCta}

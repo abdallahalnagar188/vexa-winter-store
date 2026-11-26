@@ -22,6 +22,12 @@ const TABS: (OrderStatus | 'all')[] = [
   'returned',
 ];
 
+function sanitizeCsvCell(value: unknown): string {
+  const raw = String(value ?? '');
+  const safe = /^[=+\-@\t\r]/.test(raw) ? `'${raw}` : raw;
+  return `"${safe.replaceAll('"', '""')}"`;
+}
+
 function exportCsv(orders: OrderRecord[]) {
   const headers = ['Ref', 'Date', 'Customer', 'Phone', 'Governorate', 'Address', 'Items', 'Total COD', 'Status'];
   const lines = orders.map((o) => {
@@ -39,7 +45,7 @@ function exportCsv(orders: OrderRecord[]) {
       String(o.total_cod),
       o.status,
     ];
-    return cols.map((c) => `"${String(c).replaceAll('"', '""')}"`).join(',');
+    return cols.map(sanitizeCsvCell).join(',');
   });
   const csv = '\uFEFF' + [headers.join(','), ...lines].join('\n');
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });

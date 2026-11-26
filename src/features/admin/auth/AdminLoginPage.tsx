@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import { sanitizeAdminRedirect } from '@/shared/validation/url';
 import { Input } from '@/shared/components/ui/Input';
 import { Button } from '@/shared/components/ui/Button';
 import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
@@ -32,7 +33,7 @@ export function AdminLoginPage() {
         return;
       }
 
-      navigate(location.state?.from || '/admin', { replace: true });
+      navigate(sanitizeAdminRedirect(location.state?.from, '/admin'), { replace: true });
     } finally {
       setLoading(false);
     }

@@ -21,6 +21,7 @@ import { useTiers } from '@/features/storefront/api/useTiers';
 import { useHomepageContent } from '@/features/storefront/api/useHomepageContent';
 import { useDir } from '@/shared/hooks/useDir';
 import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
+import { sanitizeSafeUrl } from '@/shared/validation/url';
 import { Skeleton } from '@/shared/components/ui/Skeleton';
 import { Button } from '@/shared/components/ui/Button';
 import { describeTier } from '@/shared/pricing/tiers';
@@ -264,7 +265,7 @@ export function HomePage() {
 
             <div>
               <Link
-                to={promoBanner?.cta_link || '/shop'}
+                to={sanitizeSafeUrl(promoBanner?.cta_link, '/shop')}
                 className="group inline-flex min-h-12 items-center gap-2.5 rounded-[2px] bg-[#F97316] px-7 py-3.5 text-sm font-bold text-white transition-colors hover:bg-[#EA580C]"
               >
                 <span>

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { normalizeEgPhone } from './phone';
 import { checkoutSchema } from './checkoutSchema';
+import { isSafeUrl, sanitizeAdminRedirect, sanitizeSafeUrl } from './url';
 import { buildCourierMessage } from '@/shared/constants/orderStatus';
 
 describe('Egyptian phone normalization & checkout validation', () => {
@@ -83,5 +84,17 @@ describe('Egyptian phone normalization & checkout validation', () => {
     expect(msg).toContain('2 × هودي شتوي (L / زيتوني)');
     expect(msg).toContain('2130 ج.م');
     expect(msg).toContain('موبايل تاني: 01112345678');
+  });
+
+  it('validates safe URLs and admin redirects against XSS / open redirects', () => {
+    expect(isSafeUrl('/shop')).toBe(true);
+    expect(isSafeUrl('https://vexa-winter-store.vercel.app')).toBe(true);
+    expect(isSafeUrl('javascript:alert(1)')).toBe(false);
+    expect(isSafeUrl('data:text/html,<script>')).toBe(false);
+    expect(isSafeUrl('//evil.com')).toBe(false);
+    expect(sanitizeSafeUrl('javascript:alert(1)', '/shop')).toBe('/shop');
+    expect(sanitizeAdminRedirect('/admin/orders')).toBe('/admin/orders');
+    expect(sanitizeAdminRedirect('https://evil.com')).toBe('/admin');
+    expect(sanitizeAdminRedirect('//evil.com')).toBe('/admin');
   });
 });

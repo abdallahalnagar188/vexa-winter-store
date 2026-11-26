@@ -35,7 +35,16 @@ async function convertToWebp(file: File): Promise<Blob> {
   });
 }
 
+const ALLOWED_IMAGE_MIME = new Set(['image/webp', 'image/jpeg', 'image/png']);
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
 export async function uploadHomepageAsset(file: File, folder: string): Promise<string> {
+  if (!ALLOWED_IMAGE_MIME.has(file.type)) {
+    throw new Error('يُسمح فقط بصور WebP أو JPEG أو PNG');
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    throw new Error('الحد الأقصى لحجم الصورة هو 5 ميجابايت');
+  }
   const blob = await convertToWebp(file);
   const path = `homepage/${folder}/${crypto.randomUUID()}.webp`;
   const { error } = await supabase.storage

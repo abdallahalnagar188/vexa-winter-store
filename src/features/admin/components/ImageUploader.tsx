@@ -65,6 +65,9 @@ function groupByColor(images: EditableImage[]): Map<string, EditableImage[]> {
   return map;
 }
 
+const ALLOWED_IMAGE_MIME = new Set(['image/webp', 'image/jpeg', 'image/png']);
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+
 export function ImageUploader({ productId, images, colors, onChange }: ImageUploaderProps) {
   const [uploading, setUploading] = useState(false);
   // Which color is active in the uploader header dropdown (null = all)
@@ -74,6 +77,19 @@ export function ImageUploader({ productId, images, colors, onChange }: ImageUplo
   const handleFiles = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
+
+    for (const file of files) {
+      if (!ALLOWED_IMAGE_MIME.has(file.type)) {
+        toast.error('يُسمح فقط بصور WebP أو JPEG أو PNG');
+        e.target.value = '';
+        return;
+      }
+      if (file.size > MAX_IMAGE_BYTES) {
+        toast.error('الحد الأقصى لحجم الصورة هو 5 ميجابايت');
+        e.target.value = '';
+        return;
+      }
+    }
 
     setUploading(true);
     try {
