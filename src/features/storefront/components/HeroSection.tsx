@@ -106,7 +106,7 @@ export function HeroSection() {
         >
           <div className="relative overflow-hidden rounded-3xl border border-[#132238]/15 bg-[#FFFFFF] p-2.5 shadow-2xl">
             <img
-              src="https://images.unsplash.com/photo-1544923246-77307dd654cb?auto=format&fit=crop&w=900&q=80"
+              src="https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=900&q=80"
               alt={t('hero.title')}
               className="aspect-4/5 w-full rounded-2xl object-cover"
             />

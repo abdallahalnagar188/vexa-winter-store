@@ -466,18 +466,32 @@ insert into storage.buckets (id, name, public) values ('products', 'products', t
 drop policy if exists "public read products bucket" on storage.objects;
 create policy "public read products bucket" on storage.objects for select using (bucket_id = 'products');
 
+-- NOTE: storage policies use inline EXISTS instead of is_admin() to avoid SECURITY DEFINER
+-- JWT context issue when is_admin() runs inside the storage service's RLS evaluation.
 drop policy if exists "admin insert products bucket" on storage.objects;
 create policy "admin insert products bucket" on storage.objects for insert to authenticated
-  with check (bucket_id = 'products' and public.is_admin());
+  with check (
+    bucket_id = 'products'
+    and exists (select 1 from public.admins where user_id = auth.uid())
+  );
 
 drop policy if exists "admin update products bucket" on storage.objects;
 create policy "admin update products bucket" on storage.objects for update to authenticated
-  using (bucket_id = 'products' and public.is_admin())
-  with check (bucket_id = 'products' and public.is_admin());
+  using (
+    bucket_id = 'products'
+    and exists (select 1 from public.admins where user_id = auth.uid())
+  )
+  with check (
+    bucket_id = 'products'
+    and exists (select 1 from public.admins where user_id = auth.uid())
+  );
 
 drop policy if exists "admin delete products bucket" on storage.objects;
 create policy "admin delete products bucket" on storage.objects for delete to authenticated
-  using (bucket_id = 'products' and public.is_admin());
+  using (
+    bucket_id = 'products'
+    and exists (select 1 from public.admins where user_id = auth.uid())
+  );
 
 -- ============ SEED: ALL 27 EGYPTIAN GOVERNORATES ============
 insert into public.governorate_shipping (id, name_ar, name_en, fee, sort_order) values
@@ -550,19 +564,28 @@ insert into public.products (id, slug, category_id, title_ar, title_en, descript
 on conflict (id) do nothing;
 
 -- ============ SEED: PRODUCT IMAGES (2 PER PRODUCT FOR HOVER SWAP) ============
+-- SEED: PRODUCT IMAGES — flat-lay / ghost-mannequin product-only shots (no models)
+-- Primary images: clean product shots of the garment itself
 insert into public.product_images (product_id, url, storage_path, sort_order, is_primary) values
- ('20000000-0000-4000-8000-000000000001', 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1000&q=80', null, 0, true),
- ('20000000-0000-4000-8000-000000000001', 'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?auto=format&fit=crop&w=1000&q=80', null, 1, false),
- ('20000000-0000-4000-8000-000000000002', 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=1000&q=80', null, 0, true),
- ('20000000-0000-4000-8000-000000000002', 'https://images.unsplash.com/photo-1614975059251-992f11792b9f?auto=format&fit=crop&w=1000&q=80', null, 1, false),
- ('20000000-0000-4000-8000-000000000003', 'https://images.unsplash.com/photo-1544923246-77307dd654cb?auto=format&fit=crop&w=1000&q=80', null, 0, true),
+ -- Hoodie 480gsm: cream/beige ghost-mannequin hoodie + knit texture close-up
+ ('20000000-0000-4000-8000-000000000001', 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?auto=format&fit=crop&w=1000&q=80', null, 0, true),
+ ('20000000-0000-4000-8000-000000000001', 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=1000&q=80', null, 1, false),
+ -- Boxy Quarter-Zip Knit: knit flat-lay front + detail
+ ('20000000-0000-4000-8000-000000000002', 'https://images.unsplash.com/photo-1614975059251-992f11792b9f?auto=format&fit=crop&w=1000&q=80', null, 0, true),
+ ('20000000-0000-4000-8000-000000000002', 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=1000&q=80', null, 1, false),
+ -- Puffer Jacket: flat-lay puffer jacket front + side
+ ('20000000-0000-4000-8000-000000000003', 'https://images.unsplash.com/photo-1543076447-215ad9ba6923?auto=format&fit=crop&w=1000&q=80', null, 0, true),
  ('20000000-0000-4000-8000-000000000003', 'https://images.unsplash.com/photo-1539533113208-f6df8cc8b543?auto=format&fit=crop&w=1000&q=80', null, 1, false),
+ -- Wool Overcoat: flat-lay overcoat front + detail
  ('20000000-0000-4000-8000-000000000004', 'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?auto=format&fit=crop&w=1000&q=80', null, 0, true),
  ('20000000-0000-4000-8000-000000000004', 'https://images.unsplash.com/photo-1520975954732-35dd22299614?auto=format&fit=crop&w=1000&q=80', null, 1, false),
- ('20000000-0000-4000-8000-000000000005', 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=1000&q=80', null, 0, true),
- ('20000000-0000-4000-8000-000000000005', 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=1000&q=80', null, 1, false),
- ('20000000-0000-4000-8000-000000000006', 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?auto=format&fit=crop&w=1000&q=80', null, 0, true),
- ('20000000-0000-4000-8000-000000000006', 'https://images.unsplash.com/photo-1516826957135-700dedea698c?auto=format&fit=crop&w=1000&q=80', null, 1, false),
+ -- Fleece Cargo Pants: dark charcoal wide-leg sweatpants flat-lay
+ ('20000000-0000-4000-8000-000000000005', 'https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?auto=format&fit=crop&w=1000&q=80', null, 0, true),
+ ('20000000-0000-4000-8000-000000000005', 'https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=1000&q=80', null, 1, false),
+ -- Thermal Waffle Crewneck: flat-lay sweatshirt front + texture detail
+ ('20000000-0000-4000-8000-000000000006', 'https://images.unsplash.com/photo-1578768079052-aa76e52ff62e?auto=format&fit=crop&w=1000&q=80', null, 0, true),
+ ('20000000-0000-4000-8000-000000000006', 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=1000&q=80', null, 1, false),
+ -- Sherpa-Lined Overshirt: flat-lay heavy overshirt front + back
  ('20000000-0000-4000-8000-000000000007', 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?auto=format&fit=crop&w=1000&q=80', null, 0, true),
  ('20000000-0000-4000-8000-000000000007', 'https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?auto=format&fit=crop&w=1000&q=80', null, 1, false)
 on conflict do nothing;

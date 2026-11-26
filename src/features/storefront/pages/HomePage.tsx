@@ -33,7 +33,7 @@ export function HomePage() {
       <section id="winter-campaign" className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
         <div className="relative overflow-hidden rounded-3xl border border-[#132238]/15 bg-[#132238] text-[#F4F2EC] shadow-xl">
           <img
-            src="https://images.unsplash.com/photo-1516826957135-700dedea698c?auto=format&fit=crop&w=1600&q=80"
+            src="https://images.unsplash.com/photo-1543076447-215ad9ba6923?auto=format&fit=crop&w=1600&q=80"
             alt={t('offers.bannerTitle')}
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover object-center opacity-45"
