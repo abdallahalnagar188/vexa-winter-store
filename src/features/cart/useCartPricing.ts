@@ -4,7 +4,7 @@ import { useProducts } from '@/features/storefront/api/useProducts';
 import { useTiers } from '@/features/storefront/api/useTiers';
 import { usePublicSettings } from '@/features/storefront/api/usePublicSettings';
 import { calculateCart } from '@/shared/pricing/calculateCart';
-import type { ProductVariant } from '@/shared/types/domain';
+import type { ProductVariant, ProductWithDetails } from '@/shared/types/domain';
 
 export function useCartPricing(shippingFee: number | null = null) {
   const items = useCartStore((s) => s.items);
@@ -17,9 +17,9 @@ export function useCartPricing(shippingFee: number | null = null) {
   const tiersQuery = useTiers();
   const settingsQuery = usePublicSettings();
 
-  const { priced, variantMap, staleVariantIds } = useMemo(() => {
+  const { priced, variantMap, productMap, staleVariantIds } = useMemo(() => {
     const products = productsQuery.data ?? [];
-    const productById = new Map(products.map((p) => [p.id, p]));
+    const productById = new Map<string, ProductWithDetails>(products.map((p) => [p.id, p]));
     const vMap = new Map<string, { variant: ProductVariant; basePrice: number }>();
 
     for (const p of products) {
@@ -40,6 +40,7 @@ export function useCartPricing(shippingFee: number | null = null) {
           return null;
         }
         return {
+          lineKey: item.cartItemKey,
           variantId: item.variantId,
           productId: item.productId,
           unitPrice: liveEntry.basePrice,
@@ -55,7 +56,7 @@ export function useCartPricing(shippingFee: number | null = null) {
       freeShippingThreshold: settingsQuery.data?.freeShippingThreshold ?? 0,
     });
 
-    return { priced: result, variantMap: vMap, staleVariantIds: staleIds };
+    return { priced: result, variantMap: vMap, productMap: productById, staleVariantIds: staleIds };
   }, [
     items,
     productsQuery.data,
@@ -70,6 +71,7 @@ export function useCartPricing(shippingFee: number | null = null) {
     items,
     priced,
     variantMap,
+    productMap,
     staleVariantIds,
     freeShippingThreshold: settingsQuery.data?.freeShippingThreshold ?? 0,
     tiers: tiersQuery.data ?? [],

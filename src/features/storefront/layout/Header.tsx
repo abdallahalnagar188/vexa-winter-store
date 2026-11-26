@@ -14,6 +14,7 @@ export function Header() {
   const { lang, isRtl } = useDir();
   const { pathname, search } = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const items = useCartStore((s) => s.items);
   const openDrawer = useCartStore((s) => s.openDrawer);
   const { data: categories = [] } = useCategories();
@@ -24,6 +25,13 @@ export function Header() {
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname, search]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -156,8 +164,14 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-[#F4F2EC]/15 bg-[#132238]/95 text-[#F4F2EC] backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6">
+      <header
+        className={`sticky top-0 z-40 border-b text-[#F4F2EC] transition-[background-color,border-color,box-shadow] duration-200 ${
+          scrolled
+            ? 'border-[#F4F2EC]/20 bg-[#132238]/90 shadow-md backdrop-blur-md'
+            : 'border-[#F4F2EC]/12 bg-[#132238]'
+        }`}
+      >
+        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6">
           <div className="flex items-center gap-2.5">
             <button
               type="button"

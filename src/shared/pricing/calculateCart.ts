@@ -1,6 +1,7 @@
 import { bestTier, nextTier, resolveTiers, type PricingTier } from './tiers';
 
 export interface PricedLineInput {
+  lineKey?: string;
   variantId: string;
   productId: string;
   unitPrice: number;
@@ -15,6 +16,7 @@ export interface PricedInput {
 }
 
 export interface PricedLineOutput {
+  lineKey: string;
   variantId: string;
   productId: string;
   quantity: number;
@@ -60,24 +62,33 @@ export interface PricedOutput {
  */
 export function calculateCart(input: PricedInput): PricedOutput {
   const byProduct = new Map<string, PricedLineInput[]>();
-  for (const line of input.lines) {
-    if (line.quantity <= 0) continue;
+  const validLines = input.lines
+    .map((line) => ({
+      ...line,
+      unitPrice: Number.isFinite(line.unitPrice) ? Math.max(0, Math.round(line.unitPrice)) : 0,
+      quantity: Number.isFinite(line.quantity) ? Math.floor(line.quantity) : 0,
+    }))
+    .filter((line) => line.quantity > 0);
+
+  for (const line of validLines) {
     const list = byProduct.get(line.productId) ?? [];
     list.push(line);
     byProduct.set(line.productId, list);
   }
 
-  const pricedLineByVariant = new Map<string, PricedLineOutput>();
+  const pricedLineByKey = new Map<string, PricedLineOutput>();
   const groups: Record<string, GroupSummary> = {};
   let subtotalOriginal = 0;
   let discountTotal = 0;
   let globalNextHint: NextTierHint | null = null;
 
   for (const [productId, groupLines] of byProduct.entries()) {
-    // Deterministic sort by variantId to match SQL `order by v.id`
-    const sorted = [...groupLines].sort((a, b) => a.variantId.localeCompare(b.variantId));
+    // Deterministic sort by variantId / lineKey to match SQL `order by v.id`
+    const sorted = [...groupLines].sort((a, b) =>
+      (a.lineKey ?? a.variantId).localeCompare(b.lineKey ?? b.variantId),
+    );
     const totalQty = sorted.reduce((acc, l) => acc + l.quantity, 0);
-    const groupOriginal = sorted.reduce((acc, l) => acc + Math.round(l.unitPrice) * l.quantity, 0);
+    const groupOriginal = sorted.reduce((acc, l) => acc + l.unitPrice * l.quantity, 0);
 
     const scopedTiers = resolveTiers(productId, input.tiers);
     const applied = bestTier(scopedTiers, totalQty);
@@ -95,7 +106,7 @@ export function calculateCart(input: PricedInput): PricedOutput {
 
     let remaining = groupDiscount;
     sorted.forEach((line, idx) => {
-      const unitPrice = Math.round(line.unitPrice);
+      const unitPrice = line.unitPrice;
       const lineOriginal = unitPrice * line.quantity;
       const isLast = idx === sorted.length - 1;
       let lineDiscount = isLast
@@ -106,8 +117,10 @@ export function calculateCart(input: PricedInput): PricedOutput {
       lineDiscount = Math.max(0, Math.min(lineOriginal, lineDiscount));
       remaining -= lineDiscount;
 
+      const key = line.lineKey ?? line.variantId;
       const lineTotal = lineOriginal - lineDiscount;
-      pricedLineByVariant.set(line.variantId, {
+      pricedLineByKey.set(key, {
+        lineKey: key,
         variantId: line.variantId,
         productId,
         quantity: line.quantity,
@@ -148,17 +161,18 @@ export function calculateCart(input: PricedInput): PricedOutput {
   }
 
   // Preserve original input line order in output array
-  const lines: PricedLineOutput[] = input.lines
-    .filter((l) => l.quantity > 0)
-    .map((l) => pricedLineByVariant.get(l.variantId)!)
+  const lines: PricedLineOutput[] = validLines
+    .map((l) => pricedLineByKey.get(l.lineKey ?? l.variantId)!)
     .filter(Boolean);
 
   const subtotalAfterDiscount = subtotalOriginal - discountTotal;
-  const threshold = Math.max(0, Math.round(input.freeShippingThreshold));
+  const rawThreshold = Number.isFinite(input.freeShippingThreshold) ? input.freeShippingThreshold : 0;
+  const threshold = Math.max(0, Math.round(rawThreshold));
   const isFreeShipping =
     input.shippingFee !== null && threshold > 0 && subtotalAfterDiscount >= threshold;
+  const safeShip = input.shippingFee !== null && Number.isFinite(input.shippingFee) ? input.shippingFee : 0;
   const effectiveShipping =
-    input.shippingFee === null ? null : isFreeShipping ? 0 : Math.max(0, Math.round(input.shippingFee));
+    input.shippingFee === null ? null : isFreeShipping ? 0 : Math.max(0, Math.round(safeShip));
   const totalCod = effectiveShipping === null ? null : subtotalAfterDiscount + effectiveShipping;
 
   return {

@@ -19,20 +19,26 @@ export function VariantPicker({
 }: VariantPickerProps) {
   const { t } = useTranslation();
 
+  const activeVariants = variants.filter((v) => v.is_active);
+
   const uniqueColors = Array.from(
     new Map(
-      variants.map((v) => [
+      activeVariants.map((v) => [
         v.color_name,
         { name: v.color_name, hex: v.color_hex ?? '#132238' },
       ]),
     ).values(),
   );
 
-  const uniqueSizes = Array.from(new Set(variants.map((v) => v.size)));
+  const uniqueSizes = Array.from(new Set(activeVariants.map((v) => v.size)));
 
   const sizeStock = (size: string): number => {
-    const match = variants.find(
-      (v) => v.size === size && (!selectedColor || v.color_name === selectedColor),
+    const normSize = size.trim().toLowerCase();
+    const normColor = selectedColor?.trim().toLowerCase();
+    const match = activeVariants.find(
+      (v) =>
+        v.size.trim().toLowerCase() === normSize &&
+        (!normColor || v.color_name.trim().toLowerCase() === normColor),
     );
     return match ? match.stock : 0;
   };

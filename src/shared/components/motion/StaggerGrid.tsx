@@ -16,7 +16,7 @@ export function StaggerGrid({ children, className }: StaggerGridProps) {
         hidden: {},
         visible: {
           transition: {
-            staggerChildren: 0.05,
+            staggerChildren: 0.06,
           },
         },
       }}

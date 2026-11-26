@@ -11,6 +11,15 @@ import { Button } from '@/shared/components/ui/Button';
 import { EmptyState } from '@/shared/components/ui/EmptyState';
 import { useDir } from '@/shared/hooks/useDir';
 import { formatEGP } from '@/lib/format';
+import type { ProductVariant, ProductWithDetails } from '@/shared/types/domain';
+
+function resolveColorImageUrl(product: ProductWithDetails, colorName: string): string | null {
+  const colorImages = product.product_images.filter(
+    (img) => img.color_name === colorName || img.color_name === null,
+  );
+  const picked = colorImages.find((img) => img.is_primary) ?? colorImages[0];
+  return picked?.url ?? null;
+}
 
 export function CartDrawer() {
   const { t } = useTranslation();
@@ -18,10 +27,12 @@ export function CartDrawer() {
   const drawerOpen = useCartStore((s) => s.drawerOpen);
   const closeDrawer = useCartStore((s) => s.closeDrawer);
   const setQuantity = useCartStore((s) => s.setQuantity);
+  const changeVariant = useCartStore((s) => s.changeVariant);
   const remove = useCartStore((s) => s.remove);
   const syncStock = useCartStore((s) => s.syncStock);
 
-  const { items, priced, variantMap, staleVariantIds, freeShippingThreshold } = useCartPricing(null);
+  const { items, priced, variantMap, productMap, staleVariantIds, freeShippingThreshold } =
+    useCartPricing(null);
 
   useEffect(() => {
     if (!drawerOpen || variantMap.size === 0) return;
@@ -33,6 +44,25 @@ export function CartDrawer() {
   }, [drawerOpen, variantMap, syncStock]);
 
   const hint = priced.nextTierHint;
+
+  const handleVariantChange = (cartItemKey: string, product: ProductWithDetails, nextVariant: ProductVariant) => {
+    changeVariant(
+      cartItemKey,
+      {
+        variantId: nextVariant.id,
+        snapshot: {
+          titleAr: product.title_ar,
+          titleEn: product.title_en,
+          size: nextVariant.size,
+          colorName: nextVariant.color_name,
+          colorHex: nextVariant.color_hex,
+          imageUrl: resolveColorImageUrl(product, nextVariant.color_name),
+          slug: product.slug,
+        },
+      },
+      nextVariant.stock,
+    );
+  };
 
   return (
     <Drawer open={drawerOpen} onClose={closeDrawer} ariaLabel={t('cart.title')}>
@@ -76,17 +106,24 @@ export function CartDrawer() {
             )}
 
             {items.map((item) => {
-              const pricedLine = priced.lines.find((l) => l.variantId === item.variantId);
+              const pricedLine = priced.lines.find(
+                (l) => l.lineKey === item.cartItemKey || l.variantId === item.variantId,
+              );
+              const product = productMap.get(item.productId);
               const maxStock = variantMap.get(item.variantId)?.variant.stock ?? 10;
               return (
                 <CartLine
-                  key={item.variantId}
+                  key={item.cartItemKey}
                   item={item}
                   pricedLine={pricedLine}
+                  product={product}
                   maxStock={maxStock}
                   isStale={staleVariantIds.includes(item.variantId)}
-                  onQuantityChange={(qty) => setQuantity(item.variantId, qty, maxStock)}
-                  onRemove={() => remove(item.variantId)}
+                  onQuantityChange={(qty) => setQuantity(item.cartItemKey, qty, maxStock)}
+                  onVariantChange={
+                    product ? (nextVar) => handleVariantChange(item.cartItemKey, product, nextVar) : undefined
+                  }
+                  onRemove={() => remove(item.cartItemKey)}
                 />
               );
             })}

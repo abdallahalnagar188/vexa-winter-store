@@ -58,17 +58,21 @@ export function ProductPage() {
       value: product.base_price,
       currency: 'EGP',
     });
-    const firstAvailable = product.product_variants.find((v) => v.stock > 0);
-    if (firstAvailable && !selectedColor) {
-      setSelectedColor(firstAvailable.color_name);
+    const firstAvailable = product.product_variants.find((v) => v.is_active && v.stock > 0);
+    if (firstAvailable) {
+      setSelectedColor((prev) => prev ?? firstAvailable.color_name);
     }
-  }, [product, selectedColor]);
+  }, [product?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const selectedVariant = useMemo(() => {
     if (!product || !selectedColor || !selectedSize) return null;
+    const normColor = selectedColor.trim().toLowerCase();
+    const normSize = selectedSize.trim().toLowerCase();
     return (
       product.product_variants.find(
-        (v) => v.color_name === selectedColor && v.size === selectedSize,
+        (v) =>
+          v.color_name.trim().toLowerCase() === normColor &&
+          v.size.trim().toLowerCase() === normSize,
       ) ?? null
     );
   }, [product, selectedColor, selectedSize]);
@@ -94,12 +98,14 @@ export function ProductPage() {
       ...cartItems
         .filter((i) => i.productId === product.id)
         .map((i) => ({
+          lineKey: i.cartItemKey,
           variantId: i.variantId,
           productId: product.id,
           unitPrice: product.base_price,
           quantity: i.quantity,
         })),
       {
+        lineKey: '__preview__',
         variantId: selectedVariant?.id ?? 'preview-current',
         productId: product.id,
         unitPrice: product.base_price,
@@ -150,6 +156,8 @@ export function ProductPage() {
       value: product.base_price * qty,
       currency: 'EGP',
     });
+    setQty(1);
+    setSelectedSize(null);
     toast.success(t('product.addedToast'));
     openDrawer();
   };
@@ -208,6 +216,19 @@ export function ProductPage() {
               onSelectColor={(c) => {
                 setSelectedColor(c);
                 setPickerError(false);
+                setQty(1);
+                if (selectedSize) {
+                  const stillAvailable = product.product_variants.some(
+                    (v) =>
+                      v.is_active &&
+                      v.stock > 0 &&
+                      v.color_name.trim().toLowerCase() === c.trim().toLowerCase() &&
+                      v.size.trim().toLowerCase() === selectedSize.trim().toLowerCase(),
+                  );
+                  if (!stillAvailable) {
+                    setSelectedSize(null);
+                  }
+                }
               }}
               onSelectSize={(s) => {
                 setSelectedSize(s);

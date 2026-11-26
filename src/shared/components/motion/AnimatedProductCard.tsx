@@ -10,15 +10,15 @@ export function AnimatedProductCard({ children, className }: AnimatedProductCard
   return (
     <motion.div
       variants={{
-        hidden: { opacity: 0, y: 18 },
+        hidden: { opacity: 0, y: 16 },
         visible: {
           opacity: 1,
           y: 0,
-          transition: { duration: 0.28, ease: 'easeOut' },
+          transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
         },
       }}
-      whileHover={{ y: -4 }}
-      transition={{ duration: 0.18, ease: 'easeOut' }}
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
       className={className}
     >
       {children}

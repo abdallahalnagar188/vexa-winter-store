@@ -316,7 +316,7 @@ begin
 
     for r in
       select v.id as variant_id, v.size, v.color_name, q.qty, pr.title_ar,
-        (select url from public.product_images pi where pi.product_id = pr.id order by is_primary desc, sort_order limit 1) as image_url
+        (select url from public.product_images pi where pi.product_id = pr.id order by (pi.color_name = v.color_name) desc, is_primary desc, sort_order limit 1) as image_url
       from jsonb_to_recordset(v_items) as q(variant_id uuid, qty int)
       join public.product_variants v on v.id = q.variant_id
       join public.products pr on pr.id = v.product_id

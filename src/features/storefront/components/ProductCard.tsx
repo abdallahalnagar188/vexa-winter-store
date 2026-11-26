@@ -71,7 +71,7 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
         to={`/product/${product.slug}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] text-[#132238] shadow-xs transition-all duration-200 hover:border-[#132238]/30 hover:shadow-xl"
+        className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] text-[#132238] shadow-xs transition-all duration-200 hover:border-[#132238]/28 hover:shadow-md"
       >
         <div className="relative aspect-4/5 overflow-hidden bg-[#ECE9E0]">
           <img

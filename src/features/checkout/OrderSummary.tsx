@@ -26,16 +26,18 @@ export function OrderSummary({
       <h2 className="mb-4 text-lg font-extrabold">{t('checkout.summary')}</h2>
       <div className="mb-4 space-y-3 border-b border-[#132238]/12 pb-4">
         {items.map((item) => {
-          const line = priced.lines.find((l) => l.variantId === item.variantId);
+          const line = priced.lines.find(
+            (l) => l.lineKey === item.cartItemKey || l.variantId === item.variantId,
+          );
           const title =
             lang === 'ar' ? item.snapshot.titleAr : item.snapshot.titleEn || item.snapshot.titleAr;
           return (
-            <div key={item.variantId} className="flex items-center justify-between gap-3 text-sm">
+            <div key={item.cartItemKey} className="flex items-center justify-between gap-3 text-sm">
               <div className="flex min-w-0 items-center gap-2.5">
                 <img
                   src={item.snapshot.imageUrl ?? ''}
                   alt={title}
-                  className="h-12 w-10 shrink-0 rounded-lg bg-[#ECE9E0] object-cover"
+                  className="h-12 w-10 shrink-0 rounded-lg bg-[#ECE9E0] object-contain p-0.5"
                 />
                 <div className="min-w-0">
                   <p className="truncate font-bold">{title}</p>

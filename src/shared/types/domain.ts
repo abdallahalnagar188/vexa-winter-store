@@ -80,6 +80,7 @@ export interface CartSnapshot {
 }
 
 export interface CartItem {
+  cartItemKey: string;
   variantId: string;
   productId: string;
   quantity: number;
