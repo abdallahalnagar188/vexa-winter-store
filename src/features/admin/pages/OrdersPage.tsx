@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Download } from 'lucide-react';
+import { Download, Plus, Printer } from 'lucide-react';
+import { toast } from 'sonner';
 import type { OrderStatus } from '@/shared/types/database';
 import type { OrderRecord } from '@/shared/types/domain';
 import { useAdminOrders } from '@/features/admin/api/useAdminOrders';
@@ -7,6 +8,8 @@ import { useAdminSettings } from '@/features/admin/api/useAdminSettings';
 import { ORDER_STATUS_META } from '@/shared/constants/orderStatus';
 import { StatusBadge } from '@/features/admin/components/StatusBadge';
 import { CopyForCourierButton } from '@/features/admin/components/CopyForCourierButton';
+import { ManualOrderDrawer } from '@/features/admin/components/ManualOrderDrawer';
+import { WaybillPrintModal } from '@/features/admin/components/WaybillPrintModal';
 import { OrderDetailDrawer } from './OrderDetailDrawer';
 import { formatDate, formatEGP } from '@/lib/format';
 import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
@@ -62,6 +65,8 @@ export function OrdersPage() {
   const [activeTab, setActiveTab] = useState<OrderStatus | 'all'>('all');
   const [search, setSearch] = useState('');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [manualOpen, setManualOpen] = useState(false);
+  const [printOrderId, setPrintOrderId] = useState<string | null>(null);
 
   const ordersQuery = useAdminOrders('all');
   const settingsQuery = useAdminSettings();
@@ -81,15 +86,22 @@ export function OrdersPage() {
   }, [allOrders, activeTab, search]);
 
   const selectedOrder = allOrders.find((o) => o.id === selectedOrderId) ?? null;
+  const printOrder = allOrders.find((o) => o.id === printOrderId) ?? null;
 
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-black text-[#132238]">إدارة الطلبات (تحديث مباشر)</h1>
-        <Button variant="secondary" size="sm" onClick={() => exportCsv(filtered)}>
-          <Download className="h-4 w-4" />
-          <span>تصدير CSV (Excel)</span>
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button variant="primary" size="sm" onClick={() => setManualOpen(true)}>
+            <Plus className="h-4 w-4" />
+            <span>إضافة أوردر يدوي</span>
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => exportCsv(filtered)}>
+            <Download className="h-4 w-4" />
+            <span>تصدير CSV (Excel)</span>
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -146,10 +158,24 @@ export function OrdersPage() {
               <span className="font-display text-base font-black">
                 {formatEGP(o.total_cod, 'ar')}
               </span>
-              <CopyForCourierButton
-                order={o}
-                template={settingsQuery.data?.courier_template}
-              />
+              <div className="flex items-center gap-1.5">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  aria-label="طباعة البوليصة"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPrintOrderId(o.id);
+                  }}
+                >
+                  <Printer className="h-3.5 w-3.5" />
+                </Button>
+                <CopyForCourierButton
+                  order={o}
+                  template={settingsQuery.data?.courier_template}
+                />
+              </div>
             </div>
           </div>
         ))}
@@ -193,10 +219,25 @@ export function OrdersPage() {
                   <StatusBadge status={o.status} />
                 </td>
                 <td className="p-3">
-                  <CopyForCourierButton
-                    order={o}
-                    template={settingsQuery.data?.courier_template}
-                  />
+                  <div className="flex items-center gap-1.5">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      title="طباعة البوليصة"
+                      aria-label="طباعة البوليصة"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPrintOrderId(o.id);
+                      }}
+                    >
+                      <Printer className="h-3.5 w-3.5" />
+                    </Button>
+                    <CopyForCourierButton
+                      order={o}
+                      template={settingsQuery.data?.courier_template}
+                    />
+                  </div>
                 </td>
               </tr>
             ))}
@@ -215,7 +256,28 @@ export function OrdersPage() {
         order={selectedOrder}
         allOrders={allOrders}
         courierTemplate={settingsQuery.data?.courier_template}
+        onPrintWaybill={(ord) => setPrintOrderId(ord.id)}
         onClose={() => setSelectedOrderId(null)}
+      />
+
+      <ManualOrderDrawer
+        open={manualOpen}
+        onClose={() => setManualOpen(false)}
+        onCreated={(orderId, orderRef) => {
+          setSelectedOrderId(orderId);
+          toast.success(`تم إنشاء الأوردر ${orderRef} بنجاح`, {
+            action: {
+              label: 'طباعة البوليصة',
+              onClick: () => setPrintOrderId(orderId),
+            },
+          });
+        }}
+      />
+
+      <WaybillPrintModal
+        order={printOrder}
+        whatsappNumber={settingsQuery.data?.whatsapp_number}
+        onClose={() => setPrintOrderId(null)}
       />
     </div>
   );

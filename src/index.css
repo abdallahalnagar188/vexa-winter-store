@@ -103,3 +103,29 @@ body {
     animation: none;
   }
 }
+
+@media print {
+  body {
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  body * {
+    visibility: hidden !important;
+  }
+  #vexa-waybill-print-sheet,
+  #vexa-waybill-print-sheet * {
+    visibility: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  #vexa-waybill-print-sheet {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+}

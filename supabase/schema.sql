@@ -418,6 +418,146 @@ begin
   return jsonb_build_object('storage_paths', v_paths);
 end $$;
 
+create or replace function public.admin_create_manual_order(p jsonb)
+returns jsonb
+language plpgsql security definer set search_path = public, pg_temp as $$
+declare
+  v_name text := btrim(coalesce(p->>'customer_name', ''));
+  v_phone text := public.normalize_eg_phone(p->>'phone');
+  v_phone2 text := nullif(public.normalize_eg_phone(p->>'phone_secondary'), '');
+  v_city text := btrim(coalesce(p->>'city_area', ''));
+  v_addr text := btrim(coalesce(p->>'address_details', ''));
+  v_notes text := nullif(btrim(coalesce(p->>'notes', '')), '');
+  v_status text := coalesce(nullif(btrim(p->>'initial_status'), ''), 'confirmed');
+  v_ship_override int := case when p ? 'shipping_fee_override' and p->>'shipping_fee_override' is not null
+                              then (p->>'shipping_fee_override')::int else null end;
+  v_gov public.governorate_shipping%rowtype;
+  v_items jsonb; v_bad jsonb;
+  v_threshold int := 0;
+  v_order_id uuid; v_ref text;
+  v_sub int := 0; v_disc int := 0; v_ship int; v_total int;
+  g record; r record;
+  v_grp_orig int; v_grp_disc int; v_tier int; v_remaining int;
+  v_n int; v_i int; v_line_orig int; v_line_disc int;
+begin
+  if not public.is_admin() then raise exception 'UNAUTHORIZED'; end if;
+
+  if v_status not in ('new', 'confirmed') then raise exception 'INVALID_STATUS'; end if;
+  if v_ship_override is not null and v_ship_override < 0 then raise exception 'INVALID_SHIPPING'; end if;
+  if char_length(v_name) < 3 or char_length(v_name) > 100 then raise exception 'INVALID_NAME'; end if;
+  if v_phone !~ '^01[0125][0-9]{8}$' then raise exception 'INVALID_PHONE'; end if;
+  if v_phone2 is not null and v_phone2 !~ '^01[0125][0-9]{8}$' then raise exception 'INVALID_PHONE2'; end if;
+  if char_length(v_city) < 2 or char_length(v_addr) < 5 then raise exception 'INVALID_ADDRESS'; end if;
+  if jsonb_typeof(p->'items') <> 'array' or jsonb_array_length(p->'items') not between 1 and 30 then
+    raise exception 'INVALID_ITEMS';
+  end if;
+  if exists (
+    select 1 from jsonb_array_elements(p->'items') i
+    where coalesce((i->>'quantity')::int, 0) not between 1 and 10
+  ) then
+    raise exception 'INVALID_QUANTITY';
+  end if;
+
+  select * into v_gov from public.governorate_shipping
+  where id = (p->>'governorate_id')::smallint and is_active;
+  if not found then raise exception 'INVALID_GOVERNORATE'; end if;
+
+  select jsonb_agg(jsonb_build_object('variant_id', variant_id, 'qty', qty)) into v_items
+  from (
+    select (i->>'variant_id')::uuid as variant_id, sum((i->>'quantity')::int) as qty
+    from jsonb_array_elements(p->'items') i group by 1
+  ) s;
+
+  perform 1 from public.product_variants
+  where id in (select (x->>'variant_id')::uuid from jsonb_array_elements(v_items) x)
+  order by id for update;
+
+  select jsonb_agg(jsonb_build_object('variant_id', q.variant_id, 'requested', q.qty, 'available', coalesce(v.stock, 0)))
+  into v_bad
+  from jsonb_to_recordset(v_items) as q(variant_id uuid, qty int)
+  left join public.product_variants v on v.id = q.variant_id
+  left join public.products pr on pr.id = v.product_id
+  where v.id is null or not v.is_active or pr.is_archived or not pr.is_active or v.stock < q.qty;
+
+  if v_bad is not null then
+    raise exception 'STOCK_UNAVAILABLE' using detail = v_bad::text;
+  end if;
+
+  v_ref := public.generate_order_ref();
+  insert into public.orders (
+    order_ref, status, customer_name, phone, phone_secondary, governorate_id,
+    governorate_name, city_area, address_details, notes
+  ) values (
+    v_ref, v_status, v_name, v_phone, v_phone2, v_gov.id,
+    v_gov.name_ar, v_city, v_addr, v_notes
+  ) returning id into v_order_id;
+
+  for g in
+    select pr.id as product_id, pr.base_price, sum(q.qty)::int as qty
+    from jsonb_to_recordset(v_items) as q(variant_id uuid, qty int)
+    join public.product_variants v on v.id = q.variant_id
+    join public.products pr on pr.id = v.product_id
+    group by pr.id, pr.base_price
+  loop
+    v_grp_orig := g.base_price * g.qty;
+    select gd.tier_min_qty, gd.discount into v_tier, v_grp_disc
+    from public.group_discount(g.product_id, g.qty, v_grp_orig) gd;
+    v_grp_disc := coalesce(v_grp_disc, 0);
+    v_remaining := v_grp_disc;
+
+    select count(*) into v_n
+    from jsonb_to_recordset(v_items) as q(variant_id uuid, qty int)
+    join public.product_variants v on v.id = q.variant_id
+    where v.product_id = g.product_id;
+    v_i := 0;
+
+    for r in
+      select v.id as variant_id, v.size, v.color_name, q.qty, pr.title_ar,
+        (select url from public.product_images pi where pi.product_id = pr.id order by (pi.color_name = v.color_name) desc, is_primary desc, sort_order limit 1) as image_url
+      from jsonb_to_recordset(v_items) as q(variant_id uuid, qty int)
+      join public.product_variants v on v.id = q.variant_id
+      join public.products pr on pr.id = v.product_id
+      where pr.id = g.product_id
+      order by v.id
+    loop
+      v_i := v_i + 1;
+      v_line_orig := g.base_price * r.qty;
+      v_line_disc := case when v_i = v_n then v_remaining
+                          else round(v_grp_disc::numeric * v_line_orig / v_grp_orig)::int end;
+      v_line_disc := greatest(0, least(v_line_orig, v_line_disc));
+      v_remaining := v_remaining - v_line_disc;
+
+      insert into public.order_items (
+        order_id, product_id, variant_id, product_title, size, color,
+        image_url, unit_price, quantity, line_original, line_discount, line_total, tier_min_qty
+      ) values (
+        v_order_id, g.product_id, r.variant_id, r.title_ar, r.size, r.color_name,
+        r.image_url, g.base_price, r.qty, v_line_orig, v_line_disc, v_line_orig - v_line_disc, v_tier
+      );
+
+      update public.product_variants set stock = stock - r.qty where id = r.variant_id;
+      v_sub := v_sub + v_line_orig;
+      v_disc := v_disc + v_line_disc;
+    end loop;
+  end loop;
+
+  if v_ship_override is not null then
+    v_ship := v_ship_override;
+  else
+    select coalesce((value #>> '{}')::int, 0) into v_threshold
+    from public.store_settings where key = 'free_shipping_threshold';
+    v_ship := case when coalesce(v_threshold, 0) > 0 and (v_sub - v_disc) >= v_threshold then 0 else v_gov.fee end;
+  end if;
+  v_total := v_sub - v_disc + v_ship;
+
+  update public.orders set subtotal_original = v_sub, discount_total = v_disc,
+    shipping_fee = v_ship, total_cod = v_total where id = v_order_id;
+  insert into public.order_status_history (order_id, from_status, to_status, changed_by, note)
+    values (v_order_id, null, v_status, (select auth.uid()), 'Manual admin order');
+
+  return jsonb_build_object('order_id', v_order_id, 'order_ref', v_ref, 'total_cod', v_total);
+end $$;
+
 -- ============ RLS ============
 do $$ declare t text; begin
   foreach t in array array[
@@ -451,10 +591,10 @@ create policy "public read settings" on public.store_settings for select to anon
 revoke all on public.orders, public.order_items, public.order_status_history, public.admins from anon;
 revoke execute on function public.create_guest_order(jsonb), public.track_order(text, text),
   public.admin_update_order_status(uuid, text, text, boolean), public.admin_delete_product(uuid),
-  public.is_admin() from public, anon;
+  public.admin_create_manual_order(jsonb), public.is_admin() from public, anon;
 grant execute on function public.create_guest_order(jsonb), public.track_order(text, text) to anon, authenticated;
 grant execute on function public.admin_update_order_status(uuid, text, text, boolean), public.admin_delete_product(uuid),
-  public.is_admin() to authenticated;
+  public.admin_create_manual_order(jsonb), public.is_admin() to authenticated;
 
 -- Realtime for admin orders
 do $$ begin

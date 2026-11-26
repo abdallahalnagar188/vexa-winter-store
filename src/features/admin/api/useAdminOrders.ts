@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
-import type { OrderStatus } from '@/shared/types/database';
+import type { Json, OrderStatus } from '@/shared/types/database';
 import type { OrderRecord } from '@/shared/types/domain';
 
 function playPing() {
@@ -114,6 +114,43 @@ export function useUpdateOrderNotes() {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
+    },
+  });
+}
+
+export interface CreateManualOrderPayload {
+  customer_name: string;
+  phone: string;
+  phone_secondary?: string | null;
+  governorate_id: number;
+  city_area: string;
+  address_details: string;
+  notes?: string | null;
+  initial_status: 'new' | 'confirmed';
+  shipping_fee_override?: number | null;
+  items: { variant_id: string; quantity: number }[];
+}
+
+export interface CreateManualOrderResult {
+  order_id: string;
+  order_ref: string;
+  total_cod: number;
+}
+
+export function useCreateManualOrder() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: CreateManualOrderPayload): Promise<CreateManualOrderResult> => {
+      const { data, error } = await supabase.rpc('admin_create_manual_order', {
+        p: payload as unknown as Json,
+      });
+      if (error) throw error;
+      return data as CreateManualOrderResult;
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      void qc.invalidateQueries({ queryKey: ['admin', 'products'] });
+      void qc.invalidateQueries({ queryKey: ['products'] });
     },
   });
 }

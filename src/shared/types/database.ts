@@ -619,6 +619,10 @@ export interface Database {
         Args: { p_product_id: string };
         Returns: { storage_paths: string[] };
       };
+      admin_create_manual_order: {
+        Args: { p: Json };
+        Returns: { order_id: string; order_ref: string; total_cod: number };
+      };
       is_admin: {
         Args: Record<string, never>;
         Returns: boolean;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { AlertTriangle, MessageCircle, Phone, X } from 'lucide-react';
+import { AlertTriangle, MessageCircle, Phone, Printer, X } from 'lucide-react';
 import { toast } from 'sonner';
 import type { OrderStatus } from '@/shared/types/database';
 import type { OrderRecord } from '@/shared/types/domain';
@@ -16,6 +16,7 @@ interface OrderDetailDrawerProps {
   order: OrderRecord | null;
   allOrders: OrderRecord[];
   courierTemplate?: string;
+  onPrintWaybill?: (order: OrderRecord) => void;
   onClose: () => void;
 }
 
@@ -23,6 +24,7 @@ export function OrderDetailDrawer({
   order,
   allOrders,
   courierTemplate,
+  onPrintWaybill,
   onClose,
 }: OrderDetailDrawerProps) {
   const [internalNotes, setInternalNotes] = useState('');
@@ -94,7 +96,20 @@ export function OrderDetailDrawer({
         )}
 
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <CopyForCourierButton order={order} template={courierTemplate} size="md" />
+          <div className="flex flex-wrap items-center gap-2">
+            <CopyForCourierButton order={order} template={courierTemplate} size="md" />
+            {onPrintWaybill && (
+              <Button
+                type="button"
+                variant="outline"
+                size="md"
+                onClick={() => onPrintWaybill(order)}
+              >
+                <Printer className="h-4 w-4" />
+                <span>طباعة البوليصة</span>
+              </Button>
+            )}
+          </div>
           <div className="flex gap-2">
             <a href={`tel:${order.phone}`}>
               <Button variant="secondary" size="sm">
