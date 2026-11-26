@@ -2,7 +2,7 @@ create extension if not exists pgcrypto;
 
 -- ============ HELPERS ============
 create or replace function public.set_updated_at() returns trigger
-language plpgsql as $$
+language plpgsql set search_path = public as $$
 begin
   new.updated_at = now();
   return new;
@@ -169,7 +169,7 @@ create index if not exists order_status_history_order_idx on public.order_status
 
 -- ============ FUNCTIONS & RPCS ============
 create or replace function public.normalize_eg_phone(t text) returns text
-language sql immutable as $$
+language sql immutable set search_path = public as $$
   select case
     when s ~ '^\+?20[0-9]{10}$' then '0' || regexp_replace(s, '^\+?20', '')
     when s ~ '^0020[0-9]{10}$' then '0' || substr(s, 5)
@@ -183,7 +183,7 @@ language sql immutable as $$
 $$;
 
 create or replace function public.generate_order_ref() returns text
-language plpgsql as $$
+language plpgsql set search_path = public as $$
 declare v text;
 begin
   loop
@@ -195,7 +195,7 @@ end $$;
 
 create or replace function public.group_discount(p_product uuid, p_qty int, p_group_original int)
 returns table (tier_min_qty int, discount int)
-language sql stable as $$
+language sql stable set search_path = public as $$
   with scope as (
     select case
       when exists (select 1 from public.discount_tiers where is_active and product_id = p_product)
@@ -444,9 +444,11 @@ create policy "public read settings" on public.store_settings for select to anon
 
 revoke all on public.orders, public.order_items, public.order_status_history, public.admins from anon;
 revoke execute on function public.create_guest_order(jsonb), public.track_order(text, text),
-  public.admin_update_order_status(uuid, text, text, boolean), public.admin_delete_product(uuid) from public;
+  public.admin_update_order_status(uuid, text, text, boolean), public.admin_delete_product(uuid),
+  public.is_admin() from public, anon;
 grant execute on function public.create_guest_order(jsonb), public.track_order(text, text) to anon, authenticated;
-grant execute on function public.admin_update_order_status(uuid, text, text, boolean), public.admin_delete_product(uuid) to authenticated;
+grant execute on function public.admin_update_order_status(uuid, text, text, boolean), public.admin_delete_product(uuid),
+  public.is_admin() to authenticated;
 
 -- Realtime for admin orders
 do $$ begin
