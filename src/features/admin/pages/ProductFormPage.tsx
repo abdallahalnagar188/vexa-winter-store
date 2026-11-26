@@ -10,7 +10,7 @@ import { slugify } from '@/lib/format';
 import { productSchema, type ProductFormValues } from '@/shared/validation/productSchema';
 import { useAdminCategories } from '@/features/admin/api/useAdminProducts';
 import { useSaveTiersForScope } from '@/features/admin/api/useAdminTiers';
-import { ImageUploader, type EditableImage } from '@/features/admin/components/ImageUploader';
+import { ImageUploader, type EditableImage, type ColorOption } from '@/features/admin/components/ImageUploader';
 import { VariantMatrixEditor, type EditableVariant } from '@/features/admin/components/VariantMatrixEditor';
 import { TierEditor, type EditableTier } from '@/features/admin/components/TierEditor';
 import { Input } from '@/shared/components/ui/Input';
@@ -88,6 +88,8 @@ export function ProductFormPage() {
             storage_path: img.storage_path,
             sort_order: img.sort_order,
             is_primary: img.is_primary,
+            color_name: img.color_name ?? null,
+            color_hex: img.color_hex ?? null,
           })),
       );
 
@@ -152,6 +154,19 @@ export function ProductFormPage() {
     toast.success('تم إضافة القسم');
   };
 
+  const colors: ColorOption[] = useMemo(
+    () =>
+      Array.from(
+        new Map(
+          variants.map((v) => [
+            v.color_name,
+            { name: v.color_name, hex: v.color_hex || '#132238' },
+          ]),
+        ).values(),
+      ),
+    [variants],
+  );
+
   const uniqueMinQtys = useMemo(() => new Set(tiers.map((t) => t.min_qty)).size === tiers.length, [tiers]);
 
   const onSubmit = async (values: ProductFormValues) => {
@@ -186,6 +201,8 @@ export function ProductFormPage() {
             storage_path: img.storage_path,
             sort_order: i,
             is_primary: img.is_primary,
+            color_name: img.color_name ?? null,
+            color_hex: img.color_hex ?? null,
           })),
         );
         if (imgErr) throw imgErr;
@@ -333,7 +350,7 @@ export function ProductFormPage() {
 
       <div className="space-y-4 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 shadow-xs">
         <h2 className="text-base font-extrabold">صور المنتج</h2>
-        <ImageUploader productId={productId} images={images} onChange={setImages} />
+        <ImageUploader productId={productId} images={images} colors={colors} onChange={setImages} />
       </div>
 
       <div className="space-y-4 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 shadow-xs">

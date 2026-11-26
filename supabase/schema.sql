@@ -55,7 +55,9 @@ create table if not exists public.product_images (
   url text not null,
   storage_path text, -- null for external/Unsplash seed images; populated for Storage uploads
   sort_order int not null default 0,
-  is_primary boolean not null default false
+  is_primary boolean not null default false,
+  color_name text, -- null = shown for all colors
+  color_hex text
 );
 
 create table if not exists public.product_variants (

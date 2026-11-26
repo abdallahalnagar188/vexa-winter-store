@@ -124,6 +124,10 @@ export function ProductPage() {
       return;
     }
     setPickerError(false);
+    const colorImages = product.product_images.filter(
+      (img) => img.color_name === selectedVariant.color_name || img.color_name === null,
+    );
+    const primaryColorImg = colorImages.find((img) => img.is_primary) ?? colorImages[0];
     addToCart(
       {
         variantId: selectedVariant.id,
@@ -135,7 +139,7 @@ export function ProductPage() {
           size: selectedVariant.size,
           colorName: selectedVariant.color_name,
           colorHex: selectedVariant.color_hex,
-          imageUrl: product.product_images[0]?.url ?? null,
+          imageUrl: primaryColorImg?.url ?? null,
           slug: product.slug,
         },
       },
@@ -175,7 +179,7 @@ export function ProductPage() {
     <PageTransition className="mx-auto max-w-6xl px-4 pb-28 pt-8 sm:px-6 lg:pb-12">
       <div className="grid gap-8 lg:grid-cols-12">
         <div className="lg:col-span-6">
-          <ProductGallery images={product.product_images} title={title} />
+          <ProductGallery images={product.product_images} title={title} selectedColor={selectedColor} />
         </div>
 
         <div className="flex flex-col gap-5 rounded-3xl border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-xl sm:p-7 lg:col-span-6">

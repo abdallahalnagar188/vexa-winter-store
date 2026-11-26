@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -24,9 +24,24 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
   const { t } = useTranslation();
   const { lang } = useDir();
   const [hovered, setHovered] = useState(false);
+  const [hoveredColor, setHoveredColor] = useState<string | null>(null);
 
-  const primaryImg = product.product_images[0]?.url ?? FALLBACK_IMG;
-  const secondaryImg = product.product_images[1]?.url;
+  const colorImageMap = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const img of product.product_images) {
+      if (img.color_name && !map.has(img.color_name)) {
+        map.set(img.color_name, img.url);
+      }
+    }
+    return map;
+  }, [product.product_images]);
+
+  const primaryImg =
+    (hoveredColor && colorImageMap.get(hoveredColor)) ??
+    product.product_images.find((img) => img.is_primary)?.url ??
+    product.product_images[0]?.url ??
+    FALLBACK_IMG;
+  const secondaryImg = !hoveredColor ? product.product_images[1]?.url : undefined;
   const totalStock = product.product_variants.reduce((acc, v) => acc + v.stock, 0);
   const isSoldOut = totalStock <= 0;
 
@@ -117,7 +132,9 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
                     <span
                       key={c.name}
                       title={c.name}
-                      className="h-3.5 w-3.5 rounded-full border border-[#132238]/30"
+                      onMouseEnter={() => setHoveredColor(c.name)}
+                      onMouseLeave={() => setHoveredColor(null)}
+                      className="h-3.5 w-3.5 cursor-pointer rounded-full border border-[#132238]/30 transition-transform hover:scale-125"
                       style={{ backgroundColor: c.hex }}
                     />
                   ))}

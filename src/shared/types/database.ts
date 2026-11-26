@@ -119,6 +119,8 @@ export interface Database {
           storage_path: string | null;
           sort_order: number;
           is_primary: boolean;
+          color_name: string | null;
+          color_hex: string | null;
         };
         Insert: {
           id?: string;
@@ -127,6 +129,8 @@ export interface Database {
           storage_path?: string | null;
           sort_order?: number;
           is_primary?: boolean;
+          color_name?: string | null;
+          color_hex?: string | null;
         };
         Update: {
           id?: string;
@@ -135,6 +139,8 @@ export interface Database {
           storage_path?: string | null;
           sort_order?: number;
           is_primary?: boolean;
+          color_name?: string | null;
+          color_hex?: string | null;
         };
         Relationships: [
           {

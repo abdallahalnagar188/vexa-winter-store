@@ -16,6 +16,9 @@ export interface ProductImage {
   storage_path: string | null;
   sort_order: number;
   is_primary: boolean;
+  /** Color variant this image belongs to. null = shown for all colors (fallback). */
+  color_name: string | null;
+  color_hex: string | null;
 }
 
 export interface ProductVariant {
