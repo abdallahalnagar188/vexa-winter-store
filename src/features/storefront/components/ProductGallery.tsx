@@ -37,8 +37,8 @@ export function ProductGallery({ images, title, selectedColor }: ProductGalleryP
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Main image with crossfade on color switch */}
-      <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-[#132238]/12 bg-[#ECE9E0] shadow-md">
+      {/* Main image with seamless studio surface and crossfade on color switch */}
+      <div className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-[#132238]/10 bg-[radial-gradient(circle_at_center,#FFFFFF_0%,#F3F2EE_65%,#EAE6DC_100%)] shadow-md">
         <AnimatePresence mode="wait">
           {current ? (
             <motion.img
@@ -49,7 +49,7 @@ export function ProductGallery({ images, title, selectedColor }: ProductGalleryP
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}
               transition={{ duration: 0.25, ease: 'easeInOut' }}
-              className="h-full w-full object-contain p-2"
+              className="h-full w-full object-cover object-center"
             />
           ) : (
             <div className="flex h-full items-center justify-center font-display font-bold text-[#132238]/50">
@@ -68,7 +68,7 @@ export function ProductGallery({ images, title, selectedColor }: ProductGalleryP
               type="button"
               onClick={() => setActiveIdx(idx)}
               className={cn(
-                'h-20 w-16 shrink-0 cursor-pointer overflow-hidden rounded-xl border-2 bg-[#ECE9E0] transition-all',
+                'h-20 w-16 shrink-0 cursor-pointer overflow-hidden rounded-xl border-2 bg-[#F3F2EE] transition-all',
                 idx === safeIdx
                   ? 'border-[#FF6B1A] ring-2 ring-[#FF6B1A]/40'
                   : 'border-transparent opacity-70 hover:opacity-100',
@@ -77,7 +77,7 @@ export function ProductGallery({ images, title, selectedColor }: ProductGalleryP
               <img
                 src={img.url}
                 alt={`${title} ${idx + 1}`}
-                className="h-full w-full object-contain p-0.5"
+                className="h-full w-full object-cover object-center"
               />
             </button>
           ))}

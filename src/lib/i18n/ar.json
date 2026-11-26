@@ -61,8 +61,10 @@
     "description": "التفاصيل والخامة",
     "sizeGuide": "دليل المقاسات",
     "addedToast": "تمت إضافة القطعة إلى السلة",
+    "addedVariantToast": "تمت إضافة {{title}} ({{color}} - {{size}}) إلى السلة",
+    "selectedSubtotal": "الإجمالي للقطع المختارة",
     "livePreview": "السعر المتوقع مع القطع في السلة",
-    "includesCart": "يشمل {{count}} قطعة في السلة من نفس الموديل"
+    "includesCart": "لديك {{count}} قطعة في السلة من هذا المنتج"
   },
   "cart": {
     "title": "سلة التسوق",

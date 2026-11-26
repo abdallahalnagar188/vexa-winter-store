@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ProductWithDetails } from '@/shared/types/domain';
@@ -74,17 +75,24 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
         className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] text-[#132238] shadow-xs transition-all duration-200 hover:border-[#132238]/28 hover:shadow-md"
       >
         <div className="relative aspect-4/5 overflow-hidden bg-[#ECE9E0]">
-          <img
-            src={hovered && secondaryImg ? secondaryImg : primaryImg}
-            alt={title}
-            loading="lazy"
-            onError={(e) => {
-              if (e.currentTarget.src !== FALLBACK_IMG) {
-                e.currentTarget.src = FALLBACK_IMG;
-              }
-            }}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={hovered && secondaryImg ? secondaryImg : primaryImg}
+              src={hovered && secondaryImg ? secondaryImg : primaryImg}
+              alt={title}
+              loading="lazy"
+              initial={{ opacity: 0.75 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0.75 }}
+              transition={{ duration: 0.22, ease: 'easeOut' }}
+              onError={(e) => {
+                if (e.currentTarget.src !== FALLBACK_IMG) {
+                  e.currentTarget.src = FALLBACK_IMG;
+                }
+              }}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </AnimatePresence>
 
           <div className="absolute start-2.5 top-2.5 flex flex-col gap-1.5">
             {product.is_new && <Badge variant="primary">{t('catalog.newTag')}</Badge>}

@@ -158,7 +158,13 @@ export function ProductPage() {
     });
     setQty(1);
     setSelectedSize(null);
-    toast.success(t('product.addedToast'));
+    toast.success(
+      t('product.addedVariantToast', {
+        title,
+        color: selectedVariant.color_name,
+        size: selectedVariant.size,
+      }),
+    );
     openDrawer();
   };
 
@@ -278,10 +284,16 @@ export function ProductPage() {
 
           {groupPreview && (
             <div className="rounded-2xl border border-[#132238]/12 bg-[#ECE9E0] p-4">
-              <div className="flex items-center justify-between gap-2 text-xs font-bold text-[#132238]/75">
-                <span>{t('product.livePreview')}</span>
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-[#132238]/75">
+                <span>
+                  {existingProductCartQty > 0
+                    ? t('product.livePreview')
+                    : t('product.selectedSubtotal')}
+                </span>
                 {existingProductCartQty > 0 && (
-                  <span>{t('product.includesCart', { count: existingProductCartQty })}</span>
+                  <span className="text-[#FF6B1A]">
+                    {t('product.includesCart', { count: existingProductCartQty })}
+                  </span>
                 )}
               </div>
               <div className="mt-2 flex flex-wrap items-center justify-between gap-2">

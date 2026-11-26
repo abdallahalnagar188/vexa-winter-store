@@ -13,7 +13,10 @@ export function useCartPricing(shippingFee: number | null = null) {
     [items],
   );
 
-  const productsQuery = useProducts({ ids: productIds.length > 0 ? productIds : ['__none__'] });
+  const productsQuery = useProducts({
+    ids: productIds,
+    enabled: productIds.length > 0,
+  });
   const tiersQuery = useTiers();
   const settingsQuery = usePublicSettings();
 

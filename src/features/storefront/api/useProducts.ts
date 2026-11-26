@@ -7,12 +7,13 @@ export interface ProductFilters {
   sort?: 'newest' | 'price_asc' | 'price_desc';
   limit?: number;
   ids?: string[];
+  enabled?: boolean;
 }
 
 export function useProducts(filters: ProductFilters = {}) {
   return useQuery({
     queryKey: ['products', filters],
-    enabled: isSupabaseConfigured,
+    enabled: isSupabaseConfigured && (filters.enabled ?? true),
     staleTime: 60_000,
     queryFn: async (): Promise<ProductWithDetails[]> => {
       let query = supabase

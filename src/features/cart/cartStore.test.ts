@@ -187,4 +187,58 @@ describe('cartStore multi-color and multi-size line items', () => {
     expect(items[0]?.cartItemKey).toBe('hoodie-1::black::xl');
     expect(items[0]?.quantity).toBe(3);
   });
+
+  it('updates and removes individual (productId, color, size) lines independently', () => {
+    const store = useCartStore.getState();
+
+    store.add(
+      {
+        variantId: 'var-black-m',
+        productId: 'prod-a',
+        quantity: 1,
+        snapshot: {
+          titleAr: 'منتج أ',
+          titleEn: 'Product A',
+          size: 'M',
+          colorName: 'Black',
+          colorHex: '#000000',
+          imageUrl: null,
+          slug: 'prod-a',
+        },
+      },
+      5,
+    );
+    store.add(
+      {
+        variantId: 'var-white-xl',
+        productId: 'prod-a',
+        quantity: 1,
+        snapshot: {
+          titleAr: 'منتج أ',
+          titleEn: 'Product A',
+          size: 'XL',
+          colorName: 'White',
+          colorHex: '#FFFFFF',
+          imageUrl: null,
+          slug: 'prod-a',
+        },
+      },
+      5,
+    );
+
+    expect(useCartStore.getState().items).toHaveLength(2);
+
+    // Increment only Black M to 2; White XL stays 1
+    useCartStore.getState().setQuantity('prod-a::black::m', 2, 5);
+    let items = useCartStore.getState().items;
+    expect(items.find((i) => i.cartItemKey === 'prod-a::black::m')?.quantity).toBe(2);
+    expect(items.find((i) => i.cartItemKey === 'prod-a::white::xl')?.quantity).toBe(1);
+
+    // Decrement White XL from 1 -> 0 removes ONLY White XL
+    useCartStore.getState().setQuantity('prod-a::white::xl', 0, 5);
+    items = useCartStore.getState().items;
+    expect(items).toHaveLength(1);
+    expect(items[0]?.cartItemKey).toBe('prod-a::black::m');
+    expect(items[0]?.quantity).toBe(2);
+  });
 });

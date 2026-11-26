@@ -61,8 +61,10 @@
     "description": "Details & Fabric",
     "sizeGuide": "Size Guide",
     "addedToast": "Added to your cart",
-    "livePreview": "Live Price with Quantity Tier",
-    "includesCart": "Includes {{count}} unit(s) of this product already in cart"
+    "addedVariantToast": "Added {{title}} ({{color}} - {{size}}) to cart",
+    "selectedSubtotal": "Selected subtotal",
+    "livePreview": "Estimated total with items in cart",
+    "includesCart": "You have {{count}} item(s) of this product in cart"
   },
   "cart": {
     "title": "Your Cart",
