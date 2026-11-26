@@ -8,12 +8,12 @@ export const ORDER_STATUS_META: Record<
   new: {
     labelAr: 'طلب جديد',
     labelEn: 'New',
-    badgeClass: 'bg-[#FFD60A] text-[#124E3B] border-[#E6C000]',
+    badgeClass: 'bg-[#F47B20] text-white border-[#DC6812]',
   },
   confirmed: {
     labelAr: 'تم التأكيد',
     labelEn: 'Confirmed',
-    badgeClass: 'bg-[#124E3B] text-[#E8E3D5] border-[#1B664F]',
+    badgeClass: 'bg-[#3E452B] text-[#EAE6D7] border-[#2F3520]',
   },
   sent_to_shipping: {
     labelAr: 'مع شركة الشحن',

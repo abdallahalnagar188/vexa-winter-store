@@ -38,14 +38,14 @@ export function AnimatedCartDrawer({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 bg-[#0C382A]/70 backdrop-blur-xs"
+            className="fixed inset-0 bg-[#2F3520]/70 backdrop-blur-xs"
           />
           <motion.aside
             initial={{ x: hiddenX }}
             animate={{ x: 0 }}
             exit={{ x: hiddenX }}
             transition={{ type: 'spring', stiffness: 360, damping: 36 }}
-            className="relative z-10 flex h-full w-full max-w-md flex-col bg-[#E8E3D5] text-[#124E3B] shadow-2xl"
+            className="relative z-10 flex h-full w-full max-w-md flex-col bg-[#EAE6D7] text-[#3E452B] shadow-2xl"
           >
             {children}
           </motion.aside>

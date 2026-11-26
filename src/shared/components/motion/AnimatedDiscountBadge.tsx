@@ -12,10 +12,10 @@ export function AnimatedDiscountBadge({ children, className }: AnimatedDiscountB
     <motion.span
       layout
       initial={{ scale: 0.85, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ type: 'spring', stiffness: 450, damping: 24 }}
+      animate={{ scale: [0.85, 1.07, 1], opacity: 1 }}
+      transition={{ duration: 0.35, ease: 'easeOut' }}
       className={cn(
-        'inline-flex items-center gap-1 rounded-full bg-[#FFD60A] px-2.5 py-1 text-xs font-extrabold text-[#124E3B] shadow-xs',
+        'inline-flex items-center gap-1 rounded-full bg-[#F47B20] px-2.5 py-1 text-xs font-extrabold text-white shadow-xs',
         className,
       )}
     >

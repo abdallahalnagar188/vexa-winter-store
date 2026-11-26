@@ -29,39 +29,45 @@ export function HomePage() {
     <PageTransition>
       <HeroSection />
 
-      {globalTiers.length > 0 && (
-        <section className="border-y border-[#124E3B]/15 bg-[#E8E3D5] text-[#124E3B]">
-          <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 px-4 py-6 sm:flex-row sm:items-center sm:px-6">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#124E3B] text-[#FFD60A]">
-                <Tag className="h-5 w-5" />
-              </div>
-              <div>
-                <h2 className="text-base font-extrabold sm:text-lg">{t('offers.bannerTitle')}</h2>
-                <p className="text-xs text-[#124E3B]/75 sm:text-sm">{t('offers.bannerSub')}</p>
-              </div>
+      {/* High-Contrast Deep Olive Winter Drop & Offers Banner */}
+      <section className="border-y border-[#3E452B]/20 bg-[#3E452B] text-[#EAE6D7]">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-5 px-4 py-7 sm:px-6 lg:flex-row lg:items-center">
+          <div className="flex items-start gap-3.5 sm:items-center">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#F47B20] text-white shadow-sm">
+              <Tag className="h-5 w-5" />
             </div>
-            <div className="flex flex-wrap gap-2">
-              {globalTiers.map((tier) => (
-                <span
-                  key={tier.minQty}
-                  className="rounded-full bg-[#FFD60A] px-3.5 py-1.5 text-xs font-extrabold text-[#124E3B] shadow-xs"
-                >
-                  {describeTier(tier, lang)}
-                </span>
-              ))}
+            <div>
+              <h2 className="text-base font-extrabold text-[#EAE6D7] sm:text-lg">
+                {t('offers.bannerTitle')}
+              </h2>
+              <p className="mt-0.5 text-xs text-[#C5BFA8] sm:text-sm">{t('offers.bannerSub')}</p>
             </div>
           </div>
-        </section>
-      )}
 
+          <div className="flex flex-wrap items-center gap-2">
+            {globalTiers.map((tier) => (
+              <span
+                key={tier.minQty}
+                className="rounded-full bg-[#F47B20] px-3.5 py-1.5 text-xs font-extrabold text-white shadow-xs"
+              >
+                {describeTier(tier, lang)}
+              </span>
+            ))}
+            <span className="rounded-full border border-[#C5BFA8]/35 px-3.5 py-1.5 text-xs font-bold text-[#EAE6D7]">
+              {t('trust.shipping')}
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* Shop by Category */}
       {(categoriesQuery.data?.length ?? 0) > 0 && (
         <section className="mx-auto max-w-7xl px-4 pt-12 sm:px-6">
           <div className="mb-5 flex items-center justify-between">
-            <h2 className="text-xl font-extrabold text-[#E8E3D5] sm:text-2xl">
+            <h2 className="text-xl font-black text-[#3E452B] sm:text-2xl">
               {t('home.shopByCategory')}
             </h2>
-            <Link to="/shop" className="text-sm font-bold text-[#FFD60A] hover:underline">
+            <Link to="/shop" className="text-sm font-extrabold text-[#F47B20] hover:underline">
               {t('home.viewAll')}
             </Link>
           </div>
@@ -70,7 +76,7 @@ export function HomePage() {
               <Link
                 key={cat.id}
                 to={`/shop?category=${cat.slug}`}
-                className="rounded-xl border border-[#E8E3D5]/20 bg-[#0C382A] px-5 py-3 text-sm font-bold text-[#E8E3D5] transition-colors hover:border-[#FFD60A] hover:text-[#FFD60A]"
+                className="rounded-xl border border-[#3E452B]/20 bg-[#EAE6D7] px-5 py-3 text-sm font-bold text-[#3E452B] transition-all hover:border-[#F47B20] hover:bg-[#3E452B] hover:text-[#EAE6D7]"
               >
                 {lang === 'ar' ? cat.name_ar : cat.name_en}
               </Link>
@@ -79,9 +85,10 @@ export function HomePage() {
         </section>
       )}
 
+      {/* Featured / Trending Winter Collection Grid */}
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-2xl font-extrabold text-[#E8E3D5] sm:text-3xl">
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <h2 className="text-2xl font-black text-[#3E452B] sm:text-3xl">
             {t('home.newArrivals')}
           </h2>
           <Link to="/shop">
@@ -98,7 +105,7 @@ export function HomePage() {
             ))}
           </div>
         ) : productsQuery.isError ? (
-          <div className="rounded-2xl bg-[#E8E3D5] p-6 text-center text-[#124E3B]">
+          <div className="rounded-2xl bg-[#EAE6D7] p-6 text-center text-[#3E452B]">
             <p className="font-bold">{t('checkout.errors.generic')}</p>
             <Button variant="secondary" className="mt-3" onClick={() => productsQuery.refetch()}>
               {t('catalog.retry')}
@@ -113,38 +120,39 @@ export function HomePage() {
         )}
       </section>
 
-      <section className="border-t border-[#E8E3D5]/15 bg-[#E8E3D5] text-[#124E3B]">
-        <div className="mx-auto grid max-w-7xl gap-6 px-4 py-10 sm:grid-cols-3 sm:px-6">
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#124E3B] text-[#FFD60A]">
+      {/* Brand Value & Trust Strip */}
+      <section className="border-t border-[#3E452B]/15 bg-[#D2CCB8]/65 text-[#3E452B]">
+        <div className="mx-auto grid max-w-7xl gap-4 px-4 py-10 sm:grid-cols-3 sm:px-6">
+          <div className="flex items-start gap-3 rounded-2xl bg-[#EAE6D7] p-4 shadow-xs">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#3E452B] text-[#F47B20]">
               <Banknote className="h-5 w-5" />
             </div>
             <div>
               <h3 className="font-extrabold">{t('trust.cod')}</h3>
-              <p className="mt-0.5 text-xs text-[#124E3B]/75">{t('trust.codSub')}</p>
+              <p className="mt-0.5 text-xs text-[#3E452B]/75">{t('trust.codSub')}</p>
             </div>
           </div>
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#124E3B] text-[#FFD60A]">
+          <div className="flex items-start gap-3 rounded-2xl bg-[#EAE6D7] p-4 shadow-xs">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#3E452B] text-[#F47B20]">
               <Truck className="h-5 w-5" />
             </div>
             <div>
               <h3 className="font-extrabold">{t('trust.shipping')}</h3>
-              <p className="mt-0.5 text-xs text-[#124E3B]/75">{t('trust.shippingSub')}</p>
+              <p className="mt-0.5 text-xs text-[#3E452B]/75">{t('trust.shippingSub')}</p>
             </div>
           </div>
-          <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#124E3B] text-[#FFD60A]">
+          <div className="flex items-start gap-3 rounded-2xl bg-[#EAE6D7] p-4 shadow-xs">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#3E452B] text-[#F47B20]">
               <RefreshCw className="h-5 w-5" />
             </div>
             <div>
               <h3 className="font-extrabold">{t('trust.returns')}</h3>
-              <p className="mt-0.5 text-xs text-[#124E3B]/75">{t('trust.returnsSub')}</p>
+              <p className="mt-0.5 text-xs text-[#3E452B]/75">{t('trust.returnsSub')}</p>
             </div>
           </div>
         </div>
-        <div className="hidden items-center justify-center gap-2 pb-4 text-xs text-[#124E3B]/60 sm:flex">
-          <ShieldCheck className="h-4 w-4" />
+        <div className="hidden items-center justify-center gap-2 pb-5 text-xs font-semibold text-[#3E452B]/70 sm:flex">
+          <ShieldCheck className="h-4 w-4 text-[#F47B20]" />
           <span>{t('footer.policies')}</span>
         </div>
       </section>

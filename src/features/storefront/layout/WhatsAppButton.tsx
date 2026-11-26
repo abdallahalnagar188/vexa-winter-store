@@ -16,7 +16,7 @@ export function WhatsAppButton() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label={t('footer.whatsapp')}
-      className="fixed bottom-20 end-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[#FFD60A] text-[#124E3B] shadow-lg transition-transform hover:scale-105 hover:bg-[#E6C000] md:bottom-6"
+      className="fixed bottom-20 end-4 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-[#F47B20] text-white shadow-lg transition-transform hover:scale-105 hover:bg-[#DC6812] md:bottom-6"
     >
       <MessageCircle className="h-6 w-6 fill-current" />
     </a>

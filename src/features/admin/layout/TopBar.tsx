@@ -12,12 +12,12 @@ export function TopBar({ onOpenMenu }: { onOpenMenu: () => void }) {
   };
 
   return (
-    <header className="flex h-16 items-center justify-between border-b border-[#124E3B]/15 bg-[#E8E3D5] px-4 text-[#124E3B] sm:px-6">
+    <header className="flex h-16 items-center justify-between border-b border-[#3E452B]/15 bg-[#EAE6D7] px-4 text-[#3E452B] sm:px-6">
       <button
         type="button"
         onClick={onOpenMenu}
         aria-label="Open menu"
-        className="flex h-10 w-10 items-center justify-center rounded-xl hover:bg-[#124E3B]/10 lg:hidden"
+        className="flex h-10 w-10 items-center justify-center rounded-xl hover:bg-[#3E452B]/10 lg:hidden"
       >
         <Menu className="h-5 w-5" />
       </button>

@@ -79,7 +79,7 @@ export function OrdersPage() {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-extrabold text-[#124E3B]">إدارة الطلبات (تحديث مباشر)</h1>
+        <h1 className="text-2xl font-black text-[#3E452B]">إدارة الطلبات (تحديث مباشر)</h1>
         <Button variant="secondary" size="sm" onClick={() => exportCsv(filtered)}>
           <Download className="h-4 w-4" />
           <span>تصدير CSV (Excel)</span>
@@ -96,10 +96,10 @@ export function OrdersPage() {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`min-h-10 rounded-xl px-3.5 text-xs font-extrabold transition-colors ${
+              className={`min-h-10 cursor-pointer rounded-xl px-3.5 text-xs font-extrabold transition-colors ${
                 active
-                  ? 'bg-[#124E3B] text-[#FFD60A]'
-                  : 'bg-[#E8E3D5] text-[#124E3B] hover:bg-[#FFD60A]/40'
+                  ? 'bg-[#F47B20] text-white shadow-xs'
+                  : 'border border-[#3E452B]/15 bg-[#EAE6D7] text-[#3E452B] hover:bg-[#3E452B] hover:text-[#EAE6D7]'
               }`}
             >
               {tab === 'all' ? 'الكل' : ORDER_STATUS_META[tab].labelAr} ({count})
@@ -108,19 +108,57 @@ export function OrdersPage() {
         })}
       </div>
 
-      <div className="rounded-2xl bg-[#E8E3D5] p-4">
+      <div className="rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-4">
         <input
           type="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="ابحث برقم الأوردر (WNT-...) أو الاسم أو الموبايل..."
-          className="min-h-10 w-full max-w-md rounded-xl border border-[#124E3B]/20 bg-[#F2EFE6] px-3.5 text-sm"
+          className="min-h-10 w-full max-w-md rounded-xl border border-[#3E452B]/20 bg-[#F5F2E8] px-3.5 text-sm"
         />
       </div>
 
-      <div className="overflow-x-auto rounded-2xl bg-[#E8E3D5] shadow-sm">
+      {/* Mobile Orders Cards (no horizontal overflow on 375px) */}
+      <div className="space-y-3 md:hidden">
+        {filtered.map((o) => (
+          <div
+            key={o.id}
+            onClick={() => setSelectedOrderId(o.id)}
+            className="cursor-pointer space-y-2.5 rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-4 shadow-xs"
+          >
+            <div className="flex items-center justify-between gap-2">
+              <span className="font-display font-black">{o.order_ref}</span>
+              <StatusBadge status={o.status} />
+            </div>
+            <div className="text-sm font-bold">{o.customer_name}</div>
+            <div className="flex items-center justify-between text-xs text-[#3E452B]/75">
+              <span className="font-display" dir="ltr">
+                {o.phone}
+              </span>
+              <span>{o.governorate_name}</span>
+            </div>
+            <div className="flex items-center justify-between border-t border-[#3E452B]/10 pt-2.5">
+              <span className="font-display text-base font-black">
+                {formatEGP(o.total_cod, 'ar')}
+              </span>
+              <CopyForCourierButton
+                order={o}
+                template={settingsQuery.data?.courier_template}
+              />
+            </div>
+          </div>
+        ))}
+        {filtered.length === 0 && (
+          <div className="rounded-2xl bg-[#EAE6D7] p-6 text-center text-sm text-[#3E452B]/70">
+            لا توجد طلبات مطابقة للبحث
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Orders Table */}
+      <div className="hidden overflow-x-auto rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] shadow-sm md:block">
         <table className="w-full text-start text-sm">
-          <thead className="border-b border-[#124E3B]/15 text-xs font-extrabold">
+          <thead className="border-b border-[#3E452B]/15 text-xs font-extrabold">
             <tr>
               <th className="p-3">المرجع</th>
               <th className="p-3">التاريخ</th>
@@ -132,12 +170,12 @@ export function OrdersPage() {
               <th className="p-3">إجراء</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#124E3B]/10">
+          <tbody className="divide-y divide-[#3E452B]/10">
             {filtered.map((o) => (
               <tr
                 key={o.id}
                 onClick={() => setSelectedOrderId(o.id)}
-                className="cursor-pointer transition-colors hover:bg-[#F2EFE6]"
+                className="cursor-pointer transition-colors hover:bg-[#F5F2E8]"
               >
                 <td className="p-3 font-display font-extrabold">{o.order_ref}</td>
                 <td className="p-3 text-xs">{formatDate(o.created_at, 'ar')}</td>
@@ -160,7 +198,7 @@ export function OrdersPage() {
             ))}
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={8} className="p-8 text-center text-sm text-[#124E3B]/65">
+                <td colSpan={8} className="p-8 text-center text-sm text-[#3E452B]/65">
                   لا توجد طلبات مطابقة للبحث
                 </td>
               </tr>

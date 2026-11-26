@@ -33,29 +33,29 @@ export function OrderConfirmationPage() {
 
   return (
     <PageTransition className="mx-auto max-w-xl px-4 py-12 sm:px-6">
-      <div className="rounded-3xl bg-[#E8E3D5] p-6 text-center text-[#124E3B] shadow-2xl sm:p-10">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#124E3B] text-[#FFD60A]">
+      <div className="rounded-3xl border border-[#3E452B]/15 bg-[#EAE6D7] p-6 text-center text-[#3E452B] shadow-2xl sm:p-10">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#3E452B] text-[#F47B20]">
           <CheckCircle2 className="h-9 w-9" />
         </div>
 
-        <h1 className="mt-5 text-2xl font-extrabold sm:text-3xl">{t('confirmation.title')}</h1>
-        <p className="mt-2 text-sm text-[#124E3B]/75">{t('confirmation.subtitle')}</p>
+        <h1 className="mt-5 text-2xl font-black sm:text-3xl">{t('confirmation.title')}</h1>
+        <p className="mt-2 text-sm text-[#3E452B]/75">{t('confirmation.subtitle')}</p>
 
-        <div className="mt-6 rounded-2xl border border-[#124E3B]/20 bg-[#F2EFE6] p-4">
-          <p className="text-xs font-bold text-[#124E3B]/70">{t('confirmation.refLabel')}</p>
+        <div className="mt-6 rounded-2xl border border-[#3E452B]/20 bg-[#F5F2E8] p-4">
+          <p className="text-xs font-bold text-[#3E452B]/70">{t('confirmation.refLabel')}</p>
           <div className="mt-1 flex items-center justify-center gap-3">
             <span className="font-display text-2xl font-black tracking-wider">{ref}</span>
             <button
               type="button"
               onClick={handleCopy}
-              className="inline-flex items-center gap-1 rounded-lg bg-[#FFD60A] px-2.5 py-1 text-xs font-extrabold text-[#124E3B]"
+              className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#F47B20] px-2.5 py-1 text-xs font-extrabold text-white"
             >
               <Copy className="h-3.5 w-3.5" />
               <span>{copied ? t('confirmation.copied') : t('confirmation.copyRef')}</span>
             </button>
           </div>
           {state?.total_cod !== undefined && (
-            <p className="mt-3 border-t border-[#124E3B]/15 pt-3 text-sm font-bold">
+            <p className="mt-3 border-t border-[#3E452B]/15 pt-3 text-sm font-bold">
               {t('confirmation.totalCod')}:{' '}
               <span className="font-display text-lg font-black">
                 {formatEGP(state.total_cod, lang)}

@@ -42,7 +42,7 @@ const SettingsPage = lazy(() =>
 
 function LazyFallback() {
   return (
-    <div className="min-h-screen bg-[#124E3B] p-6">
+    <div className="min-h-screen bg-[#C5BFA8] p-6">
       <Skeleton className="h-32 w-full" />
     </div>
   );

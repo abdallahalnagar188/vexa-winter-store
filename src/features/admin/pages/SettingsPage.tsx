@@ -81,7 +81,7 @@ export function SettingsPage() {
           variant_id: null,
           product_title: 'هودي أوفر سايز قطن ثقيل',
           size: 'L',
-          color: 'زمردي داكن',
+          color: 'زيتوني',
           image_url: null,
           unit_price: 1150,
           quantity: 2,
@@ -98,14 +98,14 @@ export function SettingsPage() {
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-extrabold text-[#124E3B]">إعدادات المتجر</h1>
+        <h1 className="text-2xl font-black text-[#3E452B]">إعدادات المتجر</h1>
         <Button variant="primary" onClick={handleSave} loading={saveSetting.isPending}>
           <Save className="h-4 w-4" />
           <span>حفظ الإعدادات</span>
         </Button>
       </div>
 
-      <div className="grid gap-4 rounded-2xl bg-[#E8E3D5] p-5 shadow-sm sm:grid-cols-2">
+      <div className="grid gap-4 rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 shadow-sm sm:grid-cols-2">
         <Input
           label="رقم الواتساب (بالصيغة الدولية مثال: 201001234567)"
           dir="ltr"
@@ -121,28 +121,28 @@ export function SettingsPage() {
         />
       </div>
 
-      <div className="grid gap-4 rounded-2xl bg-[#E8E3D5] p-5 shadow-sm lg:grid-cols-2">
+      <div className="grid gap-4 rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 shadow-sm lg:grid-cols-2">
         <div className="space-y-2">
           <label className="text-sm font-extrabold">قالب رسالة المندوب (Copy for Courier)</label>
-          <p className="text-[11px] text-[#124E3B]/75">
+          <p className="text-[11px] text-[#3E452B]/75">
             المتغيرات: {'{name} {phone} {phone2_line} {governorate} {city_area} {address} {items} {total} {ref} {notes_line}'}
           </p>
           <textarea
             rows={9}
             value={courierTemplate}
             onChange={(e) => setCourierTemplate(e.target.value)}
-            className="w-full rounded-xl border border-[#124E3B]/20 bg-[#F2EFE6] p-3 text-sm"
+            className="w-full rounded-xl border border-[#3E452B]/20 bg-[#F5F2E8] p-3 text-sm"
           />
         </div>
         <div className="space-y-2">
           <span className="text-sm font-extrabold">معاينة مباشرة</span>
-          <pre className="whitespace-pre-wrap rounded-xl bg-[#F2EFE6] p-4 font-sans text-xs leading-relaxed">
+          <pre className="whitespace-pre-wrap rounded-xl bg-[#F5F2E8] p-4 font-sans text-xs leading-relaxed">
             {previewText}
           </pre>
         </div>
       </div>
 
-      <div className="space-y-3 rounded-2xl bg-[#E8E3D5] p-5 shadow-sm">
+      <div className="space-y-3 rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 shadow-sm">
         <h2 className="text-base font-extrabold">تغيير كلمة مرور المشرف</h2>
         <div className="flex flex-wrap items-end gap-3">
           <Input

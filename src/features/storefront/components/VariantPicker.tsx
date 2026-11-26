@@ -23,7 +23,7 @@ export function VariantPicker({
     new Map(
       variants.map((v) => [
         v.color_name,
-        { name: v.color_name, hex: v.color_hex ?? '#124E3B' },
+        { name: v.color_name, hex: v.color_hex ?? '#3E452B' },
       ]),
     ).values(),
   );
@@ -41,8 +41,8 @@ export function VariantPicker({
     <div className="flex flex-col gap-4">
       <div>
         <div className="mb-2 flex items-center justify-between text-sm">
-          <span className="font-bold text-[#124E3B]">{t('product.selectColor')}</span>
-          {selectedColor && <span className="font-semibold text-[#124E3B]/75">{selectedColor}</span>}
+          <span className="font-bold text-[#3E452B]">{t('product.selectColor')}</span>
+          {selectedColor && <span className="font-semibold text-[#3E452B]/75">{selectedColor}</span>}
         </div>
         <div className="flex flex-wrap gap-2.5">
           {uniqueColors.map((color) => {
@@ -53,10 +53,10 @@ export function VariantPicker({
                 type="button"
                 onClick={() => onSelectColor(color.name)}
                 className={cn(
-                  'inline-flex min-h-11 items-center gap-2 rounded-xl border px-3.5 text-sm font-bold transition-all',
+                  'inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-3.5 text-sm font-bold transition-all',
                   active
-                    ? 'border-[#124E3B] bg-[#124E3B] text-[#E8E3D5] shadow-sm'
-                    : 'border-[#124E3B]/25 bg-[#F2EFE6] text-[#124E3B] hover:border-[#124E3B]',
+                    ? 'border-[#3E452B] bg-[#3E452B] text-[#EAE6D7] shadow-sm'
+                    : 'border-[#3E452B]/25 bg-[#F5F2E8] text-[#3E452B] hover:border-[#3E452B]',
                 )}
               >
                 <span
@@ -71,7 +71,7 @@ export function VariantPicker({
       </div>
 
       <div>
-        <div className="mb-2 text-sm font-bold text-[#124E3B]">{t('product.selectSize')}</div>
+        <div className="mb-2 text-sm font-bold text-[#3E452B]">{t('product.selectSize')}</div>
         <div className="flex flex-wrap gap-2">
           {uniqueSizes.map((size) => {
             const stock = sizeStock(size);
@@ -86,10 +86,10 @@ export function VariantPicker({
                 className={cn(
                   'min-h-11 min-w-13 rounded-xl border px-3.5 font-display text-sm font-bold transition-all',
                   disabled
-                    ? 'cursor-not-allowed border-[#124E3B]/15 bg-[#D5CEBC]/50 text-[#124E3B]/40 line-through'
+                    ? 'cursor-not-allowed border-[#3E452B]/15 bg-[#D2CCB8]/60 text-[#3E452B]/40 line-through'
                     : active
-                      ? 'border-[#124E3B] bg-[#FFD60A] text-[#124E3B] shadow-sm'
-                      : 'border-[#124E3B]/25 bg-[#F2EFE6] text-[#124E3B] hover:border-[#124E3B]',
+                      ? 'cursor-pointer border-[#F47B20] bg-[#F47B20] text-white shadow-sm'
+                      : 'cursor-pointer border-[#3E452B]/25 bg-[#F5F2E8] text-[#3E452B] hover:border-[#3E452B]',
                 )}
               >
                 {size}

@@ -14,15 +14,15 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    'bg-[#FFD60A] text-[#124E3B] hover:bg-[#E6C000] active:scale-[0.99] font-extrabold shadow-sm',
+    'bg-[#F47B20] text-white hover:bg-[#DC6812] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] font-extrabold shadow-sm',
   secondary:
-    'bg-[#124E3B] text-[#E8E3D5] hover:bg-[#0C382A] active:scale-[0.99] font-bold shadow-sm',
+    'bg-[#3E452B] text-[#EAE6D7] hover:bg-[#2F3520] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] font-bold shadow-sm',
   outline:
-    'border border-[#124E3B]/30 bg-transparent text-[#124E3B] hover:bg-[#124E3B]/10 font-semibold',
+    'border border-[#3E452B]/35 bg-transparent text-[#3E452B] hover:bg-[#3E452B]/10 active:scale-[0.98] font-bold',
   outlineLight:
-    'border border-[#E8E3D5]/40 bg-transparent text-[#E8E3D5] hover:bg-[#E8E3D5]/10 font-semibold',
-  ghost: 'bg-transparent text-inherit hover:bg-black/5 font-semibold',
-  danger: 'bg-rose-600 text-white hover:bg-rose-700 font-bold shadow-sm',
+    'border border-[#EAE6D7]/45 bg-transparent text-[#EAE6D7] hover:bg-[#EAE6D7]/15 active:scale-[0.98] font-bold',
+  ghost: 'bg-transparent text-inherit hover:bg-[#3E452B]/10 font-semibold',
+  danger: 'bg-rose-600 text-white hover:bg-rose-700 active:scale-[0.98] font-bold shadow-sm',
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -46,7 +46,7 @@ export function Button({
       type={type}
       disabled={disabled || loading}
       className={cn(
-        'inline-flex items-center justify-center gap-2 transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#FFD60A] disabled:cursor-not-allowed disabled:opacity-55',
+        'inline-flex cursor-pointer items-center justify-center gap-2 transition-all duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F47B20] disabled:cursor-not-allowed disabled:opacity-55',
         variantClasses[variant],
         sizeClasses[size],
         className,

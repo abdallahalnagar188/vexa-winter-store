@@ -10,8 +10,8 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
   if (!isSupabaseConfigured) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#124E3B] p-6 text-center text-[#E8E3D5]">
-        <div className="max-w-md rounded-2xl bg-[#E8E3D5] p-6 text-[#124E3B]">
+      <div className="flex min-h-screen items-center justify-center bg-[#C5BFA8] p-6 text-center text-[#3E452B]">
+        <div className="max-w-md rounded-2xl bg-[#EAE6D7] p-6 text-[#3E452B] shadow-lg">
           <h2 className="text-lg font-extrabold">Supabase غير مُعد بعد</h2>
           <p className="mt-2 text-sm">يرجى إضافة بيانات Supabase في ملف `.env` أولاً.</p>
         </div>
@@ -21,7 +21,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 
   if (sessionQuery.isLoading) {
     return (
-      <div className="min-h-screen bg-[#124E3B] p-6">
+      <div className="min-h-screen bg-[#C5BFA8] p-6">
         <Skeleton className="h-16 w-full" />
       </div>
     );

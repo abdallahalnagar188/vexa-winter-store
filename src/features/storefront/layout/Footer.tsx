@@ -9,42 +9,42 @@ export function Footer() {
   const digits = (data?.whatsappNumber || '').replace(/\D/g, '');
 
   return (
-    <footer className="border-t border-[#E8E3D5]/15 bg-[#0C382A] text-[#E8E3D5]">
+    <footer className="border-t border-[#C5BFA8]/20 bg-[#3E452B] text-[#EAE6D7]">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-3">
         <div>
           <div className="flex items-center gap-2 font-display text-xl font-extrabold">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[#FFD60A] text-xs font-black text-[#124E3B]">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[#F47B20] text-xs font-black text-white">
               V
             </span>
             <span>{t('brand')}</span>
           </div>
-          <p className="mt-3 text-sm leading-relaxed text-[#E8E3D5]/75">{t('footer.about')}</p>
+          <p className="mt-3 text-sm leading-relaxed text-[#C5BFA8]">{t('footer.about')}</p>
         </div>
 
         <div className="flex flex-col gap-2 text-sm">
-          <span className="font-extrabold text-[#FFD60A]">{t('nav.shop')}</span>
-          <Link to="/shop" className="text-[#E8E3D5]/80 hover:text-[#FFD60A]">
+          <span className="font-extrabold text-[#F47B20]">{t('nav.shop')}</span>
+          <Link to="/shop" className="text-[#EAE6D7]/85 hover:text-[#F47B20]">
             {t('catalog.title')}
           </Link>
-          <Link to="/track" className="text-[#E8E3D5]/80 hover:text-[#FFD60A]">
+          <Link to="/track" className="text-[#EAE6D7]/85 hover:text-[#F47B20]">
             {t('nav.track')}
           </Link>
-          <Link to="/cart" className="text-[#E8E3D5]/80 hover:text-[#FFD60A]">
+          <Link to="/cart" className="text-[#EAE6D7]/85 hover:text-[#F47B20]">
             {t('nav.cart')}
           </Link>
-          <Link to="/admin" className="text-[#E8E3D5]/55 hover:text-[#E8E3D5]">
+          <Link to="/admin" className="text-[#C5BFA8]/75 hover:text-[#EAE6D7]">
             {t('nav.admin')}
           </Link>
         </div>
 
         <div className="flex flex-col gap-3 text-sm">
-          <p className="text-[#E8E3D5]/80">{t('footer.policies')}</p>
+          <p className="text-[#C5BFA8]">{t('footer.policies')}</p>
           {digits && (
             <a
               href={`https://wa.me/${digits}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#FFD60A] px-4 py-2 font-extrabold text-[#124E3B] hover:bg-[#E6C000]"
+              className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#F47B20] px-4 py-2.5 font-extrabold text-white transition-colors hover:bg-[#DC6812]"
             >
               <MessageCircle className="h-4 w-4" />
               <span>{t('footer.whatsapp')}</span>
@@ -53,7 +53,7 @@ export function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-[#E8E3D5]/10 px-4 py-4 text-center text-xs text-[#E8E3D5]/60">
+      <div className="border-t border-[#C5BFA8]/15 px-4 py-4 text-center text-xs text-[#C5BFA8]/80">
         {t('footer.rights')}
       </div>
     </footer>

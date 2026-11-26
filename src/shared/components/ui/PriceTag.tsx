@@ -18,11 +18,11 @@ export function PriceTag({ price, originalPrice, size = 'md', className }: Price
 
   return (
     <div className={cn('inline-flex flex-wrap items-baseline gap-2', className)}>
-      <span className={cn('font-display font-extrabold tabular-nums text-[#124E3B]', sizeClass)}>
+      <span className={cn('font-display font-extrabold tabular-nums text-[#3E452B]', sizeClass)}>
         {formatEGP(price, lang)}
       </span>
       {hasDiscount && (
-        <span className="font-display text-xs font-medium text-[#124E3B]/55 line-through tabular-nums sm:text-sm">
+        <span className="font-display text-xs font-medium text-[#3E452B]/55 line-through tabular-nums sm:text-sm">
           {formatEGP(originalPrice, lang)}
         </span>
       )}

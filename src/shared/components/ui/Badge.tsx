@@ -10,10 +10,10 @@ interface BadgeProps {
 }
 
 const styles: Record<BadgeVariant, string> = {
-  accent: 'bg-[#FFD60A] text-[#124E3B] font-extrabold',
-  primary: 'bg-[#124E3B] text-[#E8E3D5] font-bold',
-  beige: 'bg-[#E8E3D5] text-[#124E3B] font-bold',
-  muted: 'bg-[#124E3B]/10 text-[#124E3B] font-semibold',
+  accent: 'bg-[#F47B20] text-white font-extrabold',
+  primary: 'bg-[#3E452B] text-[#EAE6D7] font-bold',
+  beige: 'bg-[#EAE6D7] text-[#3E452B] font-bold',
+  muted: 'bg-[#3E452B]/12 text-[#3E452B] font-semibold',
 };
 
 export function Badge({ children, variant = 'accent', className }: BadgeProps) {

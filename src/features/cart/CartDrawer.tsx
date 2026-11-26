@@ -36,16 +36,16 @@ export function CartDrawer() {
 
   return (
     <Drawer open={drawerOpen} onClose={closeDrawer} ariaLabel={t('cart.title')}>
-      <div className="flex items-center justify-between border-b border-[#124E3B]/15 px-5 py-4">
+      <div className="flex items-center justify-between border-b border-[#3E452B]/15 px-5 py-4">
         <div className="flex items-center gap-2">
-          <ShoppingBag className="h-5 w-5 text-[#124E3B]" />
-          <h2 className="text-lg font-extrabold text-[#124E3B]">{t('cart.title')}</h2>
+          <ShoppingBag className="h-5 w-5 text-[#F47B20]" />
+          <h2 className="text-lg font-extrabold text-[#3E452B]">{t('cart.title')}</h2>
         </div>
         <button
           type="button"
           onClick={closeDrawer}
           aria-label="Close"
-          className="flex h-10 w-10 items-center justify-center rounded-xl text-[#124E3B] hover:bg-[#124E3B]/10"
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-[#3E452B] hover:bg-[#3E452B]/10"
         >
           <X className="h-5 w-5" />
         </button>
@@ -65,7 +65,7 @@ export function CartDrawer() {
         ) : (
           <>
             {hint && (
-              <div className="flex items-center gap-2 rounded-xl bg-[#FFD60A] px-3.5 py-2.5 text-xs font-extrabold text-[#124E3B]">
+              <div className="flex items-center gap-2 rounded-xl bg-[#F47B20] px-3.5 py-2.5 text-xs font-extrabold text-white shadow-xs">
                 <Sparkles className="h-4 w-4 shrink-0" />
                 <span>
                   {hint.type === 'percent'
@@ -95,7 +95,7 @@ export function CartDrawer() {
       </div>
 
       {items.length > 0 && (
-        <div className="border-t border-[#124E3B]/15 bg-[#F2EFE6] p-4">
+        <div className="border-t border-[#3E452B]/15 bg-[#F5F2E8] p-4">
           <PriceSummary priced={priced} freeShippingThreshold={freeShippingThreshold} />
           <div className="mt-4 flex flex-col gap-2">
             <Link to="/checkout" onClick={closeDrawer}>

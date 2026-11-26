@@ -30,7 +30,7 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-[#0C382A]/75 backdrop-blur-xs"
+            className="fixed inset-0 bg-[#2F3520]/75 backdrop-blur-xs"
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.96, y: 10 }}
@@ -38,7 +38,7 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
             exit={{ opacity: 0, scale: 0.96, y: 10 }}
             transition={{ duration: 0.18 }}
             className={cn(
-              'relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-[#E8E3D5] p-6 text-[#124E3B] shadow-2xl',
+              'relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-[#EAE6D7] p-6 text-[#3E452B] shadow-2xl',
               className,
             )}
           >
@@ -48,7 +48,7 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
                 type="button"
                 onClick={onClose}
                 aria-label="Close"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-[#124E3B] hover:bg-[#124E3B]/10"
+                className="flex h-9 w-9 items-center justify-center rounded-lg text-[#3E452B] hover:bg-[#3E452B]/10"
               >
                 <X className="h-5 w-5" />
               </button>

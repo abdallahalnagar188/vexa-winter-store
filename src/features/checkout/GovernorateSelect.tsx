@@ -33,13 +33,13 @@ export function GovernorateSelect({
 
   return (
     <div className="relative flex flex-col gap-1.5">
-      <label className="text-sm font-bold text-[#124E3B]">{t('checkout.governorate')}</label>
+      <label className="text-sm font-bold text-[#3E452B]">{t('checkout.governorate')}</label>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          'flex min-h-11 w-full items-center justify-between rounded-xl border bg-[#F2EFE6] px-3.5 py-2.5 text-sm font-semibold text-[#124E3B]',
-          error ? 'border-rose-600' : 'border-[#124E3B]/20',
+          'flex min-h-11 w-full cursor-pointer items-center justify-between rounded-xl border bg-[#F5F2E8] px-3.5 py-2.5 text-sm font-semibold text-[#3E452B]',
+          error ? 'border-rose-600' : 'border-[#3E452B]/25',
         )}
       >
         <span>
@@ -51,13 +51,13 @@ export function GovernorateSelect({
       </button>
 
       {open && (
-        <div className="absolute top-full z-30 mt-1 w-full rounded-2xl border border-[#124E3B]/20 bg-[#F2EFE6] p-2 shadow-xl">
+        <div className="absolute top-full z-30 mt-1 w-full rounded-2xl border border-[#3E452B]/20 bg-[#F5F2E8] p-2 shadow-xl">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={lang === 'ar' ? 'ابحث عن المحافظة...' : 'Search governorate...'}
-            className="mb-2 min-h-10 w-full rounded-xl border border-[#124E3B]/20 bg-white px-3 text-sm text-[#124E3B] focus:outline-none"
+            className="mb-2 min-h-10 w-full rounded-xl border border-[#3E452B]/20 bg-white px-3 text-sm text-[#3E452B] focus:outline-none"
           />
           <div className="max-h-60 overflow-y-auto">
             {filtered.map((gov) => (
@@ -70,8 +70,8 @@ export function GovernorateSelect({
                   setSearch('');
                 }}
                 className={cn(
-                  'flex w-full items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold transition-colors hover:bg-[#124E3B] hover:text-[#E8E3D5]',
-                  gov.id === value && 'bg-[#FFD60A] font-extrabold text-[#124E3B]',
+                  'flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2 text-sm font-semibold transition-colors hover:bg-[#3E452B] hover:text-[#EAE6D7]',
+                  gov.id === value && 'bg-[#F47B20] font-extrabold text-white',
                 )}
               >
                 <span>{lang === 'ar' ? gov.name_ar : gov.name_en}</span>
