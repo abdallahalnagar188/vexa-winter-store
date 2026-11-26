@@ -38,7 +38,7 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
             exit={{ opacity: 0, scale: 0.96, y: 10 }}
             transition={{ duration: 0.18 }}
             className={cn(
-              'relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-[#FFFFFF] p-6 text-[#132238] shadow-2xl',
+              'relative z-10 max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-sm bg-[#FFFFFF] p-6 text-[#132238] shadow-2xl',
               className,
             )}
           >
@@ -48,7 +48,7 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
                 type="button"
                 onClick={onClose}
                 aria-label="Close"
-                className="flex h-9 w-9 items-center justify-center rounded-lg text-[#132238] hover:bg-[#132238]/10"
+                className="flex h-9 w-9 items-center justify-center rounded-[2px] text-[#132238] hover:bg-[#132238]/10"
               >
                 <X className="h-5 w-5" />
               </button>

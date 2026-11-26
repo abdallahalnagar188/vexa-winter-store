@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
 import { Eye } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ProductWithDetails } from '@/shared/types/domain';
@@ -43,6 +42,8 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
     product.product_images[0]?.url ??
     FALLBACK_IMG;
   const secondaryImg = !hoveredColor ? product.product_images[1]?.url : undefined;
+  const displayImg = hovered && secondaryImg ? secondaryImg : primaryImg;
+
   const totalStock = product.product_variants.reduce((acc, v) => acc + v.stock, 0);
   const isSoldOut = totalStock <= 0;
 
@@ -72,27 +73,21 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
         to={`/product/${product.slug}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] text-[#132238] shadow-xs transition-all duration-200 hover:border-[#132238]/28 hover:shadow-md"
+        className="group flex h-full flex-col overflow-hidden rounded-sm border border-[#132238]/12 bg-[#FFFFFF] text-[#132238] shadow-xs transition-all duration-200 hover:border-[#132238]/30 hover:shadow-md"
       >
         <div className="relative aspect-4/5 overflow-hidden bg-[#ECE9E0]">
-          <AnimatePresence mode="wait">
-            <motion.img
-              key={hovered && secondaryImg ? secondaryImg : primaryImg}
-              src={hovered && secondaryImg ? secondaryImg : primaryImg}
-              alt={title}
-              loading="lazy"
-              initial={{ opacity: 0.75 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0.75 }}
-              transition={{ duration: 0.22, ease: 'easeOut' }}
-              onError={(e) => {
-                if (e.currentTarget.src !== FALLBACK_IMG) {
-                  e.currentTarget.src = FALLBACK_IMG;
-                }
-              }}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          </AnimatePresence>
+          <img
+            src={displayImg}
+            alt={title}
+            loading="lazy"
+            decoding="async"
+            onError={(e) => {
+              if (e.currentTarget.src !== FALLBACK_IMG) {
+                e.currentTarget.src = FALLBACK_IMG;
+              }
+            }}
+            className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+          />
 
           <div className="absolute start-2.5 top-2.5 flex flex-col gap-1.5">
             {product.is_new && <Badge variant="primary">{t('catalog.newTag')}</Badge>}
@@ -111,7 +106,7 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
 
           {!isSoldOut && (
             <div className="pointer-events-none absolute inset-x-3 bottom-3 hidden items-center justify-center sm:flex">
-              <span className="inline-flex translate-y-2 items-center gap-1.5 rounded-full bg-[#132238]/92 px-3.5 py-1.5 text-xs font-bold text-[#F4F2EC] opacity-0 backdrop-blur-xs transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+              <span className="inline-flex translate-y-2 items-center gap-1.5 rounded-[2px] bg-[#132238]/92 px-3.5 py-1.5 text-xs font-bold text-[#F4F2EC] opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
                 <Eye className="h-3.5 w-3.5 text-[#FF6B1A]" />
                 <span>{lang === 'ar' ? 'عرض التفاصيل' : 'Quick View'}</span>
               </span>
@@ -119,8 +114,8 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
           )}
 
           {isSoldOut && (
-            <div className="absolute inset-0 flex items-center justify-center bg-[#132238]/75 backdrop-blur-[1px]">
-              <span className="rounded-full bg-[#F4F2EC] px-4 py-1.5 text-xs font-extrabold text-[#132238]">
+            <div className="absolute inset-0 flex items-center justify-center bg-[#132238]/75">
+              <span className="rounded-[2px] bg-[#F4F2EC] px-4 py-1.5 text-xs font-extrabold text-[#132238]">
                 {t('catalog.soldOut')}
               </span>
             </div>
@@ -156,7 +151,7 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
               {sizeAvailability.map((s) => (
                 <span
                   key={s.size}
-                  className={`rounded-md px-1.5 py-0.5 font-display text-[10px] font-bold ${
+                  className={`rounded-[2px] px-1.5 py-0.5 font-display text-[10px] font-bold ${
                     s.inStock
                       ? 'bg-[#ECE9E0] text-[#132238]'
                       : 'bg-[#ECE9E0]/50 text-[#132238]/40 line-through'

@@ -62,18 +62,18 @@ export function Header() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             onClick={() => setMobileOpen(false)}
-            className="fixed inset-0 bg-[#0C1626]/75 backdrop-blur-xs"
+            className="fixed inset-0 bg-[#0C1626]/80"
           />
           <motion.nav
             initial={{ x: slideOffset }}
             animate={{ x: 0 }}
             exit={{ x: slideOffset }}
-            transition={{ type: 'spring', stiffness: 360, damping: 34 }}
+            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="relative z-10 flex h-dvh w-72 max-w-[82vw] flex-col overflow-y-auto bg-[#132238] p-5 text-sm font-bold text-[#F4F2EC] shadow-2xl"
           >
             <div className="mb-4 flex items-center justify-between border-b border-[#F4F2EC]/15 pb-3.5">
               <div className="flex items-center gap-2">
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[#FF6B1A] font-display text-xs font-black text-white">
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-[2px] bg-[#FF6B1A] font-display text-xs font-black text-white">
                   V
                 </span>
                 <span className="font-display text-xl font-black text-[#F4F2EC]">
@@ -84,7 +84,7 @@ export function Header() {
                 type="button"
                 onClick={() => setMobileOpen(false)}
                 aria-label="Close menu"
-                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-[#F4F2EC] hover:bg-[#1C314E]"
+                className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-[2px] text-[#F4F2EC] hover:bg-[#1C314E]"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -96,7 +96,7 @@ export function Header() {
                 end
                 onClick={() => setMobileOpen(false)}
                 className={({ isActive }) =>
-                  `rounded-xl px-3.5 py-2.5 transition-colors ${
+                  `rounded-[2px] px-3.5 py-2.5 transition-colors ${
                     isActive
                       ? 'bg-[#FF6B1A] text-white'
                       : 'bg-[#1C314E]/60 text-[#F4F2EC] hover:bg-[#1C314E]'
@@ -109,7 +109,7 @@ export function Header() {
                 to="/shop"
                 onClick={() => setMobileOpen(false)}
                 className={({ isActive }) =>
-                  `rounded-xl px-3.5 py-2.5 transition-colors ${
+                  `rounded-[2px] px-3.5 py-2.5 transition-colors ${
                     isActive && !search
                       ? 'bg-[#FF6B1A] text-white'
                       : 'bg-[#1C314E]/60 text-[#F4F2EC] hover:bg-[#1C314E]'
@@ -133,7 +133,7 @@ export function Header() {
                         key={cat.id}
                         to={`/shop?category=${cat.slug}`}
                         onClick={() => setMobileOpen(false)}
-                        className={`rounded-xl px-3.5 py-2.5 transition-colors ${
+                        className={`rounded-[2px] px-3.5 py-2.5 transition-colors ${
                           activeCat
                             ? 'bg-[#FF6B1A] text-white'
                             : 'text-[#ECE9E0] hover:bg-[#1C314E] hover:text-white'
@@ -151,7 +151,7 @@ export function Header() {
               <Link
                 to="/track"
                 onClick={() => setMobileOpen(false)}
-                className="block rounded-xl bg-[#FF6B1A] px-3.5 py-3 text-center font-extrabold text-white shadow-sm transition-colors hover:bg-[#E85A0C]"
+                className="block rounded-[2px] bg-[#FF6B1A] px-3.5 py-3 text-center font-extrabold text-white shadow-sm transition-colors hover:bg-[#E85A0C]"
               >
                 {t('nav.track')}
               </Link>
@@ -167,7 +167,7 @@ export function Header() {
       <header
         className={`sticky top-0 z-40 border-b text-[#F4F2EC] transition-[background-color,border-color,box-shadow] duration-200 ${
           scrolled
-            ? 'border-[#F4F2EC]/20 bg-[#132238]/90 shadow-md backdrop-blur-md'
+            ? 'border-[#F4F2EC]/20 bg-[#132238]/95 shadow-md backdrop-blur-sm'
             : 'border-[#F4F2EC]/12 bg-[#132238]'
         }`}
       >
@@ -177,7 +177,7 @@ export function Header() {
               type="button"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
-              className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl text-[#F4F2EC] hover:bg-[#1C314E] md:hidden"
+              className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-[2px] text-[#F4F2EC] hover:bg-[#1C314E] md:hidden"
             >
               <Menu className="h-5 w-5" />
             </button>
@@ -186,7 +186,7 @@ export function Header() {
               to="/"
               className="flex items-center gap-2 font-display text-2xl font-extrabold tracking-tight text-[#F4F2EC]"
             >
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-[#FF6B1A] text-sm font-black text-white shadow-xs">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-[2px] bg-[#FF6B1A] text-sm font-black text-white">
                 V
               </span>
               <span>{t('brand')}</span>
@@ -232,19 +232,18 @@ export function Header() {
 
           <div className="flex items-center gap-2">
             <LanguageToggle />
-            <motion.button
+            <button
               type="button"
-              whileTap={{ scale: 0.96 }}
               onClick={openDrawer}
               aria-label={t('nav.cart')}
-              className="relative inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl bg-[#FF6B1A] px-3.5 text-sm font-extrabold text-white shadow-sm transition-colors hover:bg-[#E85A0C]"
+              className="relative inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-[2px] bg-[#FF6B1A] px-3.5 text-sm font-extrabold text-white transition-colors hover:bg-[#E85A0C] active:scale-[0.98]"
             >
               <ShoppingBag className="h-4 w-4" />
               <span className="hidden sm:inline">{t('nav.cart')}</span>
-              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[#132238] px-1.5 font-display text-xs font-bold text-[#F4F2EC] tabular-nums">
+              <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-[2px] bg-[#132238] px-1.5 font-display text-xs font-bold text-[#F4F2EC] tabular-nums">
                 {totalCount}
               </span>
-            </motion.button>
+            </button>
           </div>
         </div>
       </header>

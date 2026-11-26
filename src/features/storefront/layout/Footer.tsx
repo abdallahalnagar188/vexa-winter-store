@@ -13,7 +13,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-3">
         <div>
           <div className="flex items-center gap-2 font-display text-xl font-extrabold">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-[#FF6B1A] text-xs font-black text-white">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-[2px] bg-[#FF6B1A] text-xs font-black text-white">
               V
             </span>
             <span>{t('brand')}</span>
@@ -44,7 +44,7 @@ export function Footer() {
               href={`https://wa.me/${digits}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex w-fit items-center gap-2 rounded-xl bg-[#FF6B1A] px-4 py-2.5 font-extrabold text-white transition-colors hover:bg-[#E85A0C]"
+              className="inline-flex w-fit items-center gap-2 rounded-[2px] bg-[#FF6B1A] px-4 py-2.5 font-extrabold text-white transition-colors hover:bg-[#E85A0C]"
             >
               <MessageCircle className="h-4 w-4" />
               <span>{t('footer.whatsapp')}</span>

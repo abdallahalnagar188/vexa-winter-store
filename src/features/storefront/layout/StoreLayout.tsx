@@ -1,10 +1,14 @@
+import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { WhatsAppButton } from './WhatsAppButton';
-import { CartDrawer } from '@/features/cart/CartDrawer';
 import { envConfigError, isSupabaseConfigured } from '@/lib/supabase';
+
+const CartDrawer = lazy(() =>
+  import('@/features/cart/CartDrawer').then((m) => ({ default: m.CartDrawer })),
+);
 
 export function StoreLayout() {
   return (
@@ -23,7 +27,9 @@ export function StoreLayout() {
       </main>
       <Footer />
       <WhatsAppButton />
-      <CartDrawer />
+      <Suspense fallback={null}>
+        <CartDrawer />
+      </Suspense>
     </div>
   );
 }

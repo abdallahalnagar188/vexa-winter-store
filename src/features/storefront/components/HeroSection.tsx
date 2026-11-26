@@ -1,21 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import {
-  AnimatePresence,
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from 'framer-motion';
-import { ArrowRight, Banknote, Layers, MapPin, Sparkles } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { ArrowRight, Banknote, Layers, MapPin } from 'lucide-react';
 import { useDir } from '@/shared/hooks/useDir';
 import type { HomepageHero } from '@/shared/types/domain';
 
 const LUXURY_EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 const SLIDE_DURATION_MS = 7000;
-
-const FILM_GRAIN_SVG =
-  "data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E";
 
 const FALLBACK_HERO: HomepageHero = {
   id: 'fallback',
@@ -69,7 +60,6 @@ export function HeroSection({ heroes = [] }: HeroSectionProps) {
   const safeIdx = slideIdx % activeHeroes.length;
   const hero = activeHeroes[safeIdx] ?? FALLBACK_HERO;
 
-  // Auto-advance multi-slide hero with pause-on-hover
   useEffect(() => {
     if (activeHeroes.length <= 1 || paused || prefersReducedMotion) return;
     const id = window.setInterval(() => {
@@ -77,21 +67,6 @@ export function HeroSection({ heroes = [] }: HeroSectionProps) {
     }, SLIDE_DURATION_MS);
     return () => window.clearInterval(id);
   }, [activeHeroes.length, paused, prefersReducedMotion]);
-
-  // Multi-speed scroll parallax
-  const stageRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: stageRef,
-    offset: ['start start', 'end start'],
-  });
-
-  const watermarkX = useTransform(
-    scrollYProgress,
-    [0, 1],
-    [0, prefersReducedMotion ? 0 : isRtl ? 70 : -70],
-  );
-  const ambientY = useTransform(scrollYProgress, [0, 1], [0, prefersReducedMotion ? 0 : 48]);
-  const visualY = useTransform(scrollYProgress, [0, 1], [0, prefersReducedMotion ? 0 : 28]);
 
   const badge = isAr ? hero.badge_ar : hero.badge_en || hero.badge_ar;
   const title = isAr ? hero.title_ar : hero.title_en || hero.title_ar;
@@ -109,136 +84,82 @@ export function HeroSection({ heroes = [] }: HeroSectionProps) {
 
   return (
     <section
-      ref={stageRef}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
-      className="relative flex min-h-[82vh] flex-col justify-between overflow-hidden bg-[#090D16] text-white lg:min-h-[88vh]"
+      className="relative flex min-h-[80vh] flex-col justify-between overflow-hidden bg-[#090D16] text-white lg:min-h-[86vh]"
     >
-      {/* 1. Ambient Studio Mesh Gradients */}
-      <motion.div
-        aria-hidden="true"
-        style={{ y: ambientY }}
-        className="pointer-events-none absolute inset-0 overflow-hidden"
-      >
-        <motion.div
-          animate={
-            prefersReducedMotion
-              ? undefined
-              : { x: [0, 30, -15, 0], y: [0, -25, 20, 0], scale: [1, 1.08, 0.96, 1] }
-          }
-          transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -top-32 start-1/4 h-[480px] w-[480px] rounded-full bg-[#F97316]/18 blur-[120px]"
-        />
-        <motion.div
-          animate={
-            prefersReducedMotion
-              ? undefined
-              : { x: [0, -25, 20, 0], y: [0, 30, -15, 0], scale: [1, 0.94, 1.06, 1] }
-          }
-          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute -bottom-32 end-1/4 h-[520px] w-[520px] rounded-full bg-[#1E293B]/75 blur-[130px]"
-        />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_35%,rgba(148,163,184,0.12),transparent_55%)]" />
-      </motion.div>
-
-      {/* 2. Subtle Editorial Film Grain Overlay */}
+      {/* Lightweight Static Ambient Gradient (GPU-friendly, zero animated blur filters) */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 opacity-[0.03]"
-        style={{ backgroundImage: `url("${FILM_GRAIN_SVG}")` }}
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_25%,rgba(249,115,22,0.12),transparent_55%),radial-gradient(ellipse_at_25%_80%,rgba(30,41,59,0.55),transparent_60%)]"
       />
 
-      {/* 3. Oversized Background Watermark Typography */}
-      <motion.div
+      {/* Oversized Subtle Architectural Watermark */}
+      <div
         aria-hidden="true"
-        style={{ x: watermarkX }}
         className="pointer-events-none absolute inset-x-0 top-1/2 z-0 -translate-y-1/2 select-none overflow-hidden"
       >
-        <motion.p
-          animate={prefersReducedMotion ? undefined : { x: isRtl ? ['0%', '4%', '0%'] : ['0%', '-4%', '0%'] }}
-          transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
-          className="whitespace-nowrap text-center font-display text-[22vw] font-black uppercase leading-none tracking-tighter text-white/[0.04] lg:text-[16vw]"
-          style={{ WebkitTextStroke: '1px rgba(255,255,255,0.05)' }}
+        <p
+          className="whitespace-nowrap text-center font-display text-[20vw] font-black uppercase leading-none tracking-tighter text-white/[0.03] lg:text-[15vw]"
+          style={{ WebkitTextStroke: '1px rgba(255,255,255,0.04)' }}
         >
           VEXA WINTER 26
-        </motion.p>
-      </motion.div>
+        </p>
+      </div>
 
-      {/* 4. Dramatic Primary Hero Visual (Full-bleed Asymmetric Stage with Gradient Masks) */}
-      <motion.div
-        style={{ y: visualY }}
-        className="relative z-10 flex flex-1 flex-col lg:block"
-      >
-        {/* Edge-to-Edge Visual Stage (Mobile top block -> Desktop right/end 58% full height) */}
-        <div className="relative h-[44vh] min-h-[320px] w-full overflow-hidden lg:absolute lg:inset-y-0 lg:end-0 lg:h-full lg:w-[58%]">
+      <div className="relative z-10 flex flex-1 flex-col lg:block">
+        {/* Edge-to-Edge Visual Stage with Explicit Aspect Ratio for 0 CLS */}
+        <div className="relative aspect-[4/5] w-full max-h-[54vh] overflow-hidden bg-[#0B1120] lg:absolute lg:inset-y-0 lg:end-0 lg:aspect-auto lg:h-full lg:max-h-none lg:w-[56%]">
           <AnimatePresence mode="wait">
-            <motion.div
+            <motion.img
               key={hero.hero_image_url}
-              initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0 }}
-              animate={{ opacity: 1 }}
+              src={hero.hero_image_url}
+              alt={title}
+              width={1000}
+              height={1250}
+              fetchPriority="high"
+              loading="eager"
+              decoding="sync"
+              initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 1.04 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={prefersReducedMotion ? undefined : { opacity: 0 }}
-              transition={{ duration: 0.65, ease: LUXURY_EASE }}
-              className="relative h-full w-full"
-            >
-              <motion.img
-                src={hero.hero_image_url}
-                alt={title}
-                fetchPriority="high"
-                initial={prefersReducedMotion ? { scale: 1 } : { scale: 1.08 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 7, ease: 'easeOut' }}
-                className="h-full w-full object-cover object-center"
-              />
-            </motion.div>
+              transition={{ duration: 0.7, ease: LUXURY_EASE }}
+              className="h-full w-full object-cover object-center"
+            />
           </AnimatePresence>
 
-          {/* Sleek 1px gradient frame accent */}
+          {/* Architectural 1px hairline inner frame */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-4 hidden rounded-3xl border border-white/10 lg:block"
+            className="pointer-events-none absolute inset-4 hidden border border-white/10 lg:block"
           />
 
-          {/* Seamless dark gradient masks blending visual into #090D16 stage */}
+          {/* Seamless dark gradient scrims */}
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#090D16] via-[#090D16]/35 to-[#090D16]/20"
+            className="pointer-events-none absolute inset-0 bg-linear-to-t from-[#090D16] via-[#090D16]/35 to-transparent"
           />
           <div
             aria-hidden="true"
             className={`pointer-events-none absolute inset-0 hidden lg:block ${
               isRtl
-                ? 'bg-linear-to-l from-[#090D16] via-[#090D16]/60 to-transparent'
-                : 'bg-linear-to-r from-[#090D16] via-[#090D16]/60 to-transparent'
+                ? 'bg-linear-to-l from-[#090D16] via-[#090D16]/55 to-transparent'
+                : 'bg-linear-to-r from-[#090D16] via-[#090D16]/55 to-transparent'
             }`}
           />
 
-          {/* Floating Dark-Glass Offer Pill */}
-          <motion.div
-            animate={prefersReducedMotion ? undefined : { y: [0, -8, 0] }}
-            transition={
-              prefersReducedMotion
-                ? undefined
-                : { duration: 4.5, repeat: Infinity, ease: 'easeInOut' }
-            }
-            className="absolute bottom-5 start-4 z-20 inline-flex items-center gap-3 rounded-2xl border border-white/15 bg-white/10 px-4 py-2.5 text-white shadow-2xl backdrop-blur-xl sm:bottom-8 sm:start-8"
-          >
-            <span className="relative flex h-2.5 w-2.5 shrink-0">
-              {!prefersReducedMotion && (
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#F97316] opacity-75" />
-              )}
-              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-[#F97316]" />
-            </span>
-            <div className="min-w-0">
-              <p className="truncate text-xs font-extrabold text-white">{floatingTitle}</p>
-            </div>
-            <span className="shrink-0 rounded-full bg-[#F97316] px-2.5 py-0.5 font-display text-[11px] font-black text-white">
+          {/* Sharp Editorial Dark-Matte Spec Strip (Zero Pills / Zero Pulsing Dots) */}
+          <div className="absolute bottom-5 start-4 z-20 inline-flex items-center gap-3 rounded-[2px] border-s-2 border-[#F97316] bg-[#0B0F19]/95 px-4 py-2.5 text-xs shadow-lg sm:bottom-8 sm:start-8">
+            <span className="font-semibold text-white/85">{floatingTitle}</span>
+            <span className="h-3 w-px bg-white/20" />
+            <span className="font-display font-extrabold tracking-wide text-[#F97316]">
               {floatingBadge}
             </span>
-          </motion.div>
+          </div>
 
-          {/* Floating Glassmorphic Lookbook Thumbnail Switcher (when multi-slide or interactive) */}
+          {/* Interactive Lookbook Thumbnail Switcher */}
           {activeHeroes.length > 1 && (
-            <div className="absolute bottom-5 end-4 z-20 flex items-center gap-2 rounded-2xl border border-white/15 bg-black/40 p-1.5 backdrop-blur-xl sm:bottom-8 sm:end-8">
+            <div className="absolute bottom-5 end-4 z-20 flex items-center gap-1.5 rounded-[2px] border border-white/15 bg-[#090D16]/90 p-1 sm:bottom-8 sm:end-8">
               {activeHeroes.map((slide, idx) => {
                 const isActive = idx === safeIdx;
                 return (
@@ -247,15 +168,15 @@ export function HeroSection({ heroes = [] }: HeroSectionProps) {
                     type="button"
                     onClick={() => setSlideIdx(idx)}
                     aria-label={`Slide ${idx + 1}`}
-                    className={`relative h-12 w-10 cursor-pointer overflow-hidden rounded-xl border transition-all duration-300 ${
-                      isActive
-                        ? 'scale-105 border-[#F97316] ring-2 ring-[#F97316]/40'
-                        : 'border-white/15 opacity-55 hover:opacity-90'
+                    className={`h-11 w-9 cursor-pointer overflow-hidden rounded-[2px] border transition-opacity duration-200 ${
+                      isActive ? 'border-[#F97316] opacity-100' : 'border-white/15 opacity-50 hover:opacity-85'
                     }`}
                   >
                     <img
                       src={slide.hero_image_url}
                       alt=""
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover"
                     />
                   </button>
@@ -265,85 +186,77 @@ export function HeroSection({ heroes = [] }: HeroSectionProps) {
           )}
         </div>
 
-        {/* 5. Editorial Typography Overlay Column */}
-        <div className="relative z-20 mx-auto flex w-full max-w-7xl flex-1 items-end px-4 pb-10 pt-4 sm:px-6 lg:min-h-[76vh] lg:items-center lg:py-16">
+        {/* Editorial Typography Column */}
+        <div className="relative z-20 mx-auto flex w-full max-w-7xl flex-1 items-end px-4 pb-10 pt-6 sm:px-6 lg:min-h-[76vh] lg:items-center lg:py-16">
           <AnimatePresence mode="wait">
             <motion.div
               key={hero.id}
               initial="hidden"
               animate="visible"
-              exit={prefersReducedMotion ? undefined : { opacity: 0, transition: { duration: 0.2 } }}
+              exit={prefersReducedMotion ? undefined : { opacity: 0, transition: { duration: 0.18 } }}
               variants={{
                 hidden: {},
                 visible: { transition: { staggerChildren: 0.08 } },
               }}
-              className="w-full max-w-2xl"
+              className="w-full max-w-xl"
             >
-              {/* Season Badge */}
-              <div className="overflow-hidden">
-                <motion.div
-                  variants={{
-                    hidden: prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: '100%' },
-                    visible: { opacity: 1, y: '0%', transition: { duration: 0.55, ease: LUXURY_EASE } },
-                  }}
-                >
-                  <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-extrabold tracking-widest text-white backdrop-blur-md">
-                    <Sparkles className="h-3.5 w-3.5 text-[#F97316]" />
-                    <span>{badge}</span>
-                  </span>
-                </motion.div>
-              </div>
+              {/* Clean Borderless Editorial Eyebrow */}
+              <motion.div
+                variants={{
+                  hidden: prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: LUXURY_EASE } },
+                }}
+                className="flex items-center gap-3"
+              >
+                <span className="h-[2px] w-6 shrink-0 bg-[#F97316]" />
+                <span className="text-xs font-semibold uppercase tracking-widest text-white/80">
+                  {badge}
+                </span>
+              </motion.div>
 
               {/* Massive Masked Editorial Headline */}
-              <div className="mt-5 overflow-hidden">
+              <div className="mt-4 overflow-hidden">
                 <motion.h1
                   variants={{
                     hidden: prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: '100%' },
-                    visible: { opacity: 1, y: '0%', transition: { duration: 0.7, ease: LUXURY_EASE } },
+                    visible: { opacity: 1, y: '0%', transition: { duration: 0.65, ease: LUXURY_EASE } },
                   }}
-                  className="text-5xl font-black leading-[1.02] tracking-tight text-white sm:text-6xl lg:text-7xl"
+                  className="text-4xl font-black leading-[1.04] tracking-tight text-white sm:text-6xl lg:text-7xl"
                 >
                   {title}
                 </motion.h1>
               </div>
 
-              {/* Minimal Muted Subtitle */}
-              <div className="mt-5 overflow-hidden">
-                <motion.p
-                  variants={{
-                    hidden: prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: '100%' },
-                    visible: { opacity: 1, y: '0%', transition: { duration: 0.6, ease: LUXURY_EASE } },
-                  }}
-                  className="line-clamp-2 max-w-md text-sm leading-relaxed text-white/70 sm:text-base"
-                >
-                  {subtitle}
-                </motion.p>
-              </div>
+              {/* Concise Muted Subtitle */}
+              <motion.p
+                variants={{
+                  hidden: prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: LUXURY_EASE } },
+                }}
+                className="mt-5 line-clamp-2 max-w-md text-sm leading-relaxed text-white/70 sm:text-base"
+              >
+                {subtitle}
+              </motion.p>
 
-              {/* Sleek CTA Group */}
+              {/* Sharp Architectural CTA Buttons */}
               <motion.div
                 variants={{
-                  hidden: prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 18 },
-                  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: LUXURY_EASE } },
+                  hidden: prefersReducedMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: LUXURY_EASE } },
                 }}
-                className="mt-8 flex flex-wrap items-center gap-3.5"
+                className="mt-8 flex flex-wrap items-center gap-3"
               >
                 <Link
                   to={hero.primary_cta_link || '/shop'}
-                  className="group relative inline-flex min-h-13 items-center gap-2.5 overflow-hidden rounded-full bg-[#F97316] px-8 text-sm font-black text-white shadow-[0_10px_30px_-8px_rgba(249,115,22,0.55)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#EA580C] sm:text-base"
+                  className="group inline-flex min-h-13 items-center gap-2.5 rounded-[2px] bg-[#F97316] px-8 py-4 text-sm font-bold text-white transition-colors hover:bg-[#EA580C] sm:text-base"
                 >
-                  {/* Hover Sheen Sweep */}
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-white/25 to-transparent transition-transform duration-700 group-hover:translate-x-full"
-                  />
-                  <span className="relative">{primaryCta}</span>
-                  <ArrowRight className="relative h-4 w-4 transition-transform duration-200 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
+                  <span>{primaryCta}</span>
+                  <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
                 </Link>
 
                 <Link
                   to={hero.secondary_cta_link || '/track'}
-                  className="inline-flex min-h-13 items-center justify-center rounded-full border border-white/15 bg-white/5 px-7 text-sm font-bold text-white backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/15 sm:text-base"
+                  className="inline-flex min-h-13 items-center justify-center rounded-[2px] border border-white/30 px-8 py-4 text-sm font-bold text-white transition-colors hover:border-white hover:bg-white hover:text-slate-950 sm:text-base"
                 >
                   {secondaryCta}
                 </Link>
@@ -351,10 +264,10 @@ export function HeroSection({ heroes = [] }: HeroSectionProps) {
             </motion.div>
           </AnimatePresence>
         </div>
-      </motion.div>
+      </div>
 
-      {/* 6. Minimal Integrated Bottom Trust Bar + Slide Progress Line */}
-      <div className="relative z-20 border-t border-white/10 bg-black/25 backdrop-blur-md">
+      {/* Minimal Bottom Trust Bar + Slide Progress Line */}
+      <div className="relative z-20 border-t border-white/10 bg-black/30">
         {activeHeroes.length > 1 && !prefersReducedMotion && (
           <div className="h-[2px] w-full bg-white/10">
             <motion.div
