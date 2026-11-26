@@ -1,0 +1,139 @@
+{
+  "brand": "VEXA",
+  "nav": {
+    "home": "Home",
+    "shop": "Shop",
+    "track": "Track Order",
+    "cart": "Cart",
+    "admin": "Admin"
+  },
+  "hero": {
+    "badge": "WINTER 2026 COLLECTION — EGYPT",
+    "title": "Modern Winter Essentials",
+    "subtitle": "Heavyweight Egyptian cottons and structured winter layers. Automatic multi-piece quantity discounts with Cash on Delivery across Egypt.",
+    "cta": "Shop Collection",
+    "trackCta": "Track Order"
+  },
+  "offers": {
+    "bannerTitle": "Automatic Quantity Discounts",
+    "bannerSub": "Mix any sizes or colors of the same item — discounts apply automatically in your cart",
+    "buyQtySavePct": "Buy {{qty}}+ & Save {{val}}%",
+    "buyQtySaveFixed": "Buy {{qty}}+ & Save {{val}} EGP",
+    "addMorePct": "Add {{qty}} more of this item to save {{val}}%",
+    "addMoreFixed": "Add {{qty}} more of this item to save {{val}} EGP",
+    "youSave": "Saved {{amount}}"
+  },
+  "trust": {
+    "cod": "Cash on Delivery",
+    "codSub": "Pay only when your order arrives",
+    "shipping": "All 27 Governorates",
+    "shippingSub": "Fast nationwide delivery in 2–5 days",
+    "returns": "Easy 14-Day Exchange",
+    "returnsSub": "Hassle-free sizing exchanges"
+  },
+  "home": {
+    "newArrivals": "New Arrivals",
+    "viewAll": "View All",
+    "shopByCategory": "Shop by Category",
+    "all": "All"
+  },
+  "catalog": {
+    "title": "Winter Collection",
+    "sortNewest": "Newest",
+    "sortPriceAsc": "Price: Low to High",
+    "sortPriceDesc": "Price: High to Low",
+    "newTag": "NEW",
+    "soldOut": "Sold Out",
+    "noProducts": "No products found in this category",
+    "loadMore": "Load More",
+    "retry": "Retry"
+  },
+  "product": {
+    "selectColor": "Select Color",
+    "selectSize": "Select Size",
+    "quantity": "Quantity",
+    "addToCart": "Add to Cart",
+    "orderNow": "Order Now",
+    "pickVariantError": "Please choose both color and size first",
+    "inStock": "In Stock",
+    "onlyLeft": "Only {{count}} left",
+    "outOfStock": "Sold Out",
+    "description": "Details & Fabric",
+    "sizeGuide": "Size Guide",
+    "addedToast": "Added to your cart",
+    "livePreview": "Live Price with Quantity Tier",
+    "includesCart": "Includes {{count}} unit(s) of this product already in cart"
+  },
+  "cart": {
+    "title": "Your Cart",
+    "emptyTitle": "Your cart is empty",
+    "emptySub": "Explore the winter drop and unlock multi-piece discounts.",
+    "shopNow": "Browse Shop",
+    "originalSubtotal": "Original Subtotal",
+    "discountTotal": "Total Savings",
+    "subtotal": "Subtotal",
+    "shippingNote": "Shipping calculated at checkout",
+    "freeShippingUnlocked": "Free Shipping Unlocked!",
+    "freeShippingAway": "Add {{amount}} more for free shipping",
+    "checkout": "Checkout (Cash on Delivery)",
+    "viewCart": "View Cart",
+    "remove": "Remove",
+    "stockAdjusted": "Quantities updated to match available stock"
+  },
+  "checkout": {
+    "title": "Guest Checkout",
+    "subtitle": "No account needed — place your Cash on Delivery order in seconds",
+    "fullName": "Full Name",
+    "phone": "Mobile Number (Egypt)",
+    "phoneSecondary": "Secondary Mobile (Optional)",
+    "governorate": "Governorate",
+    "selectGovernorate": "Select governorate to calculate shipping",
+    "cityArea": "City / Area",
+    "address": "Full Address (Street, Building, Floor, Landmark)",
+    "notes": "Courier Notes (Optional)",
+    "paymentTitle": "Payment Method",
+    "codLabel": "Cash on Delivery (COD)",
+    "codSub": "Pay cash to the courier upon delivery",
+    "confirmOrder": "Confirm Order",
+    "shippingFee": "Shipping Fee",
+    "free": "FREE",
+    "totalCod": "Total Due on Delivery",
+    "summary": "Order Summary",
+    "errors": {
+      "name_min": "Please enter your full name (at least 3 characters)",
+      "invalid_phone": "Enter a valid Egyptian mobile number (11 digits starting with 01)",
+      "gov_required": "Please select a governorate",
+      "city_min": "Please enter your city or area",
+      "address_min": "Please enter your detailed delivery address",
+      "rate_limited": "Order limit reached for this phone number. Please try again later.",
+      "stock": "Some items went out of stock. Your cart was adjusted to available stock.",
+      "generic": "Could not place order. Please try again."
+    }
+  },
+  "confirmation": {
+    "title": "Order Confirmed!",
+    "subtitle": "Our team will reach out by phone or WhatsApp to confirm before dispatch.",
+    "refLabel": "Order Reference",
+    "copyRef": "Copy Ref",
+    "copied": "Copied",
+    "totalCod": "Total Due on Delivery",
+    "whatsappBtn": "Confirm via WhatsApp",
+    "trackBtn": "Track Order",
+    "continueBtn": "Continue Shopping"
+  },
+  "track": {
+    "title": "Track Your Order",
+    "subtitle": "Enter your order reference and the mobile number used at checkout",
+    "refPlaceholder": "e.g. WNT-482913",
+    "phonePlaceholder": "010xxxxxxxx",
+    "submit": "Track",
+    "notFound": "No matching order found. Please check your reference and phone number.",
+    "items": "Items"
+  },
+  "footer": {
+    "about": "Contemporary winter streetwear tailored for cold Egyptian nights.",
+    "policies": "Cash on Delivery • All 27 Governorates • 14-Day Exchange",
+    "whatsapp": "Chat on WhatsApp",
+    "rights": "© 2026 VEXA Winter Store Egypt. All rights reserved."
+  }
+}

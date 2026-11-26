@@ -1,0 +1,8 @@
+# Architectural Decisions
+
+1. **Integer EGP Pricing:** All currency values (`base_price`, `fee`, `discount`, `total_cod`) are stored as whole integer EGP to avoid floating-point drift between browser previews and PostgreSQL.
+2. **Product-Level Grouping for Quantity Discounts:** Units of the same `product_id` across different sizes/colors combine when matching `discount_tiers`. Per-product tiers override global tiers (`product_id IS NULL`), and only the highest eligible tier applies.
+3. **Proportional Rounding Remainder:** `calculateCart.ts` and `create_guest_order` sort lines within each product group by `variant_id` ascending and assign any rounding remainder to the final line so line totals always equal group totals.
+4. **Safe Mock Product Deletion & Archiving:** Seeded mock products with zero order history can be hard-deleted via `admin_delete_product` (which also cleans up uploaded `products` bucket objects when `storage_path` is present). Products with historical `order_items` are protected and use soft-archiving (`is_archived = true`) so order snapshots stay intact.
+5. **External Seed Images vs Storage Images:** Seeded Unsplash image URLs keep `storage_path = null` so replacing or removing them from the Admin `ImageUploader` never attempts a Storage deletion on external URLs.
+6. **60-30-10 Design System:** Deep Emerald Green (`#124E3B`) anchors primary backgrounds/chrome/typography, Warm Creamy Beige (`#E8E3D5`) frames product cards/drawers/checkout panels, and Canary Yellow (`#FFD60A` with `#124E3B` text) is reserved strictly for primary CTAs, `"NEW"` badges, and active savings indicators.
