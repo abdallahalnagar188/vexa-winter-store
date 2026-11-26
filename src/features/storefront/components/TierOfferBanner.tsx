@@ -16,12 +16,12 @@ export function TierOfferBanner({ tiers, activeMinQty }: TierOfferBannerProps) {
   if (tiers.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-[#3E452B]/20 bg-[#D2CCB8]/65 p-4 text-[#3E452B]">
+    <div className="rounded-2xl border border-[#132238]/15 bg-[#ECE9E0] p-4 text-[#132238]">
       <div className="flex items-center gap-2 text-sm font-extrabold">
-        <Tag className="h-4 w-4 text-[#F47B20]" />
+        <Tag className="h-4 w-4 text-[#FF6B1A]" />
         <span>{t('offers.bannerTitle')}</span>
       </div>
-      <p className="mt-1 text-xs text-[#3E452B]/80">{t('offers.bannerSub')}</p>
+      <p className="mt-1 text-xs text-[#132238]/75">{t('offers.bannerSub')}</p>
       <div className="mt-3 flex flex-wrap gap-2">
         {tiers.map((tier) => {
           const isActive = activeMinQty === tier.minQty;
@@ -32,7 +32,7 @@ export function TierOfferBanner({ tiers, activeMinQty }: TierOfferBannerProps) {
           ) : (
             <span
               key={tier.minQty}
-              className="inline-flex items-center rounded-full border border-[#3E452B]/25 bg-[#EAE6D7] px-3 py-1 text-xs font-bold text-[#3E452B]"
+              className="inline-flex items-center rounded-full border border-[#132238]/20 bg-[#FFFFFF] px-3 py-1 text-xs font-bold text-[#132238]"
             >
               {describeTier(tier, lang)}
             </span>

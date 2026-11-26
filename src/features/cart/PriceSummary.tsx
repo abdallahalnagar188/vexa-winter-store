@@ -20,12 +20,12 @@ export function PriceSummary({ priced, freeShippingThreshold, rawShippingFee }: 
       : 0;
 
   return (
-    <div className="flex flex-col gap-2.5 text-sm text-[#3E452B]">
+    <div className="flex flex-col gap-2.5 text-sm text-[#132238]">
       {priced.discountTotal > 0 && (
         <>
           <div className="flex items-center justify-between">
-            <span className="text-[#3E452B]/75">{t('cart.originalSubtotal')}</span>
-            <span className="font-display text-[#3E452B]/60 line-through tabular-nums">
+            <span className="text-[#132238]/75">{t('cart.originalSubtotal')}</span>
+            <span className="font-display text-[#132238]/55 line-through tabular-nums">
               {formatEGP(priced.subtotalOriginal, lang)}
             </span>
           </div>
@@ -47,11 +47,11 @@ export function PriceSummary({ priced, freeShippingThreshold, rawShippingFee }: 
 
       {priced.shippingFee !== null ? (
         <div className="flex items-center justify-between">
-          <span className="text-[#3E452B]/80">{t('checkout.shippingFee')}</span>
+          <span className="text-[#132238]/80">{t('checkout.shippingFee')}</span>
           {priced.isFreeShipping ? (
             <div className="flex items-center gap-2">
               {rawShippingFee ? (
-                <span className="font-display text-xs text-[#3E452B]/50 line-through">
+                <span className="font-display text-xs text-[#132238]/50 line-through">
                   {formatEGP(rawShippingFee, lang)}
                 </span>
               ) : null}
@@ -64,11 +64,11 @@ export function PriceSummary({ priced, freeShippingThreshold, rawShippingFee }: 
           )}
         </div>
       ) : (
-        <p className="text-xs text-[#3E452B]/70">{t('cart.shippingNote')}</p>
+        <p className="text-xs text-[#132238]/70">{t('cart.shippingNote')}</p>
       )}
 
       {freeShippingThreshold > 0 && (
-        <div className="rounded-xl bg-[#3E452B]/10 px-3 py-2 text-xs font-bold text-[#3E452B]">
+        <div className="rounded-xl bg-[#132238]/8 px-3 py-2 text-xs font-bold text-[#132238]">
           {awayFromFree === 0
             ? t('cart.freeShippingUnlocked')
             : t('cart.freeShippingAway', { amount: formatEGP(awayFromFree, lang) })}
@@ -76,9 +76,9 @@ export function PriceSummary({ priced, freeShippingThreshold, rawShippingFee }: 
       )}
 
       {priced.totalCod !== null && (
-        <div className="mt-1 flex items-center justify-between border-t border-[#3E452B]/15 pt-3 text-base font-extrabold">
+        <div className="mt-1 flex items-center justify-between border-t border-[#132238]/15 pt-3 text-base font-extrabold">
           <span>{t('checkout.totalCod')}</span>
-          <span className="font-display text-xl text-[#3E452B] tabular-nums">
+          <span className="font-display text-xl text-[#132238] tabular-nums">
             {formatEGP(priced.totalCod, lang)}
           </span>
         </div>

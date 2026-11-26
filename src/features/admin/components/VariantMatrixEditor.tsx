@@ -22,7 +22,7 @@ const DEFAULT_SIZES = ['S', 'M', 'L', 'XL'];
 export function VariantMatrixEditor({ variants, onChange }: VariantMatrixEditorProps) {
   const [sizeInput, setSizeInput] = useState('S, M, L, XL');
   const [colorName, setColorName] = useState('');
-  const [colorHex, setColorHex] = useState('#3E452B');
+  const [colorHex, setColorHex] = useState('#132238');
 
   const generateColorVariants = () => {
     const cleanColor = colorName.trim();
@@ -62,28 +62,28 @@ export function VariantMatrixEditor({ variants, onChange }: VariantMatrixEditorP
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-3 rounded-2xl border border-[#3E452B]/15 bg-[#F5F2E8] p-4 sm:grid-cols-4">
+      <div className="grid gap-3 rounded-2xl border border-[#132238]/15 bg-[#ECE9E0] p-4 sm:grid-cols-4">
         <input
           type="text"
           value={sizeInput}
           onChange={(e) => setSizeInput(e.target.value)}
           placeholder="S, M, L, XL"
           dir="ltr"
-          className="min-h-10 rounded-xl border border-[#3E452B]/20 bg-white px-3 text-sm"
+          className="min-h-10 rounded-xl border border-[#132238]/20 bg-white px-3 text-sm"
         />
         <input
           type="text"
           value={colorName}
           onChange={(e) => setColorName(e.target.value)}
           placeholder="اسم اللون (مثال: أسود)"
-          className="min-h-10 rounded-xl border border-[#3E452B]/20 bg-white px-3 text-sm"
+          className="min-h-10 rounded-xl border border-[#132238]/20 bg-white px-3 text-sm"
         />
         <div className="flex items-center gap-2">
           <input
             type="color"
             value={colorHex}
             onChange={(e) => setColorHex(e.target.value)}
-            className="h-10 w-12 cursor-pointer rounded-lg border border-[#3E452B]/20 bg-white p-1"
+            className="h-10 w-12 cursor-pointer rounded-lg border border-[#132238]/20 bg-white p-1"
           />
           <span className="font-display text-xs">{colorHex}</span>
         </div>
@@ -94,9 +94,9 @@ export function VariantMatrixEditor({ variants, onChange }: VariantMatrixEditorP
       </div>
 
       {variants.length > 0 && (
-        <div className="overflow-x-auto rounded-2xl border border-[#3E452B]/15 bg-[#F5F2E8]">
+        <div className="overflow-x-auto rounded-2xl border border-[#132238]/15 bg-[#FFFFFF]">
           <table className="w-full text-start text-sm">
-            <thead className="border-b border-[#3E452B]/15 text-xs font-extrabold">
+            <thead className="border-b border-[#132238]/15 bg-[#ECE9E0] text-xs font-extrabold">
               <tr>
                 <th className="p-3">المقاس</th>
                 <th className="p-3">اللون</th>
@@ -106,7 +106,7 @@ export function VariantMatrixEditor({ variants, onChange }: VariantMatrixEditorP
                 <th className="p-3">حذف</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#3E452B]/10">
+            <tbody className="divide-y divide-[#132238]/10">
               {variants.map((v, idx) => (
                 <tr key={v.id ?? `${v.size}-${v.color_name}-${idx}`}>
                   <td className="p-2.5 font-display font-bold">{v.size}</td>
@@ -125,7 +125,7 @@ export function VariantMatrixEditor({ variants, onChange }: VariantMatrixEditorP
                       value={v.sku}
                       dir="ltr"
                       onChange={(e) => updateRow(idx, { sku: e.target.value })}
-                      className="w-24 rounded-lg border border-[#3E452B]/20 bg-white px-2 py-1 text-xs"
+                      className="w-24 rounded-lg border border-[#132238]/20 bg-white px-2 py-1 text-xs"
                     />
                   </td>
                   <td className="p-2.5">
@@ -136,7 +136,7 @@ export function VariantMatrixEditor({ variants, onChange }: VariantMatrixEditorP
                       onChange={(e) =>
                         updateRow(idx, { stock: Math.max(0, Number(e.target.value) || 0) })
                       }
-                      className="w-20 rounded-lg border border-[#3E452B]/20 bg-white px-2 py-1 font-display text-sm font-bold"
+                      className="w-20 rounded-lg border border-[#132238]/20 bg-white px-2 py-1 font-display text-sm font-bold"
                     />
                   </td>
                   <td className="p-2.5">
@@ -144,7 +144,7 @@ export function VariantMatrixEditor({ variants, onChange }: VariantMatrixEditorP
                       type="checkbox"
                       checked={v.is_active}
                       onChange={(e) => updateRow(idx, { is_active: e.target.checked })}
-                      className="h-4 w-4 accent-[#3E452B]"
+                      className="h-4 w-4 accent-[#132238]"
                     />
                   </td>
                   <td className="p-2.5">

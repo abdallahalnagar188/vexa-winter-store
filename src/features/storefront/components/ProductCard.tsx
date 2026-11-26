@@ -17,7 +17,7 @@ interface ProductCardProps {
 const FALLBACK_IMG =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"><rect width="400" height="500" fill="#D2CCB8"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#3E452B" font-family="sans-serif" font-size="20" font-weight="bold">VEXA WINTER</text></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500"><rect width="400" height="500" fill="#ECE9E0"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#132238" font-family="sans-serif" font-size="20" font-weight="bold">VEXA WINTER</text></svg>',
   );
 
 export function ProductCard({ product, tiers }: ProductCardProps) {
@@ -38,7 +38,7 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
     new Map(
       product.product_variants.map((v) => [
         v.color_name,
-        { name: v.color_name, hex: v.color_hex ?? '#3E452B' },
+        { name: v.color_name, hex: v.color_hex ?? '#132238' },
       ]),
     ).values(),
   );
@@ -56,9 +56,9 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
         to={`/product/${product.slug}`}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
-        className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] text-[#3E452B] shadow-sm transition-all duration-200 hover:border-[#3E452B]/35 hover:shadow-xl"
+        className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] text-[#132238] shadow-xs transition-all duration-200 hover:border-[#132238]/30 hover:shadow-xl"
       >
-        <div className="relative aspect-4/5 overflow-hidden bg-[#D2CCB8]">
+        <div className="relative aspect-4/5 overflow-hidden bg-[#ECE9E0]">
           <img
             src={hovered && secondaryImg ? secondaryImg : primaryImg}
             alt={title}
@@ -88,16 +88,16 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
 
           {!isSoldOut && (
             <div className="pointer-events-none absolute inset-x-3 bottom-3 hidden items-center justify-center sm:flex">
-              <span className="inline-flex translate-y-2 items-center gap-1.5 rounded-full bg-[#3E452B]/90 px-3.5 py-1.5 text-xs font-bold text-[#EAE6D7] opacity-0 backdrop-blur-xs transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
-                <Eye className="h-3.5 w-3.5 text-[#F47B20]" />
+              <span className="inline-flex translate-y-2 items-center gap-1.5 rounded-full bg-[#132238]/92 px-3.5 py-1.5 text-xs font-bold text-[#F4F2EC] opacity-0 backdrop-blur-xs transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+                <Eye className="h-3.5 w-3.5 text-[#FF6B1A]" />
                 <span>{lang === 'ar' ? 'عرض التفاصيل' : 'Quick View'}</span>
               </span>
             </div>
           )}
 
           {isSoldOut && (
-            <div className="absolute inset-0 flex items-center justify-center bg-[#3E452B]/75 backdrop-blur-[1px]">
-              <span className="rounded-full bg-[#EAE6D7] px-4 py-1.5 text-xs font-extrabold text-[#3E452B]">
+            <div className="absolute inset-0 flex items-center justify-center bg-[#132238]/75 backdrop-blur-[1px]">
+              <span className="rounded-full bg-[#F4F2EC] px-4 py-1.5 text-xs font-extrabold text-[#132238]">
                 {t('catalog.soldOut')}
               </span>
             </div>
@@ -106,7 +106,7 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
 
         <div className="flex flex-1 flex-col justify-between gap-2.5 p-3.5 sm:p-4">
           <div>
-            <h3 className="line-clamp-2 text-sm font-extrabold leading-snug text-[#3E452B] sm:text-base">
+            <h3 className="line-clamp-2 text-sm font-extrabold leading-snug text-[#132238] sm:text-base">
               {title}
             </h3>
             <div className="mt-1.5 flex flex-wrap items-center justify-between gap-2">
@@ -117,7 +117,7 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
                     <span
                       key={c.name}
                       title={c.name}
-                      className="h-3.5 w-3.5 rounded-full border border-[#3E452B]/35"
+                      className="h-3.5 w-3.5 rounded-full border border-[#132238]/30"
                       style={{ backgroundColor: c.hex }}
                     />
                   ))}
@@ -127,14 +127,14 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
           </div>
 
           {sizeAvailability.length > 0 && (
-            <div className="flex flex-wrap gap-1 border-t border-[#3E452B]/10 pt-2">
+            <div className="flex flex-wrap gap-1 border-t border-[#132238]/10 pt-2">
               {sizeAvailability.map((s) => (
                 <span
                   key={s.size}
                   className={`rounded-md px-1.5 py-0.5 font-display text-[10px] font-bold ${
                     s.inStock
-                      ? 'bg-[#D2CCB8]/70 text-[#3E452B]'
-                      : 'bg-[#D2CCB8]/35 text-[#3E452B]/40 line-through'
+                      ? 'bg-[#ECE9E0] text-[#132238]'
+                      : 'bg-[#ECE9E0]/50 text-[#132238]/40 line-through'
                   }`}
                 >
                   {s.size}

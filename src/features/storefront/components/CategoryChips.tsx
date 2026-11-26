@@ -21,8 +21,8 @@ export function CategoryChips({ categories, selectedSlug, onSelect }: CategoryCh
         className={cn(
           'min-h-10 cursor-pointer rounded-full px-4 text-sm font-bold transition-all',
           selectedSlug === 'all'
-            ? 'bg-[#F47B20] text-white shadow-sm'
-            : 'border border-[#3E452B]/25 bg-[#EAE6D7] text-[#3E452B] hover:border-[#3E452B]',
+            ? 'bg-[#FF6B1A] text-white shadow-sm'
+            : 'border border-[#132238]/20 bg-[#FFFFFF] text-[#132238] hover:border-[#132238]',
         )}
       >
         {t('home.all')}
@@ -37,8 +37,8 @@ export function CategoryChips({ categories, selectedSlug, onSelect }: CategoryCh
             className={cn(
               'min-h-10 cursor-pointer rounded-full px-4 text-sm font-bold transition-all',
               active
-                ? 'bg-[#F47B20] text-white shadow-sm'
-                : 'border border-[#3E452B]/25 bg-[#EAE6D7] text-[#3E452B] hover:border-[#3E452B]',
+                ? 'bg-[#FF6B1A] text-white shadow-sm'
+                : 'border border-[#132238]/20 bg-[#FFFFFF] text-[#132238] hover:border-[#132238]',
             )}
           >
             {lang === 'ar' ? cat.name_ar : cat.name_en}

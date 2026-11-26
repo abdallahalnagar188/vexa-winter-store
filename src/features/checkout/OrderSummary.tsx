@@ -22,9 +22,9 @@ export function OrderSummary({
   const { lang } = useDir();
 
   return (
-    <div className="rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 text-[#3E452B] shadow-lg">
+    <div className="rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-lg">
       <h2 className="mb-4 text-lg font-extrabold">{t('checkout.summary')}</h2>
-      <div className="mb-4 space-y-3 border-b border-[#3E452B]/15 pb-4">
+      <div className="mb-4 space-y-3 border-b border-[#132238]/12 pb-4">
         {items.map((item) => {
           const line = priced.lines.find((l) => l.variantId === item.variantId);
           const title =
@@ -35,11 +35,11 @@ export function OrderSummary({
                 <img
                   src={item.snapshot.imageUrl ?? ''}
                   alt={title}
-                  className="h-12 w-10 shrink-0 rounded-lg bg-[#D2CCB8] object-cover"
+                  className="h-12 w-10 shrink-0 rounded-lg bg-[#ECE9E0] object-cover"
                 />
                 <div className="min-w-0">
                   <p className="truncate font-bold">{title}</p>
-                  <p className="text-xs text-[#3E452B]/70">
+                  <p className="text-xs text-[#132238]/70">
                     {item.quantity} × {item.snapshot.size} / {item.snapshot.colorName}
                   </p>
                 </div>
@@ -50,7 +50,7 @@ export function OrderSummary({
                     {formatEGP(line.lineTotal, lang)}
                   </p>
                   {line.lineDiscount > 0 && (
-                    <p className="font-display text-xs text-[#3E452B]/50 line-through">
+                    <p className="font-display text-xs text-[#132238]/50 line-through">
                       {formatEGP(line.lineOriginal, lang)}
                     </p>
                   )}

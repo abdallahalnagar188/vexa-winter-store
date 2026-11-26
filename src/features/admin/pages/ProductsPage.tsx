@@ -58,7 +58,7 @@ export function ProductsPage() {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black text-[#3E452B]">المنتجات والمخزون</h1>
+        <h1 className="text-2xl font-black text-[#132238]">المنتجات والمخزون</h1>
         <Link to="/admin/products/new">
           <Button variant="primary">
             <Plus className="h-4 w-4" />
@@ -67,33 +67,32 @@ export function ProductsPage() {
         </Link>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-4">
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-4 shadow-xs">
         <input
           type="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="ابحث بالاسم أو الرابط..."
-          className="min-h-10 w-full max-w-sm rounded-xl border border-[#3E452B]/20 bg-[#F5F2E8] px-3 text-sm"
+          className="min-h-10 w-full max-w-sm rounded-xl border border-[#132238]/20 bg-[#F4F2EC] px-3 text-sm"
         />
         <label className="flex items-center gap-2 text-sm font-bold">
           <input
             type="checkbox"
             checked={showArchived}
             onChange={(e) => setShowArchived(e.target.checked)}
-            className="h-4 w-4 accent-[#3E452B]"
+            className="h-4 w-4 accent-[#132238]"
           />
           عرض المنتجات المؤرشفة
         </label>
       </div>
 
-      {/* Mobile Cards */}
       <div className="space-y-3 md:hidden">
         {products.map((p) => {
           const totalStock = p.product_variants.reduce((acc, v) => acc + v.stock, 0);
           return (
             <div
               key={p.id}
-              className={`space-y-3 rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-4 ${
+              className={`space-y-3 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-4 shadow-xs ${
                 p.is_archived ? 'opacity-60' : ''
               }`}
             >
@@ -101,11 +100,11 @@ export function ProductsPage() {
                 <img
                   src={p.product_images[0]?.url ?? ''}
                   alt=""
-                  className="h-16 w-12 shrink-0 rounded-xl bg-[#D2CCB8] object-cover"
+                  className="h-16 w-12 shrink-0 rounded-xl bg-[#ECE9E0] object-cover"
                 />
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-extrabold">{p.title_ar}</p>
-                  <p className="text-xs text-[#3E452B]/70">
+                  <p className="text-xs text-[#132238]/70">
                     {p.category?.name_ar ?? '—'} • المخزون: {totalStock}
                   </p>
                   <div className="mt-1 flex items-center gap-2">
@@ -123,7 +122,7 @@ export function ProductsPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-wrap items-center gap-2 border-t border-[#3E452B]/10 pt-2.5">
+              <div className="flex flex-wrap items-center gap-2 border-t border-[#132238]/10 pt-2.5">
                 <Link to={`/admin/products/${p.id}`} className="flex-1">
                   <Button variant="secondary" size="sm" className="w-full">
                     <Edit3 className="h-3.5 w-3.5" />
@@ -157,10 +156,9 @@ export function ProductsPage() {
         })}
       </div>
 
-      {/* Desktop Table */}
-      <div className="hidden overflow-x-auto rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] shadow-sm md:block">
+      <div className="hidden overflow-x-auto rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] shadow-xs md:block">
         <table className="w-full text-start text-sm">
-          <thead className="border-b border-[#3E452B]/15 text-xs font-extrabold">
+          <thead className="border-b border-[#132238]/12 bg-[#ECE9E0] text-xs font-extrabold">
             <tr>
               <th className="p-3">المنتج</th>
               <th className="p-3">القسم</th>
@@ -170,7 +168,7 @@ export function ProductsPage() {
               <th className="p-3">إجراءات</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#3E452B]/10">
+          <tbody className="divide-y divide-[#132238]/10">
             {products.map((p) => {
               const totalStock = p.product_variants.reduce((acc, v) => acc + v.stock, 0);
               return (
@@ -180,11 +178,11 @@ export function ProductsPage() {
                       <img
                         src={p.product_images[0]?.url ?? ''}
                         alt=""
-                        className="h-12 w-10 rounded-lg bg-[#D2CCB8] object-cover"
+                        className="h-12 w-10 rounded-lg bg-[#ECE9E0] object-cover"
                       />
                       <div>
                         <p className="font-extrabold">{p.title_ar}</p>
-                        <p className="font-display text-xs text-[#3E452B]/65">{p.slug}</p>
+                        <p className="font-display text-xs text-[#132238]/65">{p.slug}</p>
                       </div>
                     </div>
                   </td>

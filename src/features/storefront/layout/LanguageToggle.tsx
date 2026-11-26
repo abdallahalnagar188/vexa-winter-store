@@ -15,7 +15,7 @@ export function LanguageToggle() {
       type="button"
       onClick={toggle}
       aria-label="Toggle language"
-      className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-xl border border-[#C5BFA8]/30 bg-[#2F3520] px-3 text-xs font-bold text-[#EAE6D7] transition-colors hover:border-[#F47B20] hover:text-[#F47B20]"
+      className="inline-flex min-h-10 cursor-pointer items-center gap-1.5 rounded-xl border border-[#F4F2EC]/25 bg-[#1C314E] px-3 text-xs font-bold text-[#F4F2EC] transition-colors hover:border-[#FF6B1A] hover:text-[#FF6B1A]"
     >
       <Globe className="h-3.5 w-3.5" />
       <span>{lang === 'ar' ? 'EN' : 'عربي'}</span>

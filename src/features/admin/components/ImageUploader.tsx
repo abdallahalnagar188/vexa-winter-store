@@ -111,12 +111,12 @@ export function ImageUploader({ productId, images, onChange }: ImageUploaderProp
 
   return (
     <div className="space-y-3">
-      <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[#3E452B]/30 bg-[#F5F2E8] p-6 text-center transition-colors hover:border-[#F47B20]">
-        <Upload className="h-6 w-6 text-[#F47B20]" />
-        <span className="text-sm font-extrabold text-[#3E452B]">
+      <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-[#132238]/25 bg-[#F4F2EC] p-6 text-center transition-colors hover:border-[#FF6B1A]">
+        <Upload className="h-6 w-6 text-[#FF6B1A]" />
+        <span className="text-sm font-extrabold text-[#132238]">
           {uploading ? 'جاري ضغط ورفع الصور...' : 'اضغط لرفع صور جديدة (WebP تلقائياً)'}
         </span>
-        <span className="text-xs text-[#3E452B]/65">
+        <span className="text-xs text-[#132238]/65">
           تُرفع الصور إلى Supabase Storage (`products` bucket)
         </span>
         <input
@@ -134,7 +134,7 @@ export function ImageUploader({ productId, images, onChange }: ImageUploaderProp
           {images.map((img, idx) => (
             <div
               key={`${img.url}-${idx}`}
-              className="group relative overflow-hidden rounded-xl border border-[#3E452B]/20 bg-[#F5F2E8]"
+              className="group relative overflow-hidden rounded-xl border border-[#132238]/15 bg-[#F4F2EC]"
             >
               <img src={img.url} alt="" className="aspect-4/5 w-full object-cover" />
               <div className="flex items-center justify-between gap-1 p-1.5">
@@ -144,8 +144,8 @@ export function ImageUploader({ productId, images, onChange }: ImageUploaderProp
                   title="تعيين كصورة رئيسية"
                   className={`rounded-lg px-2 py-1 text-[11px] font-bold ${
                     img.is_primary
-                      ? 'bg-[#F47B20] text-white'
-                      : 'bg-[#3E452B]/10 text-[#3E452B]'
+                      ? 'bg-[#FF6B1A] text-white'
+                      : 'bg-[#132238]/10 text-[#132238]'
                   }`}
                 >
                   <Star className="inline h-3 w-3" /> {img.is_primary ? 'رئيسية' : 'أساسية'}
@@ -154,7 +154,7 @@ export function ImageUploader({ productId, images, onChange }: ImageUploaderProp
                   <button
                     type="button"
                     onClick={() => move(idx, -1)}
-                    className="rounded p-1 hover:bg-[#3E452B]/10"
+                    className="rounded p-1 hover:bg-[#132238]/10"
                     aria-label="Move back"
                   >
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -162,7 +162,7 @@ export function ImageUploader({ productId, images, onChange }: ImageUploaderProp
                   <button
                     type="button"
                     onClick={() => move(idx, 1)}
-                    className="rounded p-1 hover:bg-[#3E452B]/10"
+                    className="rounded p-1 hover:bg-[#132238]/10"
                     aria-label="Move forward"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" />

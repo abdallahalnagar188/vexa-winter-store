@@ -7,55 +7,58 @@
 @import "@fontsource/space-grotesk/700.css";
 
 @theme {
-  --color-sand: #C5BFA8;
-  --color-sand-soft: #D2CCB8;
-  --color-sand-light: #EAE6D7;
-  --color-sand-muted: #B6B098;
-  --color-olive: #3E452B;
-  --color-olive-dark: #2F3520;
-  --color-olive-light: #525B3A;
-  --color-tangerine: #F47B20;
-  --color-tangerine-hover: #DC6812;
+  --color-canvas: #F4F2EC;
+  --color-surface-subtle: #ECE9E0;
+  --color-surface-elevated: #FFFFFF;
+  --color-navy: #132238;
+  --color-navy-light: #1C314E;
+  --color-navy-dark: #0C1626;
+  --color-orange: #FF6B1A;
+  --color-orange-hover: #E85A0C;
 
   --font-sans: "Cairo", "Space Grotesk", system-ui, -apple-system, sans-serif;
   --font-display: "Space Grotesk", "Cairo", system-ui, sans-serif;
 }
 
 :root {
-  --color-primary: #C5BFA8;
-  --color-secondary: #3E452B;
-  --color-accent: #F47B20;
+  --bg-primary: #F4F2EC;
+  --surface-subtle: #ECE9E0;
+  --surface-elevated: #FFFFFF;
+  --text-navy: #132238;
+  --navy-light: #1C314E;
+  --navy-dark: #0C1626;
+  --accent-orange: #FF6B1A;
+  --accent-orange-hover: #E85A0C;
 }
 
 html {
   scroll-behavior: smooth;
   font-family: var(--font-sans);
-  background-color: #C5BFA8;
-  color: #3E452B;
+  background-color: var(--bg-primary);
+  color: var(--text-navy);
 }
 
 body {
   min-height: 100vh;
   overflow-x: hidden;
-  background-color: #C5BFA8;
-  color: #3E452B;
+  background-color: var(--bg-primary);
+  color: var(--text-navy);
 }
 
-/* Custom thin scrollbars harmonized with Sand / Olive / Tangerine palette */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #D2CCB8;
+  background: #ECE9E0;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #3E452B;
+  background: #132238;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #F47B20;
+  background: #FF6B1A;
 }

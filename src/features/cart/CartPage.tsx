@@ -18,7 +18,7 @@ export function CartPage() {
 
   return (
     <PageTransition className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
-      <h1 className="mb-6 text-2xl font-black text-[#3E452B] sm:text-3xl">{t('cart.title')}</h1>
+      <h1 className="mb-6 text-2xl font-black text-[#132238] sm:text-3xl">{t('cart.title')}</h1>
 
       {items.length === 0 ? (
         <EmptyState
@@ -34,7 +34,7 @@ export function CartPage() {
         />
       ) : (
         <div className="grid gap-6 lg:grid-cols-12">
-          <div className="space-y-3 rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-4 lg:col-span-8">
+          <div className="space-y-3 rounded-2xl border border-[#132238]/12 bg-[#ECE9E0] p-4 lg:col-span-8">
             {items.map((item) => {
               const pricedLine = priced.lines.find((l) => l.variantId === item.variantId);
               const maxStock = variantMap.get(item.variantId)?.variant.stock ?? 10;
@@ -52,7 +52,7 @@ export function CartPage() {
             })}
           </div>
 
-          <div className="h-fit rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 text-[#3E452B] shadow-lg lg:sticky lg:top-24 lg:col-span-4">
+          <div className="h-fit rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-lg lg:sticky lg:top-24 lg:col-span-4">
             <h2 className="mb-4 text-lg font-extrabold">{t('checkout.summary')}</h2>
             <PriceSummary priced={priced} freeShippingThreshold={freeShippingThreshold} />
             <Link to="/checkout" className="mt-5 block">

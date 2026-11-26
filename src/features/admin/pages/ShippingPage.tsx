@@ -62,7 +62,7 @@ export function ShippingPage() {
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black text-[#3E452B]">أسعار شحن المحافظات (27 محافظة)</h1>
+        <h1 className="text-2xl font-black text-[#132238]">أسعار شحن المحافظات (27 محافظة)</h1>
         <Button
           variant="primary"
           onClick={handleSave}
@@ -73,7 +73,7 @@ export function ShippingPage() {
         </Button>
       </div>
 
-      <div className="grid gap-4 rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-4 sm:grid-cols-2">
+      <div className="grid gap-4 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-4 shadow-xs sm:grid-cols-2">
         <div className="flex items-end gap-2">
           <div className="flex-1">
             <label className="block text-xs font-bold">تعيين سعر موحد لكل المحافظات</label>
@@ -83,7 +83,7 @@ export function ShippingPage() {
               value={bulkFee}
               onChange={(e) => setBulkFee(e.target.value)}
               placeholder="مثال: 75"
-              className="mt-1 min-h-10 w-full rounded-xl border border-[#3E452B]/20 bg-[#F5F2E8] px-3 font-display text-sm"
+              className="mt-1 min-h-10 w-full rounded-xl border border-[#132238]/20 bg-[#F4F2EC] px-3 font-display text-sm"
             />
           </div>
           <Button type="button" variant="secondary" onClick={applyBulk}>
@@ -100,14 +100,14 @@ export function ShippingPage() {
             min={0}
             value={freeThreshold}
             onChange={(e) => setFreeThreshold(Math.max(0, Number(e.target.value) || 0))}
-            className="mt-1 min-h-10 w-full rounded-xl border border-[#3E452B]/20 bg-[#F5F2E8] px-3 font-display text-sm font-bold"
+            className="mt-1 min-h-10 w-full rounded-xl border border-[#132238]/20 bg-[#F4F2EC] px-3 font-display text-sm font-bold"
           />
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] shadow-sm">
+      <div className="overflow-x-auto rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] shadow-xs">
         <table className="w-full text-start text-sm">
-          <thead className="border-b border-[#3E452B]/15 text-xs font-extrabold">
+          <thead className="border-b border-[#132238]/12 bg-[#ECE9E0] text-xs font-extrabold">
             <tr>
               <th className="p-3">#</th>
               <th className="p-3">المحافظة (عربي)</th>
@@ -116,9 +116,9 @@ export function ShippingPage() {
               <th className="p-3">متاح</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#3E452B]/10">
+          <tbody className="divide-y divide-[#132238]/10">
             {rows.map((gov) => (
-              <tr key={gov.id} className={dirtyIds.has(gov.id) ? 'bg-[#F47B20]/15' : ''}>
+              <tr key={gov.id} className={dirtyIds.has(gov.id) ? 'bg-[#FF6B1A]/15' : ''}>
                 <td className="p-3 font-display text-xs">{gov.id}</td>
                 <td className="p-3 font-bold">{gov.name_ar}</td>
                 <td className="p-3 font-display text-xs">{gov.name_en}</td>
@@ -130,7 +130,7 @@ export function ShippingPage() {
                     onChange={(e) =>
                       updateRow(gov.id, { fee: Math.max(0, Number(e.target.value) || 0) })
                     }
-                    className="w-24 rounded-lg border border-[#3E452B]/20 bg-[#F5F2E8] px-2.5 py-1.5 font-display text-sm font-bold"
+                    className="w-24 rounded-lg border border-[#132238]/20 bg-[#F4F2EC] px-2.5 py-1.5 font-display text-sm font-bold"
                   />
                 </td>
                 <td className="p-3">
@@ -138,7 +138,7 @@ export function ShippingPage() {
                     type="checkbox"
                     checked={gov.is_active}
                     onChange={(e) => updateRow(gov.id, { is_active: e.target.checked })}
-                    className="h-4 w-4 accent-[#3E452B]"
+                    className="h-4 w-4 accent-[#132238]"
                   />
                 </td>
               </tr>

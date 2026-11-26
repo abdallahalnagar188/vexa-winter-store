@@ -39,15 +39,15 @@ export function AdminLoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#C5BFA8] p-4">
-      <div className="w-full max-w-md rounded-3xl border border-[#3E452B]/15 bg-[#EAE6D7] p-6 text-[#3E452B] shadow-2xl sm:p-8">
+    <div className="flex min-h-screen items-center justify-center bg-[#F4F2EC] p-4">
+      <div className="w-full max-w-md rounded-3xl border border-[#132238]/12 bg-[#FFFFFF] p-6 text-[#132238] shadow-2xl sm:p-8">
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#3E452B] text-[#F47B20]">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#132238] text-[#FF6B1A]">
             <Lock className="h-5 w-5" />
           </div>
           <div>
             <h1 className="text-xl font-black">لوحة إدارة VEXA</h1>
-            <p className="text-xs text-[#3E452B]/70">دخول المشرفين فقط</p>
+            <p className="text-xs text-[#132238]/70">دخول المشرفين فقط</p>
           </div>
         </div>
 

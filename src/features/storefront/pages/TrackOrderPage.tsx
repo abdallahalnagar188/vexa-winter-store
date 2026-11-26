@@ -51,9 +51,9 @@ export function TrackOrderPage() {
 
   return (
     <PageTransition className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <div className="rounded-3xl border border-[#3E452B]/15 bg-[#EAE6D7] p-6 text-[#3E452B] shadow-xl sm:p-8">
+      <div className="rounded-3xl border border-[#132238]/12 bg-[#FFFFFF] p-6 text-[#132238] shadow-xl sm:p-8">
         <h1 className="text-2xl font-black">{t('track.title')}</h1>
-        <p className="mt-1 text-sm text-[#3E452B]/75">{t('track.subtitle')}</p>
+        <p className="mt-1 text-sm text-[#132238]/75">{t('track.subtitle')}</p>
 
         <form onSubmit={handleSubmit} className="mt-6 grid gap-4 sm:grid-cols-2">
           <Input
@@ -88,11 +88,11 @@ export function TrackOrderPage() {
         )}
 
         {order && (
-          <div className="mt-6 space-y-5 border-t border-[#3E452B]/15 pt-6">
+          <div className="mt-6 space-y-5 border-t border-[#132238]/12 pt-6">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <p className="font-display text-lg font-extrabold">{order.order_ref}</p>
-                <p className="text-xs text-[#3E452B]/70">
+                <p className="text-xs text-[#132238]/70">
                   {formatDate(order.created_at, lang)} • {order.governorate}
                 </p>
               </div>
@@ -118,8 +118,8 @@ export function TrackOrderPage() {
                         className={cn(
                           'flex h-8 w-8 items-center justify-center rounded-full border-2',
                           done
-                            ? 'border-[#F47B20] bg-[#F47B20] text-white'
-                            : 'border-[#3E452B]/20 bg-[#F5F2E8] text-[#3E452B]/40',
+                            ? 'border-[#FF6B1A] bg-[#FF6B1A] text-white'
+                            : 'border-[#132238]/20 bg-[#ECE9E0] text-[#132238]/40',
                         )}
                       >
                         <CheckCircle2 className="h-4 w-4" />
@@ -135,7 +135,7 @@ export function TrackOrderPage() {
               </div>
             )}
 
-            <div className="space-y-2 rounded-2xl bg-[#F5F2E8] p-4">
+            <div className="space-y-2 rounded-2xl bg-[#ECE9E0] p-4">
               <p className="text-xs font-extrabold">{t('track.items')}</p>
               {order.items.map((item, idx) => (
                 <div key={idx} className="flex justify-between text-sm">
@@ -144,7 +144,7 @@ export function TrackOrderPage() {
                   </span>
                 </div>
               ))}
-              <div className="flex justify-between border-t border-[#3E452B]/15 pt-2 font-extrabold">
+              <div className="flex justify-between border-t border-[#132238]/15 pt-2 font-extrabold">
                 <span>{t('checkout.totalCod')}</span>
                 <span className="font-display">{formatEGP(order.total_cod, lang)}</span>
               </div>

@@ -35,13 +35,13 @@ export function CatalogPage() {
   return (
     <PageTransition className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-black text-[#3E452B] sm:text-3xl">{t('catalog.title')}</h1>
+        <h1 className="text-2xl font-black text-[#132238] sm:text-3xl">{t('catalog.title')}</h1>
 
         <select
           aria-label="Sort products"
           value={sort}
           onChange={(e) => setSort(e.target.value as 'newest' | 'price_asc' | 'price_desc')}
-          className="min-h-11 rounded-xl border border-[#3E452B]/25 bg-[#EAE6D7] px-3.5 text-sm font-bold text-[#3E452B] focus:border-[#F47B20] focus:outline-none"
+          className="min-h-11 rounded-xl border border-[#132238]/20 bg-[#FFFFFF] px-3.5 text-sm font-bold text-[#132238] focus:border-[#FF6B1A] focus:outline-none"
         >
           <option value="newest">{t('catalog.sortNewest')}</option>
           <option value="price_asc">{t('catalog.sortPriceAsc')}</option>

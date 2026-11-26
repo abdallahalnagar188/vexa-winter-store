@@ -96,7 +96,7 @@ export function ProductFormPage() {
           id: v.id,
           size: v.size,
           color_name: v.color_name,
-          color_hex: v.color_hex ?? '#3E452B',
+          color_hex: v.color_hex ?? '#132238',
           sku: v.sku ?? '',
           stock: v.stock,
           is_active: v.is_active,
@@ -238,7 +238,7 @@ export function ProductFormPage() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-4xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black text-[#3E452B]">
+        <h1 className="text-2xl font-black text-[#132238]">
           {isNew ? 'إضافة منتج جديد' : 'تعديل المنتج'}
         </h1>
         <Button type="submit" variant="primary" size="lg" loading={saving}>
@@ -247,7 +247,7 @@ export function ProductFormPage() {
         </Button>
       </div>
 
-      <div className="space-y-4 rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 shadow-sm">
+      <div className="space-y-4 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 shadow-xs">
         <h2 className="text-base font-extrabold">البيانات الأساسية</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <Input label="الاسم بالعربي" {...register('title_ar')} error={errors.title_ar?.message} />
@@ -276,7 +276,7 @@ export function ProductFormPage() {
             <label className="text-sm font-bold">القسم</label>
             <select
               {...register('category_id')}
-              className="min-h-11 rounded-xl border border-[#3E452B]/25 bg-[#F5F2E8] px-3 text-sm"
+              className="min-h-11 rounded-xl border border-[#132238]/20 bg-[#FFFFFF] px-3 text-sm"
             >
               <option value="">بدون قسم</option>
               {(categoriesQuery.data ?? []).map((cat) => (
@@ -305,7 +305,7 @@ export function ProductFormPage() {
             <textarea
               rows={3}
               {...register('description_ar')}
-              className="rounded-xl border border-[#3E452B]/25 bg-[#F5F2E8] p-3 text-sm"
+              className="rounded-xl border border-[#132238]/20 bg-[#FFFFFF] p-3 text-sm"
             />
           </div>
           <div className="flex flex-col gap-1.5">
@@ -314,36 +314,36 @@ export function ProductFormPage() {
               rows={3}
               dir="ltr"
               {...register('description_en')}
-              className="rounded-xl border border-[#3E452B]/25 bg-[#F5F2E8] p-3 text-sm"
+              className="rounded-xl border border-[#132238]/20 bg-[#FFFFFF] p-3 text-sm"
             />
           </div>
         </div>
 
         <div className="flex flex-wrap gap-6 pt-2 text-sm font-bold">
           <label className="flex items-center gap-2">
-            <input type="checkbox" {...register('is_new')} className="h-4 w-4 accent-[#3E452B]" />
+            <input type="checkbox" {...register('is_new')} className="h-4 w-4 accent-[#132238]" />
             إظهار شارة NEW (جديد)
           </label>
           <label className="flex items-center gap-2">
-            <input type="checkbox" {...register('is_active')} className="h-4 w-4 accent-[#3E452B]" />
+            <input type="checkbox" {...register('is_active')} className="h-4 w-4 accent-[#132238]" />
             ظاهر في المتجر
           </label>
         </div>
       </div>
 
-      <div className="space-y-4 rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 shadow-sm">
+      <div className="space-y-4 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 shadow-xs">
         <h2 className="text-base font-extrabold">صور المنتج</h2>
         <ImageUploader productId={productId} images={images} onChange={setImages} />
       </div>
 
-      <div className="space-y-4 rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 shadow-sm">
+      <div className="space-y-4 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 shadow-xs">
         <h2 className="text-base font-extrabold">المقاسات والألوان والمخزون</h2>
         <VariantMatrixEditor variants={variants} onChange={setVariants} />
       </div>
 
-      <div className="space-y-3 rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 shadow-sm">
+      <div className="space-y-3 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 shadow-xs">
         <h2 className="text-base font-extrabold">خصومات خاصة بهذا المنتج (اختياري)</h2>
-        <p className="text-xs text-[#3E452B]/75">
+        <p className="text-xs text-[#132238]/75">
           إضافة شرائح هنا تلغي الخصم العام لهذا المنتج فقط وتطبق شرائحه الخاصة.
         </p>
         <TierEditor tiers={tiers} onChange={setTiers} />

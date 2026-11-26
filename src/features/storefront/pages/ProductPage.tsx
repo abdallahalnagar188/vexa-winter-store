@@ -178,10 +178,10 @@ export function ProductPage() {
           <ProductGallery images={product.product_images} title={title} />
         </div>
 
-        <div className="flex flex-col gap-5 rounded-3xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 text-[#3E452B] shadow-xl sm:p-7 lg:col-span-6">
+        <div className="flex flex-col gap-5 rounded-3xl border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-xl sm:p-7 lg:col-span-6">
           <div>
             {product.is_new && (
-              <span className="mb-2 inline-block rounded-full bg-[#3E452B] px-3 py-0.5 text-xs font-extrabold text-[#EAE6D7]">
+              <span className="mb-2 inline-block rounded-full bg-[#132238] px-3 py-0.5 text-xs font-extrabold text-[#F4F2EC]">
                 {t('catalog.newTag')}
               </span>
             )}
@@ -223,19 +223,19 @@ export function ProductPage() {
                 {selectedVariant.stock <= 0 ? (
                   <span className="text-rose-700">{t('product.outOfStock')}</span>
                 ) : selectedVariant.stock <= 3 ? (
-                  <span className="text-[#F47B20]">
+                  <span className="text-[#FF6B1A]">
                     {t('product.onlyLeft', { count: selectedVariant.stock })}
                   </span>
                 ) : (
-                  <span className="text-[#3E452B]">{t('product.inStock')}</span>
+                  <span className="text-[#132238]">{t('product.inStock')}</span>
                 )}
               </div>
             )}
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#3E452B]/15 pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[#132238]/12 pt-4">
             <div>
-              <span className="mb-1.5 block text-xs font-bold text-[#3E452B]/75">
+              <span className="mb-1.5 block text-xs font-bold text-[#132238]/75">
                 {t('product.quantity')}
               </span>
               <QuantityStepper value={qty} max={maxOrderQty} onChange={setQty} />
@@ -244,16 +244,16 @@ export function ProductPage() {
             <button
               type="button"
               onClick={() => setSizeGuideOpen(true)}
-              className="inline-flex cursor-pointer items-center gap-1.5 text-xs font-bold text-[#3E452B] underline"
+              className="inline-flex cursor-pointer items-center gap-1.5 text-xs font-bold text-[#132238] underline"
             >
-              <Ruler className="h-4 w-4 text-[#F47B20]" />
+              <Ruler className="h-4 w-4 text-[#FF6B1A]" />
               <span>{t('product.sizeGuide')}</span>
             </button>
           </div>
 
           {groupPreview && (
-            <div className="rounded-2xl border border-[#3E452B]/15 bg-[#F5F2E8] p-4">
-              <div className="flex items-center justify-between gap-2 text-xs font-bold text-[#3E452B]/75">
+            <div className="rounded-2xl border border-[#132238]/12 bg-[#ECE9E0] p-4">
+              <div className="flex items-center justify-between gap-2 text-xs font-bold text-[#132238]/75">
                 <span>{t('product.livePreview')}</span>
                 {existingProductCartQty > 0 && (
                   <span>{t('product.includesCart', { count: existingProductCartQty })}</span>
@@ -289,19 +289,19 @@ export function ProductPage() {
           </Button>
 
           {description && (
-            <div className="border-t border-[#3E452B]/15 pt-4">
+            <div className="border-t border-[#132238]/12 pt-4">
               <h2 className="mb-1.5 text-sm font-extrabold">{t('product.description')}</h2>
-              <p className="text-sm leading-relaxed text-[#3E452B]/80">{description}</p>
+              <p className="text-sm leading-relaxed text-[#132238]/80">{description}</p>
             </div>
           )}
         </div>
       </div>
 
       {/* Sticky mobile Add to Cart bar */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#3E452B]/15 bg-[#EAE6D7]/95 p-3 backdrop-blur-md lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#132238]/15 bg-[#FFFFFF]/95 p-3 backdrop-blur-md lg:hidden">
         <div className="mx-auto flex max-w-lg items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="truncate text-[11px] font-bold text-[#3E452B]/70">{title}</p>
+            <p className="truncate text-[11px] font-bold text-[#132238]/70">{title}</p>
             <PriceTag
               price={groupPreview?.groupTotal ?? product.base_price * qty}
               originalPrice={
@@ -323,13 +323,13 @@ export function ProductPage() {
         <div className="overflow-x-auto text-sm">
           <table className="w-full border-collapse text-center">
             <thead>
-              <tr className="border-b border-[#3E452B]/20 font-extrabold">
+              <tr className="border-b border-[#132238]/20 font-extrabold">
                 <th className="p-2">Size</th>
                 <th className="p-2">Chest (cm)</th>
                 <th className="p-2">Length (cm)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#3E452B]/10 font-display">
+            <tbody className="divide-y divide-[#132238]/10 font-display">
               <tr><td className="p-2 font-bold">S</td><td>56</td><td>68</td></tr>
               <tr><td className="p-2 font-bold">M</td><td>59</td><td>71</td></tr>
               <tr><td className="p-2 font-bold">L</td><td>62</td><td>74</td></tr>

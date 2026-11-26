@@ -98,13 +98,13 @@ export function DiscountsPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-black text-[#3E452B]">خصومات الكميات (Tiered Discounts)</h1>
+      <h1 className="text-2xl font-black text-[#132238]">خصومات الكميات (Tiered Discounts)</h1>
 
-      <div className="space-y-4 rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 shadow-sm">
+      <div className="space-y-4 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 shadow-xs">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="text-base font-extrabold">القواعد العامة لكل المنتجات</h2>
-            <p className="text-xs text-[#3E452B]/75">
+            <p className="text-xs text-[#132238]/75">
               تطبق على أي منتج لا يمتلك شرائح خاصة به. الشريحة الأعلى فقط هي التي تُطبق.
             </p>
           </div>
@@ -118,13 +118,13 @@ export function DiscountsPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 shadow-sm">
+        <div className="rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 shadow-xs">
           <h2 className="mb-3 text-base font-extrabold">محاكي الأسعار المباشر</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <select
               value={simProductId}
               onChange={(e) => setSimProductId(e.target.value)}
-              className="min-h-10 rounded-xl border border-[#3E452B]/20 bg-[#F5F2E8] px-3 text-sm font-bold"
+              className="min-h-10 rounded-xl border border-[#132238]/20 bg-[#F4F2EC] px-3 text-sm font-bold"
             >
               {(productsQuery.data ?? []).map((p) => (
                 <option key={p.id} value={p.id}>
@@ -138,20 +138,20 @@ export function DiscountsPage() {
               max={10}
               value={simQty}
               onChange={(e) => setSimQty(Math.max(1, Number(e.target.value) || 1))}
-              className="min-h-10 rounded-xl border border-[#3E452B]/20 bg-[#F5F2E8] px-3 font-display text-sm font-bold"
+              className="min-h-10 rounded-xl border border-[#132238]/20 bg-[#F4F2EC] px-3 font-display text-sm font-bold"
             />
           </div>
           {simResult && (
-            <div className="mt-4 space-y-1.5 rounded-xl bg-[#F5F2E8] p-4 text-sm font-bold">
+            <div className="mt-4 space-y-1.5 rounded-xl bg-[#ECE9E0] p-4 text-sm font-bold">
               <div className="flex justify-between">
                 <span>الأصلي:</span>
                 <span className="font-display">{formatEGP(simResult.subtotalOriginal, 'ar')}</span>
               </div>
-              <div className="flex justify-between text-[#F47B20]">
+              <div className="flex justify-between text-[#FF6B1A]">
                 <span>الخصم:</span>
                 <span className="font-display">-{formatEGP(simResult.discountTotal, 'ar')}</span>
               </div>
-              <div className="flex justify-between border-t border-[#3E452B]/15 pt-2 text-base font-extrabold">
+              <div className="flex justify-between border-t border-[#132238]/15 pt-2 text-base font-extrabold">
                 <span>النهائي:</span>
                 <span className="font-display">{formatEGP(simResult.subtotalAfterDiscount, 'ar')}</span>
               </div>
@@ -159,9 +159,9 @@ export function DiscountsPage() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 shadow-sm">
+        <div className="rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 shadow-xs">
           <h2 className="mb-3 text-base font-extrabold">منتجات بشرائح خصم خاصة</h2>
-          <p className="mb-3 text-xs text-[#3E452B]/75">
+          <p className="mb-3 text-xs text-[#132238]/75">
             هذه المنتجات تستخدم قواعدها الخاصة بدلاً من القواعد العامة.
           </p>
           <div className="space-y-2">
@@ -169,14 +169,14 @@ export function DiscountsPage() {
               <Link
                 key={p.id}
                 to={`/admin/products/${p.id}`}
-                className="flex items-center justify-between rounded-xl bg-[#F5F2E8] px-3.5 py-2.5 text-sm font-bold hover:bg-[#F47B20]/15"
+                className="flex items-center justify-between rounded-xl bg-[#ECE9E0] px-3.5 py-2.5 text-sm font-bold hover:bg-[#FF6B1A]/15"
               >
                 <span>{p.title_ar}</span>
-                <span className="text-xs text-[#F47B20] underline">تعديل</span>
+                <span className="text-xs text-[#FF6B1A] underline">تعديل</span>
               </Link>
             ))}
             {productsWithOverrides.length === 0 && (
-              <p className="text-xs text-[#3E452B]/65">كل المنتجات تتبع القواعد العامة حالياً.</p>
+              <p className="text-xs text-[#132238]/65">كل المنتجات تتبع القواعد العامة حالياً.</p>
             )}
           </div>
         </div>

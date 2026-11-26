@@ -29,17 +29,17 @@ export function CartLine({
   const title = lang === 'ar' ? item.snapshot.titleAr : item.snapshot.titleEn || item.snapshot.titleAr;
 
   return (
-    <div className="flex gap-3 rounded-2xl border border-[#3E452B]/15 bg-[#F5F2E8] p-3 text-[#3E452B]">
+    <div className="flex gap-3 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-3 text-[#132238] shadow-2xs">
       <img
         src={item.snapshot.imageUrl ?? ''}
         alt={title}
-        className="h-24 w-20 shrink-0 rounded-xl bg-[#D2CCB8] object-cover"
+        className="h-24 w-20 shrink-0 rounded-xl bg-[#ECE9E0] object-cover"
       />
       <div className="flex min-w-0 flex-1 flex-col justify-between gap-2">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
             <h4 className="truncate text-sm font-extrabold">{title}</h4>
-            <p className="mt-0.5 text-xs text-[#3E452B]/70">
+            <p className="mt-0.5 text-xs text-[#132238]/70">
               {item.snapshot.colorName} • {item.snapshot.size}
             </p>
             {isStale && (
@@ -50,7 +50,7 @@ export function CartLine({
             type="button"
             onClick={onRemove}
             aria-label={t('cart.remove')}
-            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[#3E452B]/60 hover:bg-rose-100 hover:text-rose-700"
+            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[#132238]/60 hover:bg-rose-100 hover:text-rose-700"
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -70,7 +70,7 @@ export function CartLine({
                   {formatEGP(pricedLine.lineTotal, lang)}
                 </span>
                 {pricedLine.lineDiscount > 0 && (
-                  <span className="font-display text-xs text-[#3E452B]/50 line-through tabular-nums">
+                  <span className="font-display text-xs text-[#132238]/50 line-through tabular-nums">
                     {formatEGP(pricedLine.lineOriginal, lang)}
                   </span>
                 )}

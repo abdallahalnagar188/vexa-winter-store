@@ -13,11 +13,11 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="aspect-4/5 overflow-hidden rounded-2xl border border-[#3E452B]/15 bg-[#D2CCB8] shadow-md">
+      <div className="aspect-4/5 overflow-hidden rounded-2xl border border-[#132238]/12 bg-[#ECE9E0] shadow-md">
         {current ? (
           <img src={current} alt={title} className="h-full w-full object-cover" />
         ) : (
-          <div className="flex h-full items-center justify-center font-display font-bold text-[#3E452B]/50">
+          <div className="flex h-full items-center justify-center font-display font-bold text-[#132238]/50">
             VEXA
           </div>
         )}
@@ -33,7 +33,7 @@ export function ProductGallery({ images, title }: ProductGalleryProps) {
               className={cn(
                 'h-20 w-16 shrink-0 cursor-pointer overflow-hidden rounded-xl border-2 transition-all',
                 idx === activeIdx
-                  ? 'border-[#F47B20] ring-2 ring-[#F47B20]/45'
+                  ? 'border-[#FF6B1A] ring-2 ring-[#FF6B1A]/40'
                   : 'border-transparent opacity-75 hover:opacity-100',
               )}
             >

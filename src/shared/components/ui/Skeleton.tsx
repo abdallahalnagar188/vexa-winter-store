@@ -5,5 +5,5 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ className }: SkeletonProps) {
-  return <div className={cn('animate-pulse rounded-xl bg-[#3E452B]/15', className)} />;
+  return <div className={cn('animate-pulse rounded-xl bg-[#132238]/12', className)} />;
 }

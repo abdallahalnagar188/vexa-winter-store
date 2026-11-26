@@ -10,8 +10,8 @@ export function AdminLayout() {
   useAdminOrdersRealtime(true);
 
   return (
-    <div dir="rtl" className="flex min-h-screen bg-[#3E452B] text-[#3E452B]">
-      <div className="hidden shrink-0 border-e border-[#C5BFA8]/20 lg:block">
+    <div dir="rtl" className="flex min-h-screen bg-[#132238] text-[#132238]">
+      <div className="hidden shrink-0 border-e border-[#F4F2EC]/15 lg:block">
         <Sidebar />
       </div>
 
@@ -32,13 +32,13 @@ export function AdminLayout() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileMenuOpen(false)}
-              className="flex-1 bg-[#2F3520]/60 backdrop-blur-xs"
+              className="flex-1 bg-[#0C1626]/65 backdrop-blur-xs"
             />
           </div>
         )}
       </AnimatePresence>
 
-      <div className="flex min-w-0 flex-1 flex-col bg-[#C5BFA8]">
+      <div className="flex min-w-0 flex-1 flex-col bg-[#F4F2EC]">
         <TopBar onOpenMenu={() => setMobileMenuOpen(true)} />
         <main className="flex-1 p-4 sm:p-6">
           <Outlet />

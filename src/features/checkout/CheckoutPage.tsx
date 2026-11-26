@@ -151,15 +151,14 @@ export function CheckoutPage() {
 
   return (
     <PageTransition className="mx-auto max-w-6xl px-4 pb-28 pt-8 sm:px-6 lg:pb-12">
-      <h1 className="text-2xl font-black text-[#3E452B] sm:text-3xl">{t('checkout.title')}</h1>
-      <p className="mt-1 text-sm text-[#3E452B]/80">{t('checkout.subtitle')}</p>
+      <h1 className="text-2xl font-black text-[#132238] sm:text-3xl">{t('checkout.title')}</h1>
+      <p className="mt-1 text-sm text-[#132238]/75">{t('checkout.subtitle')}</p>
 
-      {/* Mobile collapsible order summary */}
       <div className="mt-5 lg:hidden">
         <button
           type="button"
           onClick={() => setMobileSummaryOpen((v) => !v)}
-          className="flex w-full items-center justify-between rounded-2xl border border-[#3E452B]/15 bg-[#EAE6D7] px-4 py-3 text-sm font-extrabold text-[#3E452B]"
+          className="flex w-full items-center justify-between rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] px-4 py-3 text-sm font-extrabold text-[#132238]"
         >
           <span>{t('checkout.summary')}</span>
           <span className="flex items-center gap-2 font-display">
@@ -185,7 +184,7 @@ export function CheckoutPage() {
         <form
           id="checkout-form"
           onSubmit={handleSubmit(onSubmit)}
-          className="space-y-4 rounded-3xl border border-[#3E452B]/15 bg-[#EAE6D7] p-5 text-[#3E452B] shadow-xl sm:p-7 lg:col-span-7"
+          className="space-y-4 rounded-3xl border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-xl sm:p-7 lg:col-span-7"
         >
           <input type="text" tabIndex={-1} autoComplete="off" className="hidden" {...register('website')} />
 
@@ -228,14 +227,14 @@ export function CheckoutPage() {
           />
 
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="address_details" className="text-sm font-bold text-[#3E452B]">
+            <label htmlFor="address_details" className="text-sm font-bold text-[#132238]">
               {t('checkout.address')}
             </label>
             <textarea
               id="address_details"
               rows={3}
               {...register('address_details')}
-              className="w-full rounded-xl border border-[#3E452B]/25 bg-[#F5F2E8] p-3 text-sm text-[#3E452B] focus:border-[#3E452B] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#F47B20]/60"
+              className="w-full rounded-xl border border-[#132238]/20 bg-[#FFFFFF] p-3 text-sm text-[#132238] focus:border-[#132238] focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/50"
             />
             {errors.address_details?.message && (
               <p className="text-xs font-semibold text-rose-700">
@@ -246,14 +245,14 @@ export function CheckoutPage() {
 
           <Input label={t('checkout.notes')} {...register('notes')} />
 
-          <div className="rounded-2xl border border-[#3E452B]/20 bg-[#F5F2E8] p-4">
+          <div className="rounded-2xl border border-[#132238]/15 bg-[#ECE9E0] p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#3E452B] text-[#F47B20]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#132238] text-[#FF6B1A]">
                 <Banknote className="h-5 w-5" />
               </div>
               <div>
                 <p className="text-sm font-extrabold">{t('checkout.codLabel')}</p>
-                <p className="text-xs text-[#3E452B]/75">{t('checkout.codSub')}</p>
+                <p className="text-xs text-[#132238]/75">{t('checkout.codSub')}</p>
               </div>
             </div>
           </div>
@@ -282,12 +281,11 @@ export function CheckoutPage() {
         </div>
       </div>
 
-      {/* Mobile sticky bottom checkout bar */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#3E452B]/15 bg-[#EAE6D7]/95 p-3 backdrop-blur-md lg:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-[#132238]/15 bg-[#FFFFFF]/95 p-3 backdrop-blur-md lg:hidden">
         <div className="mx-auto flex max-w-lg items-center justify-between gap-3">
           <div>
-            <p className="text-[11px] font-bold text-[#3E452B]/70">{t('checkout.totalCod')}</p>
-            <p className="font-display text-base font-extrabold text-[#3E452B] tabular-nums">
+            <p className="text-[11px] font-bold text-[#132238]/70">{t('checkout.totalCod')}</p>
+            <p className="font-display text-base font-extrabold text-[#132238] tabular-nums">
               {priced.totalCod !== null
                 ? formatEGP(priced.totalCod, lang)
                 : formatEGP(priced.subtotalAfterDiscount, lang)}

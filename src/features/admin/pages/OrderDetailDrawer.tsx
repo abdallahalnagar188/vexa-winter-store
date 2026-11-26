@@ -68,17 +68,17 @@ export function OrderDetailDrawer({
 
   return (
     <Drawer open={Boolean(order)} onClose={onClose} ariaLabel={order.order_ref}>
-      <div className="flex items-center justify-between border-b border-[#3E452B]/15 px-5 py-4">
+      <div className="flex items-center justify-between border-b border-[#132238]/12 bg-[#FFFFFF] px-5 py-4">
         <div>
           <h2 className="font-display text-lg font-extrabold">{order.order_ref}</h2>
-          <p className="text-xs text-[#3E452B]/70">{formatDate(order.created_at, 'ar')}</p>
+          <p className="text-xs text-[#132238]/70">{formatDate(order.created_at, 'ar')}</p>
         </div>
         <div className="flex items-center gap-2">
           <StatusBadge status={order.status} />
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-xl hover:bg-[#3E452B]/10"
+            className="flex h-9 w-9 items-center justify-center rounded-xl hover:bg-[#132238]/10"
           >
             <X className="h-5 w-5" />
           </button>
@@ -115,18 +115,18 @@ export function OrderDetailDrawer({
           </div>
         </div>
 
-        <div className="space-y-1.5 rounded-2xl bg-[#F5F2E8] p-4">
+        <div className="space-y-1.5 rounded-2xl border border-[#132238]/10 bg-[#FFFFFF] p-4">
           <p className="font-extrabold">{order.customer_name}</p>
           <p className="font-display text-xs">{order.phone}</p>
           {order.phone_secondary && <p className="font-display text-xs">{order.phone_secondary}</p>}
           <p className="pt-1 text-xs font-bold">
             {order.governorate_name} — {order.city_area}
           </p>
-          <p className="text-xs text-[#3E452B]/80">{order.address_details}</p>
+          <p className="text-xs text-[#132238]/80">{order.address_details}</p>
           {order.notes && <p className="text-xs text-amber-900">ملاحظة العميل: {order.notes}</p>}
         </div>
 
-        <div className="space-y-2 rounded-2xl bg-[#F5F2E8] p-4">
+        <div className="space-y-2 rounded-2xl border border-[#132238]/10 bg-[#FFFFFF] p-4">
           <p className="font-extrabold">القطع المطلوبة</p>
           {(order.order_items ?? []).map((item) => (
             <div key={item.id} className="flex justify-between gap-2 text-xs">
@@ -136,13 +136,13 @@ export function OrderDetailDrawer({
               <span className="font-display font-bold">{formatEGP(item.line_total, 'ar')}</span>
             </div>
           ))}
-          <div className="space-y-1 border-t border-[#3E452B]/15 pt-2 text-xs">
+          <div className="space-y-1 border-t border-[#132238]/12 pt-2 text-xs">
             <div className="flex justify-between">
               <span>قبل الخصم:</span>
               <span className="font-display">{formatEGP(order.subtotal_original, 'ar')}</span>
             </div>
             {order.discount_total > 0 && (
-              <div className="flex justify-between text-[#F47B20]">
+              <div className="flex justify-between text-[#FF6B1A]">
                 <span>خصم الكميات:</span>
                 <span className="font-display">-{formatEGP(order.discount_total, 'ar')}</span>
               </div>
@@ -159,7 +159,7 @@ export function OrderDetailDrawer({
         </div>
 
         {nextStatuses.length > 0 && (
-          <div className="space-y-3 rounded-2xl bg-[#F5F2E8] p-4">
+          <div className="space-y-3 rounded-2xl border border-[#132238]/10 bg-[#FFFFFF] p-4">
             <p className="font-extrabold">تغيير حالة الطلب</p>
             {(nextStatuses.includes('cancelled') || nextStatuses.includes('returned')) && (
               <label className="flex items-center gap-2 text-xs font-bold">
@@ -167,7 +167,7 @@ export function OrderDetailDrawer({
                   type="checkbox"
                   checked={restock}
                   onChange={(e) => setRestock(e.target.checked)}
-                  className="h-4 w-4 accent-[#3E452B]"
+                  className="h-4 w-4 accent-[#132238]"
                 />
                 إرجاع القطع إلى المخزون عند الإلغاء أو الاسترجاع
               </label>
@@ -195,7 +195,7 @@ export function OrderDetailDrawer({
             value={internalNotes}
             onChange={(e) => setInternalNotes(e.target.value)}
             onBlur={handleNotesBlur}
-            className="w-full rounded-xl border border-[#3E452B]/20 bg-[#F5F2E8] p-2.5 text-xs"
+            className="w-full rounded-xl border border-[#132238]/20 bg-[#FFFFFF] p-2.5 text-xs"
           />
         </div>
 
@@ -203,7 +203,7 @@ export function OrderDetailDrawer({
           <div className="space-y-1.5 text-xs">
             <p className="font-extrabold">سجل الحالات</p>
             {order.order_status_history?.map((h) => (
-              <div key={h.id} className="flex justify-between text-[#3E452B]/75">
+              <div key={h.id} className="flex justify-between text-[#132238]/75">
                 <span>
                   {h.from_status ? `${h.from_status} → ` : ''}
                   {h.to_status}

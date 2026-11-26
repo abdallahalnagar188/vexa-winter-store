@@ -36,7 +36,7 @@ export function TierEditor({ tiers, onChange }: TierEditorProps) {
       {tiers.map((row, idx) => (
         <div
           key={idx}
-          className="grid grid-cols-2 items-center gap-2 rounded-xl border border-[#3E452B]/15 bg-[#F5F2E8] p-3 sm:grid-cols-5"
+          className="grid grid-cols-2 items-center gap-2 rounded-xl border border-[#132238]/15 bg-[#F4F2EC] p-3 sm:grid-cols-5"
         >
           <div>
             <label className="block text-[11px] font-bold">الحد الأدنى (قطعة)</label>
@@ -47,7 +47,7 @@ export function TierEditor({ tiers, onChange }: TierEditorProps) {
               onChange={(e) =>
                 updateRow(idx, { min_qty: Math.max(2, Number(e.target.value) || 2) })
               }
-              className="mt-1 w-full rounded-lg border border-[#3E452B]/20 bg-white px-2.5 py-1.5 font-display text-sm font-bold"
+              className="mt-1 w-full rounded-lg border border-[#132238]/20 bg-white px-2.5 py-1.5 font-display text-sm font-bold"
             />
           </div>
           <div>
@@ -57,7 +57,7 @@ export function TierEditor({ tiers, onChange }: TierEditorProps) {
               onChange={(e) =>
                 updateRow(idx, { discount_type: e.target.value as DiscountType })
               }
-              className="mt-1 w-full rounded-lg border border-[#3E452B]/20 bg-white px-2 py-1.5 text-sm font-bold"
+              className="mt-1 w-full rounded-lg border border-[#132238]/20 bg-white px-2 py-1.5 text-sm font-bold"
             >
               <option value="percent">نسبة %</option>
               <option value="fixed">مبلغ ثابت (ج.م)</option>
@@ -73,7 +73,7 @@ export function TierEditor({ tiers, onChange }: TierEditorProps) {
               onChange={(e) =>
                 updateRow(idx, { value: Math.max(1, Number(e.target.value) || 1) })
               }
-              className="mt-1 w-full rounded-lg border border-[#3E452B]/20 bg-white px-2.5 py-1.5 font-display text-sm font-bold"
+              className="mt-1 w-full rounded-lg border border-[#132238]/20 bg-white px-2.5 py-1.5 font-display text-sm font-bold"
             />
           </div>
           <label className="flex items-center gap-2 text-xs font-bold">
@@ -81,7 +81,7 @@ export function TierEditor({ tiers, onChange }: TierEditorProps) {
               type="checkbox"
               checked={row.is_active}
               onChange={(e) => updateRow(idx, { is_active: e.target.checked })}
-              className="h-4 w-4 accent-[#3E452B]"
+              className="h-4 w-4 accent-[#132238]"
             />
             مفعل
           </label>
