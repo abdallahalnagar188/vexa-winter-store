@@ -96,11 +96,10 @@ export function OrdersPage() {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`min-h-10 cursor-pointer rounded-xl px-3.5 text-xs font-extrabold transition-colors ${
-                active
-                  ? 'bg-[#F47B20] text-white shadow-xs'
-                  : 'border border-[#3E452B]/15 bg-[#EAE6D7] text-[#3E452B] hover:bg-[#3E452B] hover:text-[#EAE6D7]'
-              }`}
+              className={`min-h-10 cursor-pointer rounded-xl px-3.5 text-xs font-extrabold transition-colors ${active
+                ? 'bg-[#F47B20] text-white shadow-xs'
+                : 'border border-[#3E452B]/15 bg-[#EAE6D7] text-[#3E452B] hover:bg-[#3E452B] hover:text-[#EAE6D7]'
+                }`}
             >
               {tab === 'all' ? 'الكل' : ORDER_STATUS_META[tab].labelAr} ({count})
             </button>
