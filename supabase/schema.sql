@@ -641,3 +641,111 @@ insert into public.discount_tiers (product_id, min_qty, discount_type, value, is
  ('20000000-0000-4000-8000-000000000006', 2, 'fixed', 250, true),
  ('20000000-0000-4000-8000-000000000006', 3, 'percent', 20, true)
 on conflict do nothing;
+
+-- ============ HOMEPAGE CMS TABLES ============
+create table if not exists public.homepage_hero (
+  id uuid primary key default gen_random_uuid(),
+  badge_ar text not null,
+  badge_en text not null,
+  title_ar text not null,
+  title_en text not null,
+  subtitle_ar text not null,
+  subtitle_en text not null,
+  primary_cta_ar text not null,
+  primary_cta_en text not null,
+  primary_cta_link text not null default '/shop',
+  secondary_cta_ar text not null,
+  secondary_cta_en text not null,
+  secondary_cta_link text not null default '/track',
+  hero_image_url text not null,
+  floating_tag_title_ar text not null,
+  floating_tag_title_en text not null,
+  floating_tag_badge_ar text not null,
+  floating_tag_badge_en text not null,
+  stat_1_value text not null,
+  stat_1_label_ar text not null,
+  stat_1_label_en text not null,
+  stat_2_value text not null,
+  stat_2_label_ar text not null,
+  stat_2_label_en text not null,
+  stat_3_value text not null,
+  stat_3_label_ar text not null,
+  stat_3_label_en text not null,
+  display_order int not null default 0,
+  is_active boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+drop trigger if exists homepage_hero_updated on public.homepage_hero;
+create trigger homepage_hero_updated before update on public.homepage_hero
+  for each row execute function public.set_updated_at();
+
+create table if not exists public.homepage_marquee_items (
+  id uuid primary key default gen_random_uuid(),
+  text_ar text not null,
+  text_en text not null,
+  display_order int not null default 0,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.homepage_promo_banner (
+  id uuid primary key default gen_random_uuid(),
+  badge_ar text not null,
+  badge_en text not null,
+  title_ar text not null,
+  title_en text not null,
+  subtitle_ar text not null,
+  subtitle_en text not null,
+  cta_ar text not null,
+  cta_en text not null,
+  cta_link text not null default '/shop',
+  background_image_url text not null,
+  overlay_opacity numeric(3,2) not null default 0.75 check (overlay_opacity >= 0 and overlay_opacity <= 1),
+  pill_tags_ar text[] not null default '{}',
+  pill_tags_en text[] not null default '{}',
+  is_active boolean not null default true,
+  updated_at timestamptz not null default now()
+);
+
+drop trigger if exists homepage_promo_banner_updated on public.homepage_promo_banner;
+create trigger homepage_promo_banner_updated before update on public.homepage_promo_banner
+  for each row execute function public.set_updated_at();
+
+create table if not exists public.homepage_category_cards (
+  id uuid primary key default gen_random_uuid(),
+  category_slug text not null,
+  title_ar text not null,
+  title_en text not null,
+  subtitle_ar text not null default '',
+  subtitle_en text not null default '',
+  cover_image_url text not null,
+  display_order int not null default 0,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+
+alter table public.homepage_hero enable row level security;
+alter table public.homepage_marquee_items enable row level security;
+alter table public.homepage_promo_banner enable row level security;
+alter table public.homepage_category_cards enable row level security;
+
+drop policy if exists "hero_public_read" on public.homepage_hero;
+create policy "hero_public_read" on public.homepage_hero for select using (is_active or public.is_admin());
+drop policy if exists "hero_admin_write" on public.homepage_hero;
+create policy "hero_admin_write" on public.homepage_hero for all using (public.is_admin()) with check (public.is_admin());
+
+drop policy if exists "marquee_public_read" on public.homepage_marquee_items;
+create policy "marquee_public_read" on public.homepage_marquee_items for select using (is_active or public.is_admin());
+drop policy if exists "marquee_admin_write" on public.homepage_marquee_items;
+create policy "marquee_admin_write" on public.homepage_marquee_items for all using (public.is_admin()) with check (public.is_admin());
+
+drop policy if exists "banner_public_read" on public.homepage_promo_banner;
+create policy "banner_public_read" on public.homepage_promo_banner for select using (is_active or public.is_admin());
+drop policy if exists "banner_admin_write" on public.homepage_promo_banner;
+create policy "banner_admin_write" on public.homepage_promo_banner for all using (public.is_admin()) with check (public.is_admin());
+
+drop policy if exists "cat_cards_public_read" on public.homepage_category_cards;
+create policy "cat_cards_public_read" on public.homepage_category_cards for select using (is_active or public.is_admin());
+drop policy if exists "cat_cards_admin_write" on public.homepage_category_cards;
+create policy "cat_cards_admin_write" on public.homepage_category_cards for all using (public.is_admin()) with check (public.is_admin());

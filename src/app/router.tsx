@@ -39,6 +39,9 @@ const OrdersPage = lazy(() =>
 const SettingsPage = lazy(() =>
   import('@/features/admin/pages/SettingsPage').then((m) => ({ default: m.SettingsPage })),
 );
+const HomepageCmsPage = lazy(() =>
+  import('@/features/admin/pages/HomepageCmsPage').then((m) => ({ default: m.HomepageCmsPage })),
+);
 
 function LazyFallback() {
   return (
@@ -87,6 +90,7 @@ const router = createBrowserRouter([
       { path: 'discounts', element: <DiscountsPage /> },
       { path: 'shipping', element: <ShippingPage /> },
       { path: 'orders', element: <OrdersPage /> },
+      { path: 'homepage', element: <HomepageCmsPage /> },
       { path: 'settings', element: <SettingsPage /> },
     ],
   },

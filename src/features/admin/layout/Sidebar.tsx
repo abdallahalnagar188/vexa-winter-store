@@ -1,6 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
+  LayoutTemplate,
   Package,
   Percent,
   Settings,
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
   { to: '/admin', label: 'نظرة عامة', icon: LayoutDashboard, end: true },
   { to: '/admin/orders', label: 'الطلبات', icon: ShoppingCart, badge: true },
   { to: '/admin/products', label: 'المنتجات', icon: Package },
+  { to: '/admin/homepage', label: 'إدارة الرئيسية', icon: LayoutTemplate },
   { to: '/admin/discounts', label: 'خصومات الكميات', icon: Percent },
   { to: '/admin/shipping', label: 'شحن المحافظات', icon: Truck },
   { to: '/admin/settings', label: 'الإعدادات', icon: Settings },
