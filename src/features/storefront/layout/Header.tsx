@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useCartStore } from '@/features/cart/cartStore';
 import { useCategories } from '@/features/storefront/api/useCategories';
 import { useDir } from '@/shared/hooks/useDir';
+import { VexaLogo } from '@/shared/components/ui/VexaLogo';
 import { LanguageToggle } from './LanguageToggle';
 
 export function Header() {
@@ -72,14 +73,7 @@ export function Header() {
             className="relative z-10 flex h-dvh w-72 max-w-[82vw] flex-col overflow-y-auto bg-[#132238] p-5 text-sm font-bold text-[#F4F2EC] shadow-2xl"
           >
             <div className="mb-4 flex items-center justify-between border-b border-[#F4F2EC]/15 pb-3.5">
-              <div className="flex items-center gap-2">
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-[2px] bg-[#FF6B1A] font-display text-xs font-black text-white">
-                  V
-                </span>
-                <span className="font-display text-xl font-black text-[#F4F2EC]">
-                  {t('brand')}
-                </span>
-              </div>
+              <VexaLogo variant="dark-bg" className="h-7 w-auto" />
               <button
                 type="button"
                 onClick={() => setMobileOpen(false)}
@@ -182,14 +176,8 @@ export function Header() {
               <Menu className="h-5 w-5" />
             </button>
 
-            <Link
-              to="/"
-              className="flex items-center gap-2 font-display text-2xl font-extrabold tracking-tight text-[#F4F2EC]"
-            >
-              <span className="inline-flex h-8 w-8 items-center justify-center rounded-[2px] bg-[#FF6B1A] text-sm font-black text-white">
-                V
-              </span>
-              <span>{t('brand')}</span>
+            <Link to="/" aria-label="VEXA Home" className="flex items-center py-1">
+              <VexaLogo variant="dark-bg" className="h-7 w-auto sm:h-8" />
             </Link>
           </div>
 

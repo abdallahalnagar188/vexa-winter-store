@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { sanitizeAdminRedirect } from '@/shared/validation/url';
 import { Input } from '@/shared/components/ui/Input';
 import { Button } from '@/shared/components/ui/Button';
+import { VexaLogo } from '@/shared/components/ui/VexaLogo';
 import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
 
 export function AdminLoginPage() {
@@ -41,14 +42,14 @@ export function AdminLoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#F4F2EC] p-4">
-      <div className="w-full max-w-md rounded-3xl border border-[#132238]/12 bg-[#FFFFFF] p-6 text-[#132238] shadow-2xl sm:p-8">
-        <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#132238] text-[#FF6B1A]">
-            <Lock className="h-5 w-5" />
-          </div>
+      <div className="w-full max-w-md rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-6 text-[#132238] shadow-xl sm:p-8">
+        <div className="mb-6 flex items-center justify-between gap-3 border-b border-[#132238]/10 pb-4">
           <div>
-            <h1 className="text-xl font-black">لوحة إدارة VEXA</h1>
-            <p className="text-xs text-[#132238]/70">دخول المشرفين فقط</p>
+            <VexaLogo variant="light-bg" className="h-8 w-auto" />
+            <p className="mt-1.5 text-xs font-semibold text-[#132238]/70">دخول المشرفين فقط</p>
+          </div>
+          <div className="flex h-10 w-10 items-center justify-center rounded-[2px] bg-[#132238] text-[#FF6B1A]">
+            <Lock className="h-4 w-4" />
           </div>
         </div>
 

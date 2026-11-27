@@ -4,6 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import type { OrderRecord } from '@/shared/types/domain';
 import { formatDate, formatEGP } from '@/lib/format';
 import { Button } from '@/shared/components/ui/Button';
+import { VexaLogo } from '@/shared/components/ui/VexaLogo';
 
 type PaperFormat = 'a6' | 'a4';
 
@@ -100,9 +101,10 @@ export function WaybillPrintModal({ order, whatsappNumber, onClose }: WaybillPri
             {/* Header */}
             <div className="flex items-start justify-between gap-3 border-b-[1.5px] border-black pb-2.5">
               <div>
-                <p className={`font-display font-black tracking-tight ${isA6 ? 'text-xl' : 'text-3xl'}`}>
-                  VEXA
-                </p>
+                <VexaLogo
+                  variant="monochrome"
+                  className={isA6 ? 'mb-1 h-6 w-auto' : 'mb-1.5 h-8 w-auto'}
+                />
                 <p className="font-bold">متجر فيكسا للأزياء الشتوية</p>
                 {whatsappNumber && (
                   <p className="font-display font-bold" dir="ltr">

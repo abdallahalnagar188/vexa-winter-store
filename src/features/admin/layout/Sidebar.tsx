@@ -10,6 +10,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { useAdminOrders } from '@/features/admin/api/useAdminOrders';
+import { VexaLogo } from '@/shared/components/ui/VexaLogo';
 import { cn } from '@/shared/components/ui/cn';
 
 const NAV_ITEMS = [
@@ -27,14 +28,9 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <aside className="flex h-full w-64 flex-col bg-[#132238] p-4 text-[#F4F2EC]">
-      <div className="mb-6 flex items-center gap-2.5 px-2">
-        <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[#FF6B1A] font-display text-sm font-black text-white">
-          V
-        </span>
-        <div>
-          <p className="font-display text-lg font-extrabold leading-none">VEXA Admin</p>
-          <p className="text-[11px] text-[#ECE9E0]/70">إدارة المتجر</p>
-        </div>
+      <div className="mb-6 flex flex-col gap-1 px-2">
+        <VexaLogo variant="dark-bg" className="h-7 w-auto self-start" />
+        <p className="text-[11px] font-semibold text-[#ECE9E0]/70">إدارة المتجر</p>
       </div>
 
       <nav className="flex-1 space-y-1.5">

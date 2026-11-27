@@ -5,7 +5,6 @@ import {
   Banknote,
   Layers,
   RefreshCw,
-  ShieldCheck,
   Tag,
   Truck,
 } from 'lucide-react';
@@ -455,10 +454,6 @@ export function HomePage() {
               <p className="mt-0.5 text-xs text-[#132238]/75">{t('trust.returnsSub')}</p>
             </div>
           </div>
-        </div>
-        <div className="hidden items-center justify-center gap-2 pb-6 text-xs font-semibold text-[#132238]/70 sm:flex">
-          <ShieldCheck className="h-4 w-4 text-[#FF6B1A]" />
-          <span>{t('footer.policies')}</span>
         </div>
       </section>
     </PageTransition>
