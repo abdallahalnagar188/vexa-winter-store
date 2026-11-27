@@ -7,6 +7,7 @@ import { resolveTiers, type PricingTier } from '@/shared/pricing/tiers';
 import { useCartStore } from '@/features/cart/cartStore';
 import { useDir } from '@/shared/hooks/useDir';
 import { formatEGP } from '@/lib/format';
+import { trackStorefrontEvent } from '@/lib/storefrontTracker';
 import { AnimatedProductCard } from '@/shared/components/motion/AnimatedProductCard';
 import { AnimatedDiscountBadge } from '@/shared/components/motion/AnimatedDiscountBadge';
 import { cn } from '@/shared/components/ui/cn';
@@ -130,6 +131,9 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
         size: variant.size,
       }),
     );
+    trackStorefrontEvent('add_to_cart', {
+      productId: product.id,
+    });
   };
 
   return (

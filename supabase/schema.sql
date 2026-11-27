@@ -108,6 +108,16 @@ create index if not exists product_variants_product_idx on public.product_varian
 create index if not exists product_images_product_idx on public.product_images (product_id);
 create index if not exists products_category_idx on public.products (category_id);
 
+create table if not exists public.storefront_events (
+  id uuid primary key default gen_random_uuid(),
+  session_id text not null check (char_length(session_id) between 6 and 100),
+  event_type text not null check (event_type in ('page_view', 'product_view', 'add_to_cart')),
+  path text,
+  product_id uuid references public.products(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+create index if not exists storefront_events_created_type_idx on public.storefront_events (created_at, event_type);
+
 -- ============ SHIPPING (27 GOVERNORATES) ============
 create table if not exists public.governorate_shipping (
   id smallint primary key,
@@ -540,6 +550,238 @@ begin
   return v_result;
 end $$;
 
+create or replace function public.log_storefront_event(
+  p_session_id text,
+  p_event_type text,
+  p_path text default null,
+  p_product_id uuid default null
+) returns void
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_sid text := btrim(coalesce(p_session_id, ''));
+  v_type text := btrim(coalesce(p_event_type, ''));
+  v_path text := left(nullif(btrim(coalesce(p_path, '')), ''), 300);
+  v_pid uuid := null;
+begin
+  if char_length(v_sid) < 6 or char_length(v_sid) > 100 then
+    return;
+  end if;
+  if v_type not in ('page_view', 'product_view', 'add_to_cart') then
+    return;
+  end if;
+
+  if p_product_id is not null then
+    select id into v_pid from public.products where id = p_product_id limit 1;
+  end if;
+
+  insert into public.storefront_events (session_id, event_type, path, product_id)
+  values (v_sid, v_type, v_path, v_pid);
+end $$;
+
+create or replace function public.admin_get_dashboard_analytics(
+  p_start_date timestamptz,
+  p_end_date timestamptz
+) returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_start timestamptz := coalesce(p_start_date, now() - interval '7 days');
+  v_end timestamptz := coalesce(p_end_date, now());
+  v_unique_visits int := 0;
+  v_page_views int := 0;
+  v_product_views int := 0;
+  v_add_to_cart int := 0;
+  v_orders_total int := 0;
+  v_valid_orders int := 0;
+  v_delivered_rev int := 0;
+  v_shipping_pending int := 0;
+  v_delivered_cnt int := 0;
+  v_returned_cnt int := 0;
+  v_cancelled_cnt int := 0;
+  v_new_cnt int := 0;
+  v_confirmed_cnt int := 0;
+  v_shipping_cnt int := 0;
+  v_aov int := 0;
+  v_conv_rate numeric := 0;
+  v_delivery_rate numeric := 0;
+  v_return_rate numeric := 0;
+  v_top_viewed jsonb := '[]'::jsonb;
+  v_top_sold jsonb := '[]'::jsonb;
+  v_top_govs jsonb := '[]'::jsonb;
+  v_series jsonb := '[]'::jsonb;
+begin
+  if not public.is_admin() then
+    raise exception 'UNAUTHORIZED';
+  end if;
+
+  select
+    count(distinct session_id) filter (where event_type = 'page_view')::int,
+    count(*) filter (where event_type = 'page_view')::int,
+    count(*) filter (where event_type = 'product_view')::int,
+    count(*) filter (where event_type = 'add_to_cart')::int
+  into v_unique_visits, v_page_views, v_product_views, v_add_to_cart
+  from public.storefront_events
+  where created_at >= v_start and created_at <= v_end;
+
+  select
+    count(*)::int,
+    count(*) filter (where status not in ('cancelled', 'returned'))::int,
+    coalesce(sum(total_cod) filter (where status = 'delivered'), 0)::int,
+    coalesce(sum(total_cod) filter (where status = 'sent_to_shipping'), 0)::int,
+    count(*) filter (where status = 'delivered')::int,
+    count(*) filter (where status = 'returned')::int,
+    count(*) filter (where status = 'cancelled')::int,
+    count(*) filter (where status = 'new')::int,
+    count(*) filter (where status = 'confirmed')::int,
+    count(*) filter (where status = 'sent_to_shipping')::int,
+    coalesce(round(avg(total_cod) filter (where status not in ('cancelled', 'returned'))), 0)::int
+  into
+    v_orders_total, v_valid_orders, v_delivered_rev, v_shipping_pending,
+    v_delivered_cnt, v_returned_cnt, v_cancelled_cnt, v_new_cnt, v_confirmed_cnt, v_shipping_cnt, v_aov
+  from public.orders
+  where created_at >= v_start and created_at <= v_end;
+
+  v_conv_rate := case
+    when v_unique_visits > 0 then round((v_orders_total::numeric / v_unique_visits) * 100, 2)
+    else 0
+  end;
+
+  v_delivery_rate := case
+    when (v_delivered_cnt + v_returned_cnt) > 0
+      then round((v_delivered_cnt::numeric / (v_delivered_cnt + v_returned_cnt)) * 100, 1)
+    else 0
+  end;
+
+  v_return_rate := case
+    when (v_delivered_cnt + v_returned_cnt) > 0
+      then round((v_returned_cnt::numeric / (v_delivered_cnt + v_returned_cnt)) * 100, 1)
+    else 0
+  end;
+
+  select coalesce(jsonb_agg(row_to_json(t)), '[]'::jsonb)
+  into v_top_viewed
+  from (
+    select
+      e.product_id,
+      coalesce(p.title_ar, 'منتج محذوف') as title_ar,
+      p.title_en,
+      p.slug,
+      count(*)::int as views
+    from public.storefront_events e
+    left join public.products p on p.id = e.product_id
+    where e.event_type = 'product_view'
+      and e.product_id is not null
+      and e.created_at >= v_start
+      and e.created_at <= v_end
+    group by e.product_id, p.title_ar, p.title_en, p.slug
+    order by views desc
+    limit 5
+  ) t;
+
+  select coalesce(jsonb_agg(row_to_json(t)), '[]'::jsonb)
+  into v_top_sold
+  from (
+    select
+      oi.product_id,
+      oi.product_title as title_ar,
+      oi.size,
+      sum(oi.quantity)::int as units_sold,
+      sum(oi.line_total)::int as revenue
+    from public.order_items oi
+    join public.orders o on o.id = oi.order_id
+    where o.created_at >= v_start
+      and o.created_at <= v_end
+      and o.status not in ('cancelled', 'returned')
+    group by oi.product_id, oi.product_title, oi.size
+    order by units_sold desc, revenue desc
+    limit 5
+  ) t;
+
+  select coalesce(jsonb_agg(row_to_json(t)), '[]'::jsonb)
+  into v_top_govs
+  from (
+    select
+      governorate_name,
+      count(*)::int as orders_count,
+      coalesce(sum(total_cod) filter (where status not in ('cancelled', 'returned')), 0)::int as revenue
+    from public.orders
+    where created_at >= v_start and created_at <= v_end
+    group by governorate_name
+    order by orders_count desc
+    limit 5
+  ) t;
+
+  with days as (
+    select generate_series(
+      date_trunc('day', v_start at time zone 'Africa/Cairo')::date,
+      date_trunc('day', v_end at time zone 'Africa/Cairo')::date,
+      interval '1 day'
+    )::date as day_date
+  ),
+  daily_orders as (
+    select
+      (created_at at time zone 'Africa/Cairo')::date as day_date,
+      count(*)::int as orders_count,
+      coalesce(sum(total_cod) filter (where status = 'delivered'), 0)::int as delivered_revenue,
+      coalesce(sum(total_cod) filter (where status not in ('cancelled', 'returned')), 0)::int as total_revenue
+    from public.orders
+    where created_at >= v_start and created_at <= v_end
+    group by 1
+  ),
+  daily_visits as (
+    select
+      (created_at at time zone 'Africa/Cairo')::date as day_date,
+      count(distinct session_id) filter (where event_type = 'page_view')::int as unique_visits
+    from public.storefront_events
+    where created_at >= v_start and created_at <= v_end
+    group by 1
+  )
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'date', to_char(d.day_date, 'YYYY-MM-DD'),
+    'orders_count', coalesce(o.orders_count, 0),
+    'delivered_revenue', coalesce(o.delivered_revenue, 0),
+    'total_revenue', coalesce(o.total_revenue, 0),
+    'unique_visits', coalesce(v.unique_visits, 0)
+  ) order by d.day_date), '[]'::jsonb)
+  into v_series
+  from days d
+  left join daily_orders o on o.day_date = d.day_date
+  left join daily_visits v on v.day_date = d.day_date;
+
+  return jsonb_build_object(
+    'unique_visits', v_unique_visits,
+    'page_views', v_page_views,
+    'product_views', v_product_views,
+    'add_to_cart_count', v_add_to_cart,
+    'orders_count', v_orders_total,
+    'valid_orders_count', v_valid_orders,
+    'conversion_rate_pct', v_conv_rate,
+    'delivered_revenue', v_delivered_rev,
+    'shipping_pending_cod', v_shipping_pending,
+    'aov', v_aov,
+    'delivery_rate_pct', v_delivery_rate,
+    'return_rate_pct', v_return_rate,
+    'pipeline', jsonb_build_object(
+      'new', v_new_cnt,
+      'confirmed', v_confirmed_cnt,
+      'sent_to_shipping', v_shipping_cnt,
+      'delivered', v_delivered_cnt,
+      'returned', v_returned_cnt,
+      'cancelled', v_cancelled_cnt
+    ),
+    'top_viewed_products', v_top_viewed,
+    'top_selling_products', v_top_sold,
+    'top_governorates', v_top_govs,
+    'series', v_series
+  );
+end $$;
+
 create or replace function public.admin_update_order_status(
   p_order_id uuid, p_new_status text, p_note text default null, p_restock boolean default true
 ) returns void language plpgsql security definer set search_path = public, pg_temp as $$
@@ -761,7 +1003,7 @@ do $$ declare t text; begin
   foreach t in array array[
     'categories','products','product_images','product_variants',
     'discount_tiers','coupons','governorate_shipping','store_settings',
-    'orders','order_items','order_status_history','admins'
+    'orders','order_items','order_status_history','admins','storefront_events'
   ] loop
     execute format('alter table public.%I enable row level security', t);
     execute format('alter table public.%I force row level security', t);
@@ -786,16 +1028,17 @@ create policy "public read shipping" on public.governorate_shipping for select t
 drop policy if exists "public read settings" on public.store_settings;
 create policy "public read settings" on public.store_settings for select to anon, authenticated using (is_public);
 
-revoke all on public.orders, public.order_items, public.order_status_history, public.admins, public.coupons from anon;
+revoke all on public.orders, public.order_items, public.order_status_history, public.admins, public.coupons, public.storefront_events from anon;
 revoke execute on function public.create_guest_order(jsonb), public.track_order(text, text),
   public.validate_coupon(text, integer), public.admin_get_customer_risk_stats(text[]),
+  public.log_storefront_event(text, text, text, uuid), public.admin_get_dashboard_analytics(timestamptz, timestamptz),
   public.admin_update_order_status(uuid, text, text, boolean), public.admin_delete_product(uuid),
   public.admin_create_manual_order(jsonb), public.is_admin() from public, anon;
 grant execute on function public.create_guest_order(jsonb), public.track_order(text, text),
-  public.validate_coupon(text, integer) to anon, authenticated;
+  public.validate_coupon(text, integer), public.log_storefront_event(text, text, text, uuid) to anon, authenticated;
 grant execute on function public.admin_update_order_status(uuid, text, text, boolean), public.admin_delete_product(uuid),
   public.admin_create_manual_order(jsonb), public.admin_get_customer_risk_stats(text[]),
-  public.is_admin() to authenticated;
+  public.admin_get_dashboard_analytics(timestamptz, timestamptz), public.is_admin() to authenticated;
 
 -- Realtime for admin orders
 do $$ begin

@@ -17,6 +17,7 @@ import { useDir } from '@/shared/hooks/useDir';
 import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
 import { formatEGP } from '@/lib/format';
 import { trackPixelEvent } from '@/lib/analytics';
+import { trackStorefrontEvent } from '@/lib/storefrontTracker';
 import { Button } from '@/shared/components/ui/Button';
 import { Dialog } from '@/shared/components/ui/Dialog';
 import { EmptyState } from '@/shared/components/ui/EmptyState';
@@ -57,6 +58,10 @@ export function ProductPage() {
       content_name: product.title_en || product.title_ar,
       value: product.base_price,
       currency: 'EGP',
+    });
+    trackStorefrontEvent('product_view', {
+      path: `/product/${product.slug}`,
+      productId: product.id,
     });
     const firstAvailable = product.product_variants.find((v) => v.is_active && v.stock > 0);
     if (firstAvailable) {
@@ -155,6 +160,10 @@ export function ProductPage() {
       content_ids: [product.id],
       value: product.base_price * qty,
       currency: 'EGP',
+    });
+    trackStorefrontEvent('add_to_cart', {
+      path: `/product/${product.slug}`,
+      productId: product.id,
     });
     setQty(1);
     setSelectedSize(null);

@@ -1,14 +1,24 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Outlet } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
-import { useAdminOrdersRealtime } from '@/features/admin/api/useAdminOrders';
+import { useAdminOrders, useAdminOrdersRealtime } from '@/features/admin/api/useAdminOrders';
+import { useAdminNotificationStore } from '@/features/admin/store/notificationStore';
 
 export function AdminLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  useAdminOrdersRealtime(true);
+  useAdminOrdersRealtime();
+
+  const newOrdersQuery = useAdminOrders('new');
+  const seedFromOrders = useAdminNotificationStore((s) => s.seedFromOrders);
+
+  useEffect(() => {
+    if (newOrdersQuery.data) {
+      seedFromOrders(newOrdersQuery.data);
+    }
+  }, [newOrdersQuery.data, seedFromOrders]);
 
   const mobileAdminDrawer = (
     <AnimatePresence>

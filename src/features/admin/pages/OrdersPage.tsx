@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { AlertTriangle, CheckCircle2, Download, Plus, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import type { OrderStatus } from '@/shared/types/database';
@@ -97,15 +98,45 @@ function CustomerRiskBadge({ stat }: { stat?: CustomerRiskStat }) {
 
 export function OrdersPage() {
   useDocumentTitle('الطلبات - الإدارة');
-  const [activeTab, setActiveTab] = useState<OrderStatus | 'all'>('all');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlStatus = searchParams.get('status') as OrderStatus | 'all' | null;
+  const urlRef = searchParams.get('ref');
+  const urlCreate = searchParams.get('create');
+
+  const [activeTab, setActiveTab] = useState<OrderStatus | 'all'>(
+    urlStatus && TABS.includes(urlStatus) ? urlStatus : 'all',
+  );
   const [search, setSearch] = useState('');
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  const [manualOpen, setManualOpen] = useState(false);
+  const [manualOpen, setManualOpen] = useState(urlCreate === '1');
   const [printOrderId, setPrintOrderId] = useState<string | null>(null);
 
   const ordersQuery = useAdminOrders('all');
   const settingsQuery = useAdminSettings();
   const allOrders = useMemo(() => ordersQuery.data ?? [], [ordersQuery.data]);
+
+  useEffect(() => {
+    if (urlStatus && TABS.includes(urlStatus)) {
+      setActiveTab(urlStatus);
+    }
+  }, [urlStatus]);
+
+  useEffect(() => {
+    if (urlCreate === '1') {
+      setManualOpen(true);
+    }
+  }, [urlCreate]);
+
+  useEffect(() => {
+    if (!urlRef || allOrders.length === 0) return;
+    const match = allOrders.find((o) => o.order_ref.toUpperCase() === urlRef.toUpperCase());
+    if (match) {
+      setSelectedOrderId(match.id);
+      const next = new URLSearchParams(searchParams);
+      next.delete('ref');
+      setSearchParams(next, { replace: true });
+    }
+  }, [urlRef, allOrders, searchParams, setSearchParams]);
   const phonesList = useMemo(() => allOrders.map((o) => o.phone), [allOrders]);
   const riskQuery = useCustomerRiskStats(phonesList);
   const riskMap = riskQuery.data ?? {};

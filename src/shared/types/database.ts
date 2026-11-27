@@ -662,6 +662,19 @@ export interface Database {
         Args: { p_phones: string[] };
         Returns: Json;
       };
+      log_storefront_event: {
+        Args: {
+          p_session_id: string;
+          p_event_type: string;
+          p_path?: string | null;
+          p_product_id?: string | null;
+        };
+        Returns: undefined;
+      };
+      admin_get_dashboard_analytics: {
+        Args: { p_start_date: string; p_end_date: string };
+        Returns: Json;
+      };
       admin_update_order_status: {
         Args: {
           p_order_id: string;

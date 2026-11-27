@@ -2,32 +2,22 @@ import { useEffect } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import {
+  playOrderNotificationChime,
+  showDesktopOrderNotification,
+  unlockOrderAudio,
+} from '@/features/admin/utils/orderSound';
+import { useAdminNotificationStore } from '@/features/admin/store/notificationStore';
 import type { Json, OrderStatus } from '@/shared/types/database';
 import type { CustomerRiskStat, OrderRecord } from '@/shared/types/domain';
 
-function playPing() {
-  try {
-    const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(880, ctx.currentTime);
-    gain.gain.setValueAtTime(0.08, ctx.currentTime);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start();
-    osc.stop(ctx.currentTime + 0.16);
-  } catch {
-    // browser autoplay policy requires user gesture
-  }
-}
-
-export function useAdminOrdersRealtime(soundEnabled = true) {
+export function useAdminOrdersRealtime() {
   const qc = useQueryClient();
+  const pushLiveOrder = useAdminNotificationStore((s) => s.pushLiveOrder);
 
   useEffect(() => {
+    unlockOrderAudio();
+
     const channel = supabase
       .channel('admin-orders-live')
       .on(
@@ -35,10 +25,48 @@ export function useAdminOrdersRealtime(soundEnabled = true) {
         { event: '*', schema: 'public', table: 'orders' },
         (payload) => {
           void qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
+          void qc.invalidateQueries({ queryKey: ['admin', 'analytics'] });
+          void qc.invalidateQueries({ queryKey: ['admin', 'customer-risk'] });
+
           if (payload.eventType === 'INSERT') {
-            const ref = (payload.new as { order_ref?: string })?.order_ref ?? '';
-            toast.success(`طلب جديد وصل: ${ref}`);
-            if (soundEnabled) playPing();
+            const row = payload.new as {
+              id?: string;
+              order_ref?: string;
+              customer_name?: string;
+              governorate_name?: string;
+              total_cod?: number;
+              created_at?: string;
+            };
+            const orderRef = row.order_ref ?? '';
+            const customerName = row.customer_name ?? 'عميل جديد';
+            const govName = row.governorate_name ?? '';
+            const totalCod = Number(row.total_cod ?? 0);
+
+            if (row.id && orderRef) {
+              pushLiveOrder({
+                id: row.id,
+                order_ref: orderRef,
+                customer_name: customerName,
+                governorate_name: govName,
+                total_cod: totalCod,
+                created_at: row.created_at ?? new Date().toISOString(),
+              });
+            }
+
+            toast.success(`طلب جديد وصل: ${orderRef} (${totalCod} ج.م)`);
+
+            const { soundMuted, desktopNotifEnabled } = useAdminNotificationStore.getState();
+            if (!soundMuted) {
+              playOrderNotificationChime();
+            }
+            if (desktopNotifEnabled && orderRef) {
+              showDesktopOrderNotification({
+                orderRef,
+                customerName,
+                governorateName: govName,
+                totalCod,
+              });
+            }
           }
         },
       )
@@ -47,7 +75,7 @@ export function useAdminOrdersRealtime(soundEnabled = true) {
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [qc, soundEnabled]);
+  }, [qc, pushLiveOrder]);
 }
 
 export function useAdminOrders(statusFilter?: OrderStatus | 'all') {
@@ -96,6 +124,7 @@ export function useUpdateOrderStatus() {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      void qc.invalidateQueries({ queryKey: ['admin', 'analytics'] });
       void qc.invalidateQueries({ queryKey: ['admin', 'customer-risk'] });
       void qc.invalidateQueries({ queryKey: ['admin', 'products'] });
       void qc.invalidateQueries({ queryKey: ['products'] });
@@ -127,6 +156,7 @@ export interface CreateManualOrderPayload {
   city_area: string;
   address_details: string;
   notes?: string | null;
+  coupon_code?: string | null;
   initial_status: 'new' | 'confirmed';
   shipping_fee_override?: number | null;
   items: { variant_id: string; quantity: number }[];
@@ -150,6 +180,7 @@ export function useCreateManualOrder() {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      void qc.invalidateQueries({ queryKey: ['admin', 'analytics'] });
       void qc.invalidateQueries({ queryKey: ['admin', 'customer-risk'] });
       void qc.invalidateQueries({ queryKey: ['admin', 'products'] });
       void qc.invalidateQueries({ queryKey: ['products'] });

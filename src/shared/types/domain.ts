@@ -89,6 +89,55 @@ export interface CustomerRiskStat {
   cancelled_count: number;
 }
 
+export interface DashboardAnalytics {
+  unique_visits: number;
+  page_views: number;
+  product_views: number;
+  add_to_cart_count: number;
+  orders_count: number;
+  valid_orders_count: number;
+  conversion_rate_pct: number;
+  delivered_revenue: number;
+  shipping_pending_cod: number;
+  aov: number;
+  delivery_rate_pct: number;
+  return_rate_pct: number;
+  pipeline: {
+    new: number;
+    confirmed: number;
+    sent_to_shipping: number;
+    delivered: number;
+    returned: number;
+    cancelled: number;
+  };
+  top_viewed_products: {
+    product_id: string;
+    title_ar: string;
+    title_en: string | null;
+    slug: string | null;
+    views: number;
+  }[];
+  top_selling_products: {
+    product_id: string | null;
+    title_ar: string;
+    size: string;
+    units_sold: number;
+    revenue: number;
+  }[];
+  top_governorates: {
+    governorate_name: string;
+    orders_count: number;
+    revenue: number;
+  }[];
+  series: {
+    date: string;
+    orders_count: number;
+    delivered_revenue: number;
+    total_revenue: number;
+    unique_visits: number;
+  }[];
+}
+
 export interface GovernorateShipping {
   id: number;
   name_ar: string;

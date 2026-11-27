@@ -1,16 +1,25 @@
-import { lazy, Suspense } from 'react';
-import { Outlet } from 'react-router-dom';
+import { lazy, Suspense, useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { Header } from './Header';
 import { Footer } from './Footer';
 import { WhatsAppButton } from './WhatsAppButton';
 import { envConfigError, isSupabaseConfigured } from '@/lib/supabase';
+import { trackStorefrontEvent } from '@/lib/storefrontTracker';
 
 const CartDrawer = lazy(() =>
   import('@/features/cart/CartDrawer').then((m) => ({ default: m.CartDrawer })),
 );
 
 export function StoreLayout() {
+  const location = useLocation();
+
+  useEffect(() => {
+    trackStorefrontEvent('page_view', {
+      path: `${location.pathname}${location.search}`,
+    });
+  }, [location.pathname, location.search]);
+
   return (
     <div className="flex min-h-screen flex-col bg-[#F4F2EC] text-[#132238]">
       {!isSupabaseConfigured && (
