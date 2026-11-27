@@ -16,18 +16,30 @@ export function useProducts(filters: ProductFilters = {}) {
     enabled: isSupabaseConfigured && (filters.enabled ?? true),
     staleTime: 60_000,
     queryFn: async (): Promise<ProductWithDetails[]> => {
-      let query = supabase
-        .from('products')
-        .select(
-          `
+      const hasCategoryFilter = Boolean(filters.categorySlug && filters.categorySlug !== 'all');
+      const selectClause = hasCategoryFilter
+        ? `
+          *,
+          category:categories!inner(*),
+          product_images(*),
+          product_variants(*)
+        `
+        : `
           *,
           category:categories(*),
           product_images(*),
           product_variants(*)
-        `,
-        )
+        `;
+
+      let query = supabase
+        .from('products')
+        .select(selectClause)
         .eq('is_active', true)
         .eq('is_archived', false);
+
+      if (hasCategoryFilter) {
+        query = query.eq('category.slug', filters.categorySlug!);
+      }
 
       if (filters.ids && filters.ids.length > 0) {
         query = query.in('id', filters.ids);
@@ -48,10 +60,7 @@ export function useProducts(filters: ProductFilters = {}) {
       const { data, error } = await query;
       if (error) throw error;
 
-      let rows = (data ?? []) as unknown as ProductWithDetails[];
-      if (filters.categorySlug && filters.categorySlug !== 'all') {
-        rows = rows.filter((p) => p.category?.slug === filters.categorySlug);
-      }
+      const rows = (data ?? []) as unknown as ProductWithDetails[];
 
       return rows.map((p) => ({
         ...p,

@@ -36,6 +36,7 @@ export interface Database {
           name_en: string;
           sort_order: number;
           is_active: boolean;
+          show_in_header: boolean;
         };
         Insert: {
           id?: string;
@@ -44,6 +45,7 @@ export interface Database {
           name_en: string;
           sort_order?: number;
           is_active?: boolean;
+          show_in_header?: boolean;
         };
         Update: {
           id?: string;
@@ -52,6 +54,7 @@ export interface Database {
           name_en?: string;
           sort_order?: number;
           is_active?: boolean;
+          show_in_header?: boolean;
         };
         Relationships: [];
       };

@@ -7,6 +7,7 @@ export interface Category {
   name_en: string;
   sort_order: number;
   is_active: boolean;
+  show_in_header: boolean;
 }
 
 export interface ProductImage {

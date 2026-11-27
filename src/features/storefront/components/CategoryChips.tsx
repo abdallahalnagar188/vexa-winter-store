@@ -19,10 +19,10 @@ export function CategoryChips({ categories, selectedSlug, onSelect }: CategoryCh
         type="button"
         onClick={() => onSelect('all')}
         className={cn(
-          'min-h-10 cursor-pointer rounded-full px-4 text-sm font-bold transition-all',
+          'min-h-10 cursor-pointer rounded-[2px] border px-4 text-sm font-bold transition-colors',
           selectedSlug === 'all'
-            ? 'bg-[#FF6B1A] text-white shadow-sm'
-            : 'border border-[#132238]/20 bg-[#FFFFFF] text-[#132238] hover:border-[#132238]',
+            ? 'border-[#FF6B1A] bg-[#FF6B1A] text-white'
+            : 'border-[#132238]/20 bg-[#FFFFFF] text-[#132238] hover:border-[#132238]',
         )}
       >
         {t('home.all')}
@@ -35,10 +35,10 @@ export function CategoryChips({ categories, selectedSlug, onSelect }: CategoryCh
             type="button"
             onClick={() => onSelect(cat.slug)}
             className={cn(
-              'min-h-10 cursor-pointer rounded-full px-4 text-sm font-bold transition-all',
+              'min-h-10 cursor-pointer rounded-[2px] border px-4 text-sm font-bold transition-colors',
               active
-                ? 'bg-[#FF6B1A] text-white shadow-sm'
-                : 'border border-[#132238]/20 bg-[#FFFFFF] text-[#132238] hover:border-[#132238]',
+                ? 'border-[#FF6B1A] bg-[#FF6B1A] text-white'
+                : 'border-[#132238]/20 bg-[#FFFFFF] text-[#132238] hover:border-[#132238]',
             )}
           >
             {lang === 'ar' ? cat.name_ar : cat.name_en}

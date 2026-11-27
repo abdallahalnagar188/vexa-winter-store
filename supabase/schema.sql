@@ -26,7 +26,8 @@ create table if not exists public.categories (
   name_ar text not null,
   name_en text not null,
   sort_order int not null default 0,
-  is_active boolean not null default true
+  is_active boolean not null default true,
+  show_in_header boolean not null default true
 );
 
 create table if not exists public.products (

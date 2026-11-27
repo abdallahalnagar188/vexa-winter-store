@@ -21,6 +21,7 @@ export function Header() {
   const { data: categories = [] } = useCategories();
 
   const totalCount = items.reduce((acc, i) => acc + i.quantity, 0);
+  const headerCategories = categories.filter((c) => c.show_in_header !== false);
   const slideOffset = isRtl ? '100%' : '-100%';
 
   useEffect(() => {
@@ -114,13 +115,13 @@ export function Header() {
               </NavLink>
             </div>
 
-            {categories.length > 0 && (
+            {headerCategories.length > 0 && (
               <div className="mt-4 border-t border-[#F4F2EC]/15 pt-4">
                 <p className="mb-2 px-2 text-xs font-extrabold text-[#ECE9E0]/65">
                   {t('home.shopByCategory')}
                 </p>
                 <div className="flex flex-col gap-1">
-                  {categories.map((cat) => {
+                  {headerCategories.map((cat) => {
                     const activeCat = search.includes(`category=${cat.slug}`);
                     return (
                       <Link
@@ -199,7 +200,7 @@ export function Header() {
             >
               {t('nav.shop')}
             </NavLink>
-            {categories.slice(0, 3).map((cat) => (
+            {headerCategories.map((cat) => (
               <Link
                 key={cat.id}
                 to={`/shop?category=${cat.slug}`}
