@@ -46,7 +46,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
               onClick={onNavigate}
               className={({ isActive }) =>
                 cn(
-                  'flex min-h-11 items-center justify-between rounded-xl px-3.5 text-sm font-bold transition-colors',
+                  'flex min-h-11 items-center justify-between rounded-[2px] px-3.5 text-sm font-bold transition-colors',
                   isActive
                     ? 'bg-[#FF6B1A] text-white shadow-sm'
                     : 'text-[#F4F2EC]/85 hover:bg-[#1C314E]',
@@ -58,7 +58,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                 <span>{item.label}</span>
               </span>
               {item.badge && newOrders.length > 0 && (
-                <span className="rounded-full bg-[#132238] px-2 py-0.5 font-display text-xs font-extrabold text-[#FF6B1A] ring-1 ring-[#FF6B1A]">
+                <span className="rounded-[2px] bg-[#132238] px-2 py-0.5 font-display text-xs font-extrabold text-[#FF6B1A] ring-1 ring-[#FF6B1A]">
                   {newOrders.length}
                 </span>
               )}
@@ -71,7 +71,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         href="/"
         target="_blank"
         rel="noopener noreferrer"
-        className="mt-4 flex min-h-10 items-center justify-center gap-2 rounded-xl border border-[#F4F2EC]/25 text-xs font-bold text-[#F4F2EC] hover:border-[#FF6B1A] hover:text-[#FF6B1A]"
+        className="mt-4 flex min-h-10 items-center justify-center gap-2 rounded-[2px] border border-[#F4F2EC]/25 text-xs font-bold text-[#F4F2EC] hover:border-[#FF6B1A] hover:text-[#FF6B1A]"
       >
         <ExternalLink className="h-3.5 w-3.5" />
         <span>عرض المتجر</span>
