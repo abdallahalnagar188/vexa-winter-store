@@ -44,9 +44,16 @@
     "sortPriceDesc": "السعر: من الأعلى للأقل",
     "newTag": "جديد",
     "soldOut": "نفدت الكمية",
-    "noProducts": "لا توجد منتجات في هذا القسم حالياً",
+    "noProducts": "لا توجد منتجات مطابقة للفلاتر الحالية",
     "loadMore": "عرض المزيد",
-    "retry": "إعادة المحاولة"
+    "retry": "إعادة المحاولة",
+    "searchPlaceholder": "ابحث باسم الموديل أو الخامة...",
+    "filters": "تصفية النتائج",
+    "sizeFilter": "المقاس",
+    "colorFilter": "اللون",
+    "inStockOnly": "المتوفر فقط",
+    "clearFilters": "مسح الفلاتر",
+    "resultsCount": "{{count}} منتج"
   },
   "product": {
     "selectColor": "اختر اللون",
@@ -72,6 +79,8 @@
     "emptySub": "استكشف مجموعة الشتاء واكتشف عروض الكميات.",
     "shopNow": "تصفح المنتجات",
     "originalSubtotal": "الإجمالي قبل الخصم",
+    "bundleDiscount": "خصم الكميات",
+    "couponDiscount": "خصم الكوبون ({{code}})",
     "discountTotal": "إجمالي التوفير",
     "subtotal": "المجموع الفرعي",
     "shippingNote": "يحسب الشحن عند اختيار المحافظة",
@@ -80,7 +89,21 @@
     "checkout": "إتمام الطلب (كاش عند الاستلام)",
     "viewCart": "عرض السلة",
     "remove": "حذف",
-    "stockAdjusted": "تم تعديل الكميات حسب المخزون المتاح"
+    "stockAdjusted": "تم تعديل الكميات حسب المخزون المتاح",
+    "couponLabel": "كود الخصم",
+    "couponPlaceholder": "أدخل كود الخصم...",
+    "couponApply": "تطبيق",
+    "couponApplied": "تم تطبيق الكوبون {{code}}",
+    "couponRemove": "إزالة",
+    "couponErrors": {
+      "COUPON_EMPTY": "يرجى كتابة كود الخصم أولاً",
+      "COUPON_NOT_FOUND": "كود الخصم غير صحيح",
+      "COUPON_INACTIVE": "كود الخصم غير مفعل حالياً",
+      "COUPON_EXPIRED": "انتهت صلاحية كود الخصم",
+      "COUPON_USAGE_LIMIT": "تم استنفاد الحد الأقصى لاستخدام هذا الكوبون",
+      "COUPON_MIN_ORDER": "الحد الأدنى لتفعيل هذا الكوبون هو {{amount}}",
+      "COUPON_INVALID": "كود الخصم لم يعد صالحاً، يرجى التحقق منه"
+    }
   },
   "checkout": {
     "title": "إتمام الطلب",
@@ -130,7 +153,12 @@
     "phonePlaceholder": "010xxxxxxxx",
     "submit": "بحث",
     "notFound": "لم يتم العثور على طلب بهذه البيانات، تأكد من رقم المرجع والموبايل.",
-    "items": "القطع"
+    "items": "القطع",
+    "breakdownTitle": "تفاصيل المبلغ المطلوب (كاش)",
+    "subtotal": "سعر المنتجات",
+    "bundleDiscount": "خصم الكميات",
+    "couponDiscount": "خصم الكوبون ({{code}})",
+    "shippingFee": "مصاريف الشحن"
   },
   "footer": {
     "about": "أزياء شتوية عصرية مصممة بعناية لتمنحك الدفء والأناقة في شتاء مصر.",

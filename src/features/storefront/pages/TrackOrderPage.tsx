@@ -51,7 +51,7 @@ export function TrackOrderPage() {
 
   return (
     <PageTransition className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-      <div className="rounded-3xl border border-[#132238]/12 bg-[#FFFFFF] p-6 text-[#132238] shadow-xl sm:p-8">
+      <div className="rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-6 text-[#132238] shadow-xl sm:p-8">
         <h1 className="text-2xl font-black">{t('track.title')}</h1>
         <p className="mt-1 text-sm text-[#132238]/75">{t('track.subtitle')}</p>
 
@@ -82,7 +82,7 @@ export function TrackOrderPage() {
         </form>
 
         {notFound && (
-          <p className="mt-5 rounded-xl bg-rose-100 p-3 text-center text-sm font-bold text-rose-800">
+          <p className="mt-5 rounded-[2px] border border-rose-300 bg-rose-100 p-3 text-center text-sm font-bold text-rose-800">
             {t('track.notFound')}
           </p>
         )}
@@ -98,7 +98,7 @@ export function TrackOrderPage() {
               </div>
               <span
                 className={cn(
-                  'rounded-full border px-3 py-1 text-xs font-extrabold',
+                  'rounded-[2px] border px-3 py-1 text-xs font-extrabold',
                   ORDER_STATUS_META[order.status].badgeClass,
                 )}
               >
@@ -116,7 +116,7 @@ export function TrackOrderPage() {
                     <div key={step} className="flex flex-col items-center gap-1.5 text-center">
                       <div
                         className={cn(
-                          'flex h-8 w-8 items-center justify-center rounded-full border-2',
+                          'flex h-8 w-8 items-center justify-center rounded-[2px] border-2',
                           done
                             ? 'border-[#FF6B1A] bg-[#FF6B1A] text-white'
                             : 'border-[#132238]/20 bg-[#ECE9E0] text-[#132238]/40',
@@ -135,18 +135,61 @@ export function TrackOrderPage() {
               </div>
             )}
 
-            <div className="space-y-2 rounded-2xl bg-[#ECE9E0] p-4">
-              <p className="text-xs font-extrabold">{t('track.items')}</p>
-              {order.items.map((item, idx) => (
-                <div key={idx} className="flex justify-between text-sm">
-                  <span>
-                    {item.quantity} × {item.title} ({item.size} / {item.color})
+            <div className="space-y-3 rounded-sm border border-[#132238]/12 bg-[#ECE9E0] p-4">
+              <div className="space-y-1.5">
+                <p className="text-xs font-extrabold">{t('track.items')}</p>
+                {order.items.map((item, idx) => (
+                  <div key={idx} className="flex justify-between text-sm font-semibold">
+                    <span>
+                      {item.quantity} × {item.title} ({item.size} / {item.color})
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="space-y-1.5 border-t border-[#132238]/15 pt-3 text-xs font-bold">
+                <p className="text-[11px] font-black uppercase tracking-wide text-[#132238]/70">
+                  {t('track.breakdownTitle')}
+                </p>
+                <div className="flex justify-between">
+                  <span>{t('track.subtotal')}</span>
+                  <span className="font-display tabular-nums">
+                    {formatEGP(order.subtotal ?? order.total_cod, lang)}
                   </span>
                 </div>
-              ))}
-              <div className="flex justify-between border-t border-[#132238]/15 pt-2 font-extrabold">
+                {(order.bundle_discount ?? 0) > 0 && (
+                  <div className="flex justify-between text-[#FF6B1A]">
+                    <span>{t('track.bundleDiscount')}</span>
+                    <span className="font-display tabular-nums">
+                      -{formatEGP(order.bundle_discount, lang)}
+                    </span>
+                  </div>
+                )}
+                {(order.coupon_discount ?? 0) > 0 && (
+                  <div className="flex justify-between text-[#1F7A4D]">
+                    <span>
+                      {t('track.couponDiscount', { code: order.coupon_code ?? 'PROMO' })}
+                    </span>
+                    <span className="font-display tabular-nums">
+                      -{formatEGP(order.coupon_discount, lang)}
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span>{t('track.shippingFee')}</span>
+                  <span className="font-display tabular-nums">
+                    {(order.shipping_fee ?? 0) === 0
+                      ? t('checkout.free')
+                      : formatEGP(order.shipping_fee, lang)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex justify-between border-t border-[#132238]/20 pt-2.5 text-base font-black">
                 <span>{t('checkout.totalCod')}</span>
-                <span className="font-display">{formatEGP(order.total_cod, lang)}</span>
+                <span className="font-display text-lg tabular-nums">
+                  {formatEGP(order.total_cod, lang)}
+                </span>
               </div>
             </div>
           </div>

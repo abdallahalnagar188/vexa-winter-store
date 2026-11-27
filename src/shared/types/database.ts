@@ -231,6 +231,45 @@ export interface Database {
           },
         ];
       };
+      coupons: {
+        Row: {
+          id: string;
+          code: string;
+          discount_type: DiscountType;
+          discount_value: number;
+          min_order_amount: number;
+          max_uses: number | null;
+          used_count: number;
+          expires_at: string | null;
+          is_active: boolean;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          code: string;
+          discount_type: DiscountType;
+          discount_value: number;
+          min_order_amount?: number;
+          max_uses?: number | null;
+          used_count?: number;
+          expires_at?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          code?: string;
+          discount_type?: DiscountType;
+          discount_value?: number;
+          min_order_amount?: number;
+          max_uses?: number | null;
+          used_count?: number;
+          expires_at?: string | null;
+          is_active?: boolean;
+          created_at?: string;
+        };
+        Relationships: [];
+      };
       governorate_shipping: {
         Row: {
           id: number;
@@ -292,6 +331,8 @@ export interface Database {
           internal_notes: string | null;
           subtotal_original: number;
           discount_total: number;
+          coupon_code: string | null;
+          coupon_discount: number;
           shipping_fee: number;
           total_cod: number;
           stock_restocked: boolean;
@@ -314,6 +355,8 @@ export interface Database {
           internal_notes?: string | null;
           subtotal_original?: number;
           discount_total?: number;
+          coupon_code?: string | null;
+          coupon_discount?: number;
           shipping_fee?: number;
           total_cod?: number;
           stock_restocked?: boolean;
@@ -336,6 +379,8 @@ export interface Database {
           internal_notes?: string | null;
           subtotal_original?: number;
           discount_total?: number;
+          coupon_code?: string | null;
+          coupon_discount?: number;
           shipping_fee?: number;
           total_cod?: number;
           stock_restocked?: boolean;
@@ -607,6 +652,14 @@ export interface Database {
       };
       track_order: {
         Args: { p_ref: string; p_phone: string };
+        Returns: Json;
+      };
+      validate_coupon: {
+        Args: { p_code: string; p_subtotal: number };
+        Returns: Json;
+      };
+      admin_get_customer_risk_stats: {
+        Args: { p_phones: string[] };
         Returns: Json;
       };
       admin_update_order_status: {

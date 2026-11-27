@@ -22,20 +22,32 @@ export function PriceSummary({ priced, freeShippingThreshold, rawShippingFee }: 
   return (
     <div className="flex flex-col gap-2.5 text-sm text-[#132238]">
       {priced.discountTotal > 0 && (
-        <>
-          <div className="flex items-center justify-between">
-            <span className="text-[#132238]/75">{t('cart.originalSubtotal')}</span>
-            <span className="font-display text-[#132238]/55 line-through tabular-nums">
-              {formatEGP(priced.subtotalOriginal, lang)}
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="font-bold">{t('cart.discountTotal')}</span>
-            <AnimatedDiscountBadge>
-              -{formatEGP(priced.discountTotal, lang)}
-            </AnimatedDiscountBadge>
-          </div>
-        </>
+        <div className="flex items-center justify-between">
+          <span className="text-[#132238]/75">{t('cart.originalSubtotal')}</span>
+          <span className="font-display text-[#132238]/55 line-through tabular-nums">
+            {formatEGP(priced.subtotalOriginal, lang)}
+          </span>
+        </div>
+      )}
+
+      {priced.bundleDiscountTotal > 0 && (
+        <div className="flex items-center justify-between">
+          <span className="font-bold">{t('cart.bundleDiscount')}</span>
+          <AnimatedDiscountBadge>
+            -{formatEGP(priced.bundleDiscountTotal, lang)}
+          </AnimatedDiscountBadge>
+        </div>
+      )}
+
+      {priced.couponDiscount > 0 && priced.appliedCoupon && (
+        <div className="flex items-center justify-between">
+          <span className="font-bold text-[#1F7A4D]">
+            {t('cart.couponDiscount', { code: priced.appliedCoupon.code })}
+          </span>
+          <span className="rounded-[2px] border border-[#1F7A4D]/30 bg-[#1F7A4D]/10 px-2 py-0.5 font-display text-xs font-extrabold text-[#1F7A4D] tabular-nums">
+            -{formatEGP(priced.couponDiscount, lang)}
+          </span>
+        </div>
       )}
 
       <div className="flex items-center justify-between font-bold">
@@ -68,7 +80,7 @@ export function PriceSummary({ priced, freeShippingThreshold, rawShippingFee }: 
       )}
 
       {freeShippingThreshold > 0 && (
-        <div className="rounded-xl bg-[#132238]/8 px-3 py-2 text-xs font-bold text-[#132238]">
+        <div className="rounded-[2px] border border-[#132238]/12 bg-[#132238]/6 px-3 py-2 text-xs font-bold text-[#132238]">
           {awayFromFree === 0
             ? t('cart.freeShippingUnlocked')
             : t('cart.freeShippingAway', { amount: formatEGP(awayFromFree, lang) })}

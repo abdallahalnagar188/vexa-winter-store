@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useCartStore } from './cartStore';
 import { useCartPricing } from './useCartPricing';
 import { CartLine } from './CartLine';
+import { CouponBox } from './CouponBox';
 import { PriceSummary } from './PriceSummary';
 import { Drawer } from '@/shared/components/ui/Drawer';
 import { Button } from '@/shared/components/ui/Button';
@@ -75,7 +76,7 @@ export function CartDrawer() {
           type="button"
           onClick={closeDrawer}
           aria-label="Close"
-          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl text-[#132238] hover:bg-[#132238]/10"
+          className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-[2px] text-[#132238] hover:bg-[#132238]/10"
         >
           <X className="h-5 w-5" />
         </button>
@@ -95,7 +96,7 @@ export function CartDrawer() {
         ) : (
           <>
             {hint && (
-              <div className="flex items-center gap-2 rounded-xl bg-[#FF6B1A] px-3.5 py-2.5 text-xs font-extrabold text-white shadow-xs">
+              <div className="flex items-center gap-2 rounded-[2px] bg-[#FF6B1A] px-3.5 py-2.5 text-xs font-extrabold text-white shadow-xs">
                 <Sparkles className="h-4 w-4 shrink-0" />
                 <span>
                   {hint.type === 'percent'
@@ -133,6 +134,7 @@ export function CartDrawer() {
 
       {items.length > 0 && (
         <div className="border-t border-[#132238]/15 bg-[#FFFFFF] p-4">
+          <CouponBox subtotalAfterBundle={priced.subtotalAfterBundle} />
           <PriceSummary priced={priced} freeShippingThreshold={freeShippingThreshold} />
           <div className="mt-4 flex flex-col gap-2">
             <Link to="/checkout" onClick={closeDrawer}>

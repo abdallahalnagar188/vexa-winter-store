@@ -73,7 +73,7 @@ export function ShippingPage() {
         </Button>
       </div>
 
-      <div className="grid gap-4 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-4 shadow-xs sm:grid-cols-2">
+      <div className="grid gap-4 rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-4 shadow-xs sm:grid-cols-2">
         <div className="flex items-end gap-2">
           <div className="flex-1">
             <label className="block text-xs font-bold">تعيين سعر موحد لكل المحافظات</label>
@@ -83,7 +83,7 @@ export function ShippingPage() {
               value={bulkFee}
               onChange={(e) => setBulkFee(e.target.value)}
               placeholder="مثال: 75"
-              className="mt-1 min-h-10 w-full rounded-xl border border-[#132238]/20 bg-[#F4F2EC] px-3 font-display text-sm"
+              className="mt-1 min-h-10 w-full rounded-[2px] border border-[#132238]/20 bg-[#F4F2EC] px-3 font-display text-sm"
             />
           </div>
           <Button type="button" variant="secondary" onClick={applyBulk}>
@@ -100,12 +100,12 @@ export function ShippingPage() {
             min={0}
             value={freeThreshold}
             onChange={(e) => setFreeThreshold(Math.max(0, Number(e.target.value) || 0))}
-            className="mt-1 min-h-10 w-full rounded-xl border border-[#132238]/20 bg-[#F4F2EC] px-3 font-display text-sm font-bold"
+            className="mt-1 min-h-10 w-full rounded-[2px] border border-[#132238]/20 bg-[#F4F2EC] px-3 font-display text-sm font-bold"
           />
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] shadow-xs">
+      <div className="overflow-x-auto rounded-sm border border-[#132238]/12 bg-[#FFFFFF] shadow-xs">
         <table className="w-full text-start text-sm">
           <thead className="border-b border-[#132238]/12 bg-[#ECE9E0] text-xs font-extrabold">
             <tr>
@@ -130,7 +130,7 @@ export function ShippingPage() {
                     onChange={(e) =>
                       updateRow(gov.id, { fee: Math.max(0, Number(e.target.value) || 0) })
                     }
-                    className="w-24 rounded-lg border border-[#132238]/20 bg-[#F4F2EC] px-2.5 py-1.5 font-display text-sm font-bold"
+                    className="w-24 rounded-[2px] border border-[#132238]/20 bg-[#F4F2EC] px-2.5 py-1.5 font-display text-sm font-bold"
                   />
                 </td>
                 <td className="p-3">

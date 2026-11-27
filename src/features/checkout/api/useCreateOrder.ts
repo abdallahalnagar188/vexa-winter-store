@@ -10,6 +10,7 @@ export interface CreateOrderPayload {
   city_area: string;
   address_details: string;
   notes?: string | null;
+  coupon_code?: string | null;
   idempotency_key: string;
   items: { variant_id: string; quantity: number }[];
 }

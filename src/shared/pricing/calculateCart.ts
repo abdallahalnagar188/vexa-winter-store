@@ -1,4 +1,5 @@
 import { bestTier, nextTier, resolveTiers, type PricingTier } from './tiers';
+import type { AppliedCoupon } from '@/shared/types/domain';
 
 export interface PricedLineInput {
   lineKey?: string;
@@ -13,6 +14,7 @@ export interface PricedInput {
   tiers: PricingTier[];
   shippingFee: number | null; // null until governorate selected
   freeShippingThreshold: number; // 0 = disabled
+  coupon?: AppliedCoupon | null;
 }
 
 export interface PricedLineOutput {
@@ -49,8 +51,12 @@ export interface PricedOutput {
   lines: PricedLineOutput[];
   groups: Record<string, GroupSummary>;
   subtotalOriginal: number;
+  bundleDiscountTotal: number;
+  couponDiscount: number;
   discountTotal: number;
+  subtotalAfterBundle: number;
   subtotalAfterDiscount: number;
+  appliedCoupon: AppliedCoupon | null;
   shippingFee: number | null;
   isFreeShipping: boolean;
   totalCod: number | null;
@@ -79,7 +85,7 @@ export function calculateCart(input: PricedInput): PricedOutput {
   const pricedLineByKey = new Map<string, PricedLineOutput>();
   const groups: Record<string, GroupSummary> = {};
   let subtotalOriginal = 0;
-  let discountTotal = 0;
+  let bundleDiscountTotal = 0;
   let globalNextHint: NextTierHint | null = null;
 
   for (const [productId, groupLines] of byProduct.entries()) {
@@ -157,7 +163,7 @@ export function calculateCart(input: PricedInput): PricedOutput {
     };
 
     subtotalOriginal += groupOriginal;
-    discountTotal += groupDiscount;
+    bundleDiscountTotal += groupDiscount;
   }
 
   // Preserve original input line order in output array
@@ -165,7 +171,25 @@ export function calculateCart(input: PricedInput): PricedOutput {
     .map((l) => pricedLineByKey.get(l.lineKey ?? l.variantId)!)
     .filter(Boolean);
 
-  const subtotalAfterDiscount = subtotalOriginal - discountTotal;
+  const subtotalAfterBundle = subtotalOriginal - bundleDiscountTotal;
+
+  let couponDiscount = 0;
+  let appliedCoupon: AppliedCoupon | null = null;
+  if (input.coupon && subtotalAfterBundle > 0) {
+    const minReq = Math.max(0, Math.round(input.coupon.minOrderAmount || 0));
+    if (subtotalAfterBundle >= minReq) {
+      const rawCoupon =
+        input.coupon.discountType === 'percent'
+          ? Math.round((subtotalAfterBundle * input.coupon.discountValue) / 100)
+          : Math.round(input.coupon.discountValue);
+      couponDiscount = Math.max(0, Math.min(subtotalAfterBundle, rawCoupon));
+      appliedCoupon = input.coupon;
+    }
+  }
+
+  const discountTotal = bundleDiscountTotal + couponDiscount;
+  const subtotalAfterDiscount = subtotalAfterBundle - couponDiscount;
+
   const rawThreshold = Number.isFinite(input.freeShippingThreshold) ? input.freeShippingThreshold : 0;
   const threshold = Math.max(0, Math.round(rawThreshold));
   const isFreeShipping =
@@ -179,8 +203,12 @@ export function calculateCart(input: PricedInput): PricedOutput {
     lines,
     groups,
     subtotalOriginal,
+    bundleDiscountTotal,
+    couponDiscount,
     discountTotal,
+    subtotalAfterBundle,
     subtotalAfterDiscount,
+    appliedCoupon,
     shippingFee: effectiveShipping,
     isFreeShipping,
     totalCod,

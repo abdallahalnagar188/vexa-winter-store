@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { AlertTriangle, MessageCircle, Phone, Printer, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, MessageCircle, Phone, Printer, X } from 'lucide-react';
 import { toast } from 'sonner';
 import type { OrderStatus } from '@/shared/types/database';
-import type { OrderRecord } from '@/shared/types/domain';
+import type { CustomerRiskStat, OrderRecord } from '@/shared/types/domain';
 import { ALLOWED_STATUS_TRANSITIONS } from '@/shared/constants/transitions';
 import { ORDER_STATUS_META } from '@/shared/constants/orderStatus';
 import { formatDate, formatEGP } from '@/lib/format';
@@ -15,6 +15,7 @@ import { Button } from '@/shared/components/ui/Button';
 interface OrderDetailDrawerProps {
   order: OrderRecord | null;
   allOrders: OrderRecord[];
+  riskStat?: CustomerRiskStat;
   courierTemplate?: string;
   onPrintWaybill?: (order: OrderRecord) => void;
   onClose: () => void;
@@ -23,6 +24,7 @@ interface OrderDetailDrawerProps {
 export function OrderDetailDrawer({
   order,
   allOrders,
+  riskStat,
   courierTemplate,
   onPrintWaybill,
   onClose,
@@ -41,12 +43,17 @@ export function OrderDetailDrawer({
 
   if (!order) return null;
 
-  const priorProblemCount = allOrders.filter(
-    (o) =>
-      o.id !== order.id &&
-      o.phone === order.phone &&
-      (o.status === 'cancelled' || o.status === 'returned'),
-  ).length;
+  const returnedCount =
+    riskStat?.returned_count ??
+    allOrders.filter((o) => o.phone === order.phone && o.status === 'returned').length;
+  const cancelledCount =
+    riskStat?.cancelled_count ??
+    allOrders.filter((o) => o.phone === order.phone && o.status === 'cancelled').length;
+  const deliveredCount =
+    riskStat?.delivered_count ??
+    allOrders.filter((o) => o.phone === order.phone && o.status === 'delivered').length;
+  const showRiskWarning = returnedCount >= 1 || cancelledCount >= 2;
+  const showRepeatTrusted = !showRiskWarning && deliveredCount >= 2 && returnedCount === 0;
 
   const nextStatuses = ALLOWED_STATUS_TRANSITIONS[order.status];
 
@@ -80,7 +87,7 @@ export function OrderDetailDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-9 w-9 items-center justify-center rounded-xl hover:bg-[#132238]/10"
+            className="flex h-9 w-9 items-center justify-center rounded-[2px] hover:bg-[#132238]/10"
           >
             <X className="h-5 w-5" />
           </button>
@@ -88,10 +95,19 @@ export function OrderDetailDrawer({
       </div>
 
       <div className="flex-1 space-y-5 overflow-y-auto p-5 text-sm">
-        {priorProblemCount > 0 && (
-          <div className="flex items-center gap-2 rounded-xl bg-amber-100 p-3 text-xs font-extrabold text-amber-900">
-            <AlertTriangle className="h-4 w-4 shrink-0" />
-            <span>تنبيه: هذا الرقم لديه {priorProblemCount} طلب ملغي/مرتجع سابقاً.</span>
+        {showRiskWarning && (
+          <div className="flex items-center gap-2 rounded-[2px] border border-amber-400 bg-amber-100 p-3 text-xs font-extrabold text-amber-950">
+            <AlertTriangle className="h-4 w-4 shrink-0 text-amber-800" />
+            <span>
+              تنبيه: هذا الرقم لديه {returnedCount} مرتجع / {cancelledCount} ملغي سابقاً (إجمالي{' '}
+              {riskStat?.total_orders ?? returnedCount + cancelledCount + deliveredCount} طلبات).
+            </span>
+          </div>
+        )}
+        {showRepeatTrusted && (
+          <div className="flex items-center gap-2 rounded-[2px] border border-[#1F7A4D]/35 bg-[#1F7A4D]/10 p-3 text-xs font-extrabold text-[#1F7A4D]">
+            <CheckCircle2 className="h-4 w-4 shrink-0" />
+            <span>عميل متكرر موثوق ({deliveredCount} طلبات ناجحة بدون أي مرتجعات)</span>
           </div>
         )}
 
@@ -130,7 +146,7 @@ export function OrderDetailDrawer({
           </div>
         </div>
 
-        <div className="space-y-1.5 rounded-2xl border border-[#132238]/10 bg-[#FFFFFF] p-4">
+        <div className="space-y-1.5 rounded-sm border border-[#132238]/10 bg-[#FFFFFF] p-4">
           <p className="font-extrabold">{order.customer_name}</p>
           <p className="font-display text-xs">{order.phone}</p>
           {order.phone_secondary && <p className="font-display text-xs">{order.phone_secondary}</p>}
@@ -141,7 +157,7 @@ export function OrderDetailDrawer({
           {order.notes && <p className="text-xs text-amber-900">ملاحظة العميل: {order.notes}</p>}
         </div>
 
-        <div className="space-y-2 rounded-2xl border border-[#132238]/10 bg-[#FFFFFF] p-4">
+        <div className="space-y-2 rounded-sm border border-[#132238]/10 bg-[#FFFFFF] p-4">
           <p className="font-extrabold">القطع المطلوبة</p>
           {(order.order_items ?? []).map((item) => (
             <div key={item.id} className="flex justify-between gap-2 text-xs">
@@ -162,6 +178,12 @@ export function OrderDetailDrawer({
                 <span className="font-display">-{formatEGP(order.discount_total, 'ar')}</span>
               </div>
             )}
+            {(order.coupon_discount ?? 0) > 0 && (
+              <div className="flex justify-between text-[#1F7A4D]">
+                <span>كوبون ({order.coupon_code}):</span>
+                <span className="font-display">-{formatEGP(order.coupon_discount ?? 0, 'ar')}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span>الشحن:</span>
               <span className="font-display">{formatEGP(order.shipping_fee, 'ar')}</span>
@@ -174,7 +196,7 @@ export function OrderDetailDrawer({
         </div>
 
         {nextStatuses.length > 0 && (
-          <div className="space-y-3 rounded-2xl border border-[#132238]/10 bg-[#FFFFFF] p-4">
+          <div className="space-y-3 rounded-sm border border-[#132238]/10 bg-[#FFFFFF] p-4">
             <p className="font-extrabold">تغيير حالة الطلب</p>
             {(nextStatuses.includes('cancelled') || nextStatuses.includes('returned')) && (
               <label className="flex items-center gap-2 text-xs font-bold">
@@ -210,7 +232,7 @@ export function OrderDetailDrawer({
             value={internalNotes}
             onChange={(e) => setInternalNotes(e.target.value)}
             onBlur={handleNotesBlur}
-            className="w-full rounded-xl border border-[#132238]/20 bg-[#FFFFFF] p-2.5 text-xs"
+            className="w-full rounded-[2px] border border-[#132238]/20 bg-[#FFFFFF] p-2.5 text-xs"
           />
         </div>
 

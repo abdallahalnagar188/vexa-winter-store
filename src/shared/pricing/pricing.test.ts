@@ -158,4 +158,82 @@ describe('calculateCart pricing engine', () => {
     expect(res.shippingFee).toBe(0);
     expect(res.totalCod).toBe(1500);
   });
+
+  it('12. percent coupon applies on post-bundle subtotal and updates free shipping check', () => {
+    const res = calculateCart({
+      lines: [{ variantId: 'v1', productId: 'p1', unitPrice: 1000, quantity: 2 }],
+      tiers: globalTen, // 2000 -> -200 = 1800 post-bundle
+      shippingFee: 75,
+      freeShippingThreshold: 1700,
+      coupon: {
+        code: 'VEXA10',
+        discountType: 'percent',
+        discountValue: 10,
+        minOrderAmount: 500,
+      },
+    });
+    // 1800 * 10% = 180 coupon discount -> 1620 < 1700 threshold -> shipping still charged
+    expect(res.bundleDiscountTotal).toBe(200);
+    expect(res.couponDiscount).toBe(180);
+    expect(res.discountTotal).toBe(380);
+    expect(res.subtotalAfterBundle).toBe(1800);
+    expect(res.subtotalAfterDiscount).toBe(1620);
+    expect(res.isFreeShipping).toBe(false);
+    expect(res.shippingFee).toBe(75);
+    expect(res.totalCod).toBe(1695);
+  });
+
+  it('13. fixed coupon is clamped to post-bundle subtotal and allows free shipping when still >= threshold', () => {
+    const res = calculateCart({
+      lines: [{ variantId: 'v1', productId: 'p1', unitPrice: 1500, quantity: 2 }],
+      tiers: globalTen, // 3000 - 300 = 2700
+      shippingFee: 80,
+      freeShippingThreshold: 2500,
+      coupon: {
+        code: 'SAVE200',
+        discountType: 'fixed',
+        discountValue: 200,
+        minOrderAmount: 1000,
+      },
+    });
+    expect(res.couponDiscount).toBe(200);
+    expect(res.subtotalAfterDiscount).toBe(2500);
+    expect(res.isFreeShipping).toBe(true);
+    expect(res.shippingFee).toBe(0);
+    expect(res.totalCod).toBe(2500);
+
+    const clamped = calculateCart({
+      lines: [{ variantId: 'v1', productId: 'p1', unitPrice: 400, quantity: 1 }],
+      tiers: [],
+      shippingFee: 60,
+      freeShippingThreshold: 0,
+      coupon: {
+        code: 'BIG500',
+        discountType: 'fixed',
+        discountValue: 500,
+        minOrderAmount: 0,
+      },
+    });
+    expect(clamped.couponDiscount).toBe(400);
+    expect(clamped.subtotalAfterDiscount).toBe(0);
+    expect(clamped.totalCod).toBe(60);
+  });
+
+  it('14. coupon below minOrderAmount yields 0 discount', () => {
+    const res = calculateCart({
+      lines: [{ variantId: 'v1', productId: 'p1', unitPrice: 800, quantity: 1 }],
+      tiers: [],
+      shippingFee: 60,
+      freeShippingThreshold: 0,
+      coupon: {
+        code: 'VIP1000',
+        discountType: 'fixed',
+        discountValue: 150,
+        minOrderAmount: 1000,
+      },
+    });
+    expect(res.couponDiscount).toBe(0);
+    expect(res.appliedCoupon).toBeNull();
+    expect(res.totalCod).toBe(860);
+  });
 });

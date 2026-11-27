@@ -87,6 +87,23 @@ create table if not exists public.discount_tiers (
 create unique index if not exists discount_tiers_unique
   on public.discount_tiers (coalesce(product_id, '00000000-0000-0000-0000-000000000000'::uuid), min_qty);
 
+create table if not exists public.coupons (
+  id uuid primary key default gen_random_uuid(),
+  code text not null,
+  discount_type text not null check (discount_type in ('percent', 'fixed')),
+  discount_value integer not null check (discount_value > 0),
+  min_order_amount integer not null default 0 check (min_order_amount >= 0),
+  max_uses integer check (max_uses is null or max_uses > 0),
+  used_count integer not null default 0 check (used_count >= 0),
+  expires_at timestamptz,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now(),
+  check (discount_type <> 'percent' or discount_value <= 90),
+  check (code = upper(btrim(code)) and char_length(code) between 2 and 40)
+);
+
+create unique index if not exists coupons_code_upper_idx on public.coupons (upper(code));
+
 create index if not exists product_variants_product_idx on public.product_variants (product_id);
 create index if not exists product_images_product_idx on public.product_images (product_id);
 create index if not exists products_category_idx on public.products (category_id);
@@ -125,6 +142,8 @@ create table if not exists public.orders (
   internal_notes text,
   subtotal_original integer not null default 0,
   discount_total integer not null default 0,
+  coupon_code text,
+  coupon_discount integer not null default 0,
   shipping_fee integer not null default 0,
   total_cod integer not null default 0,
   stock_restocked boolean not null default false,
@@ -228,6 +247,11 @@ declare
   v_city text := btrim(coalesce(p->>'city_area', ''));
   v_addr text := btrim(coalesce(p->>'address_details', ''));
   v_notes text := nullif(btrim(coalesce(p->>'notes', '')), '');
+  v_coupon_code text := upper(nullif(btrim(coalesce(p->>'coupon_code', '')), ''));
+  v_coupon public.coupons%rowtype;
+  v_coupon_disc int := 0;
+  v_after_bundle int := 0;
+  v_after_all int := 0;
   v_gov public.governorate_shipping%rowtype;
   v_items jsonb; v_bad jsonb;
   v_threshold int := 0;
@@ -345,12 +369,41 @@ begin
     end loop;
   end loop;
 
+  v_after_bundle := v_sub - v_disc;
+
+  if v_coupon_code is not null then
+    select * into v_coupon from public.coupons where upper(code) = v_coupon_code for update;
+    if not found or not v_coupon.is_active then
+      raise exception 'COUPON_INVALID';
+    end if;
+    if v_coupon.expires_at is not null and v_coupon.expires_at <= now() then
+      raise exception 'COUPON_EXPIRED';
+    end if;
+    if v_coupon.max_uses is not null and v_coupon.used_count >= v_coupon.max_uses then
+      raise exception 'COUPON_USAGE_LIMIT';
+    end if;
+    if v_after_bundle < v_coupon.min_order_amount then
+      raise exception 'COUPON_MIN_ORDER';
+    end if;
+
+    v_coupon_disc := case
+      when v_coupon.discount_type = 'percent' then round(v_after_bundle * v_coupon.discount_value / 100.0)::int
+      else v_coupon.discount_value
+    end;
+    v_coupon_disc := greatest(0, least(v_after_bundle, v_coupon_disc));
+
+    update public.coupons set used_count = used_count + 1 where id = v_coupon.id;
+  end if;
+
+  v_after_all := v_after_bundle - v_coupon_disc;
+
   select coalesce((value #>> '{}')::int, 0) into v_threshold
   from public.store_settings where key = 'free_shipping_threshold';
-  v_ship := case when coalesce(v_threshold, 0) > 0 and (v_sub - v_disc) >= v_threshold then 0 else v_gov.fee end;
-  v_total := v_sub - v_disc + v_ship;
+  v_ship := case when coalesce(v_threshold, 0) > 0 and v_after_all >= v_threshold then 0 else v_gov.fee end;
+  v_total := v_after_all + v_ship;
 
   update public.orders set subtotal_original = v_sub, discount_total = v_disc,
+    coupon_code = v_coupon.code, coupon_discount = v_coupon_disc,
     shipping_fee = v_ship, total_cod = v_total where id = v_order_id;
   insert into public.order_status_history (order_id, from_status, to_status, note)
     values (v_order_id, null, 'new', 'Order created');
@@ -358,11 +411,78 @@ begin
   return jsonb_build_object('order_ref', v_ref, 'total_cod', v_total, 'duplicate', false);
 end $$;
 
+create or replace function public.validate_coupon(p_code text, p_subtotal integer)
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_code text := upper(btrim(coalesce(p_code, '')));
+  v_sub integer := greatest(0, coalesce(p_subtotal, 0));
+  c public.coupons%rowtype;
+  v_disc integer := 0;
+begin
+  if v_code = '' then
+    return jsonb_build_object('valid', false, 'error_code', 'COUPON_EMPTY');
+  end if;
+
+  select * into c from public.coupons where upper(code) = v_code limit 1;
+  if not found then
+    return jsonb_build_object('valid', false, 'error_code', 'COUPON_NOT_FOUND');
+  end if;
+
+  if not c.is_active then
+    return jsonb_build_object('valid', false, 'error_code', 'COUPON_INACTIVE');
+  end if;
+
+  if c.expires_at is not null and c.expires_at <= now() then
+    return jsonb_build_object('valid', false, 'error_code', 'COUPON_EXPIRED');
+  end if;
+
+  if c.max_uses is not null and c.used_count >= c.max_uses then
+    return jsonb_build_object('valid', false, 'error_code', 'COUPON_USAGE_LIMIT');
+  end if;
+
+  if v_sub < c.min_order_amount then
+    return jsonb_build_object(
+      'valid', false,
+      'error_code', 'COUPON_MIN_ORDER',
+      'min_order_amount', c.min_order_amount
+    );
+  end if;
+
+  v_disc := case
+    when c.discount_type = 'percent' then round(v_sub * c.discount_value / 100.0)::int
+    else c.discount_value
+  end;
+  v_disc := greatest(0, least(v_sub, v_disc));
+
+  return jsonb_build_object(
+    'valid', true,
+    'code', c.code,
+    'discount_type', c.discount_type,
+    'discount_value', c.discount_value,
+    'discount_amount', v_disc,
+    'min_order_amount', c.min_order_amount,
+    'error_code', null
+  );
+end $$;
+
 create or replace function public.track_order(p_ref text, p_phone text)
 returns jsonb language sql stable security definer set search_path = public, pg_temp as $$
   select jsonb_build_object(
-    'order_ref', o.order_ref, 'status', o.status, 'created_at', o.created_at,
-    'governorate', o.governorate_name, 'total_cod', o.total_cod,
+    'order_ref', o.order_ref,
+    'status', o.status,
+    'created_at', o.created_at,
+    'governorate', o.governorate_name,
+    'subtotal', o.subtotal_original,
+    'bundle_discount', o.discount_total,
+    'coupon_code', o.coupon_code,
+    'coupon_discount', o.coupon_discount,
+    'shipping_fee', o.shipping_fee,
+    'total_cod', o.total_cod,
     'items', (
       select coalesce(jsonb_agg(jsonb_build_object(
         'title', i.product_title, 'size', i.size, 'color', i.color, 'quantity', i.quantity
@@ -376,6 +496,49 @@ returns jsonb language sql stable security definer set search_path = public, pg_
     and o.order_ref = upper(btrim(p_ref))
     and o.phone = public.normalize_eg_phone(p_phone);
 $$;
+
+create or replace function public.admin_get_customer_risk_stats(p_phones text[])
+returns jsonb
+language plpgsql
+stable
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  v_result jsonb;
+begin
+  if not public.is_admin() then
+    raise exception 'UNAUTHORIZED';
+  end if;
+
+  with target_phones as (
+    select distinct public.normalize_eg_phone(x) as phone
+    from unnest(coalesce(p_phones, array[]::text[])) as x
+    where public.normalize_eg_phone(x) ~ '^01[0125][0-9]{8}$'
+  ),
+  agg as (
+    select
+      o.phone,
+      count(*)::int as total_orders,
+      count(*) filter (where o.status = 'delivered')::int as delivered_count,
+      count(*) filter (where o.status = 'returned')::int as returned_count,
+      count(*) filter (where o.status = 'cancelled')::int as cancelled_count
+    from public.orders o
+    join target_phones tp on tp.phone = o.phone
+    group by o.phone
+  )
+  select coalesce(jsonb_agg(jsonb_build_object(
+    'phone', phone,
+    'total_orders', total_orders,
+    'delivered_count', delivered_count,
+    'returned_count', returned_count,
+    'cancelled_count', cancelled_count
+  )), '[]'::jsonb)
+  into v_result
+  from agg;
+
+  return v_result;
+end $$;
 
 create or replace function public.admin_update_order_status(
   p_order_id uuid, p_new_status text, p_note text default null, p_restock boolean default true
@@ -432,6 +595,11 @@ declare
   v_status text := coalesce(nullif(btrim(p->>'initial_status'), ''), 'confirmed');
   v_ship_override int := case when p ? 'shipping_fee_override' and p->>'shipping_fee_override' is not null
                               then (p->>'shipping_fee_override')::int else null end;
+  v_coupon_code text := upper(nullif(btrim(coalesce(p->>'coupon_code', '')), ''));
+  v_coupon public.coupons%rowtype;
+  v_coupon_disc int := 0;
+  v_after_bundle int := 0;
+  v_after_all int := 0;
   v_gov public.governorate_shipping%rowtype;
   v_items jsonb; v_bad jsonb;
   v_threshold int := 0;
@@ -542,16 +710,45 @@ begin
     end loop;
   end loop;
 
+  v_after_bundle := v_sub - v_disc;
+
+  if v_coupon_code is not null then
+    select * into v_coupon from public.coupons where upper(code) = v_coupon_code for update;
+    if not found or not v_coupon.is_active then
+      raise exception 'COUPON_INVALID';
+    end if;
+    if v_coupon.expires_at is not null and v_coupon.expires_at <= now() then
+      raise exception 'COUPON_EXPIRED';
+    end if;
+    if v_coupon.max_uses is not null and v_coupon.used_count >= v_coupon.max_uses then
+      raise exception 'COUPON_USAGE_LIMIT';
+    end if;
+    if v_after_bundle < v_coupon.min_order_amount then
+      raise exception 'COUPON_MIN_ORDER';
+    end if;
+
+    v_coupon_disc := case
+      when v_coupon.discount_type = 'percent' then round(v_after_bundle * v_coupon.discount_value / 100.0)::int
+      else v_coupon.discount_value
+    end;
+    v_coupon_disc := greatest(0, least(v_after_bundle, v_coupon_disc));
+
+    update public.coupons set used_count = used_count + 1 where id = v_coupon.id;
+  end if;
+
+  v_after_all := v_after_bundle - v_coupon_disc;
+
   if v_ship_override is not null then
     v_ship := v_ship_override;
   else
     select coalesce((value #>> '{}')::int, 0) into v_threshold
     from public.store_settings where key = 'free_shipping_threshold';
-    v_ship := case when coalesce(v_threshold, 0) > 0 and (v_sub - v_disc) >= v_threshold then 0 else v_gov.fee end;
+    v_ship := case when coalesce(v_threshold, 0) > 0 and v_after_all >= v_threshold then 0 else v_gov.fee end;
   end if;
-  v_total := v_sub - v_disc + v_ship;
+  v_total := v_after_all + v_ship;
 
   update public.orders set subtotal_original = v_sub, discount_total = v_disc,
+    coupon_code = v_coupon.code, coupon_discount = v_coupon_disc,
     shipping_fee = v_ship, total_cod = v_total where id = v_order_id;
   insert into public.order_status_history (order_id, from_status, to_status, changed_by, note)
     values (v_order_id, null, v_status, (select auth.uid()), 'Manual admin order');
@@ -563,7 +760,7 @@ end $$;
 do $$ declare t text; begin
   foreach t in array array[
     'categories','products','product_images','product_variants',
-    'discount_tiers','governorate_shipping','store_settings',
+    'discount_tiers','coupons','governorate_shipping','store_settings',
     'orders','order_items','order_status_history','admins'
   ] loop
     execute format('alter table public.%I enable row level security', t);
@@ -589,13 +786,16 @@ create policy "public read shipping" on public.governorate_shipping for select t
 drop policy if exists "public read settings" on public.store_settings;
 create policy "public read settings" on public.store_settings for select to anon, authenticated using (is_public);
 
-revoke all on public.orders, public.order_items, public.order_status_history, public.admins from anon;
+revoke all on public.orders, public.order_items, public.order_status_history, public.admins, public.coupons from anon;
 revoke execute on function public.create_guest_order(jsonb), public.track_order(text, text),
+  public.validate_coupon(text, integer), public.admin_get_customer_risk_stats(text[]),
   public.admin_update_order_status(uuid, text, text, boolean), public.admin_delete_product(uuid),
   public.admin_create_manual_order(jsonb), public.is_admin() from public, anon;
-grant execute on function public.create_guest_order(jsonb), public.track_order(text, text) to anon, authenticated;
+grant execute on function public.create_guest_order(jsonb), public.track_order(text, text),
+  public.validate_coupon(text, integer) to anon, authenticated;
 grant execute on function public.admin_update_order_status(uuid, text, text, boolean), public.admin_delete_product(uuid),
-  public.admin_create_manual_order(jsonb), public.is_admin() to authenticated;
+  public.admin_create_manual_order(jsonb), public.admin_get_customer_risk_stats(text[]),
+  public.is_admin() to authenticated;
 
 -- Realtime for admin orders
 do $$ begin

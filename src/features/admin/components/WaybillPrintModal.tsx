@@ -186,9 +186,15 @@ export function WaybillPrintModal({ order, whatsappNumber, onClose }: WaybillPri
                   </span>
                 </div>
                 <div>
-                  <span className="block text-[10px] font-bold">الخصم</span>
+                  <span className="block text-[10px] font-bold">
+                    {(order.coupon_discount ?? 0) > 0 && order.coupon_code
+                      ? `الخصم (${order.coupon_code})`
+                      : 'الخصم'}
+                  </span>
                   <span className="font-display font-extrabold">
-                    {order.discount_total > 0 ? `-${formatEGP(order.discount_total, 'ar')}` : '0 ج.م'}
+                    {order.discount_total + (order.coupon_discount ?? 0) > 0
+                      ? `-${formatEGP(order.discount_total + (order.coupon_discount ?? 0), 'ar')}`
+                      : '0 ج.م'}
                   </span>
                 </div>
                 <div>
@@ -198,6 +204,14 @@ export function WaybillPrintModal({ order, whatsappNumber, onClose }: WaybillPri
                   </span>
                 </div>
               </div>
+              {(order.coupon_discount ?? 0) > 0 && order.discount_total > 0 && (
+                <div className="flex items-center justify-between border-b border-black px-2 py-1 text-[10px] font-bold">
+                  <span>خصم الكميات: -{formatEGP(order.discount_total, 'ar')}</span>
+                  <span>
+                    كوبون {order.coupon_code}: -{formatEGP(order.coupon_discount ?? 0, 'ar')}
+                  </span>
+                </div>
+              )}
               <div className="bg-black px-3 py-2 text-center text-white">
                 <p className={`font-black ${isA6 ? 'text-sm' : 'text-lg'}`}>
                   المبلغ المطلوب تحصيله (كاش): {formatEGP(order.total_cod, 'ar')}

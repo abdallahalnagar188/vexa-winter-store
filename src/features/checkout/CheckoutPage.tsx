@@ -38,6 +38,8 @@ export function CheckoutPage() {
   const navigate = useNavigate();
 
   const items = useCartStore((s) => s.items);
+  const coupon = useCartStore((s) => s.coupon);
+  const clearCoupon = useCartStore((s) => s.clearCoupon);
   const clearCart = useCartStore((s) => s.clear);
   const syncStock = useCartStore((s) => s.syncStock);
 
@@ -109,6 +111,7 @@ export function CheckoutPage() {
         city_area: values.city_area,
         address_details: values.address_details,
         notes: values.notes || null,
+        coupon_code: coupon?.code ?? null,
         idempotency_key: idempotencyKey,
         items: items.map((i) => ({ variant_id: i.variantId, quantity: i.quantity })),
       });
@@ -137,6 +140,9 @@ export function CheckoutPage() {
         toast.error(t('checkout.errors.stock'));
       } else if (msg.includes('RATE_LIMITED')) {
         toast.error(t('checkout.errors.rate_limited'));
+      } else if (msg.includes('COUPON_')) {
+        clearCoupon();
+        toast.error(t('cart.couponErrors.COUPON_INVALID'));
       } else if (msg.includes('INVALID_PHONE')) {
         toast.error(t('checkout.errors.invalid_phone'));
       } else if (msg.includes('INVALID_GOVERNORATE')) {
@@ -158,7 +164,7 @@ export function CheckoutPage() {
         <button
           type="button"
           onClick={() => setMobileSummaryOpen((v) => !v)}
-          className="flex w-full items-center justify-between rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] px-4 py-3 text-sm font-extrabold text-[#132238]"
+          className="flex w-full items-center justify-between rounded-sm border border-[#132238]/12 bg-[#FFFFFF] px-4 py-3 text-sm font-extrabold text-[#132238]"
         >
           <span>{t('checkout.summary')}</span>
           <span className="flex items-center gap-2 font-display">
@@ -184,7 +190,7 @@ export function CheckoutPage() {
         <form
           id="checkout-form"
           onSubmit={handleSubmit(onSubmit)}
-          className="space-y-4 rounded-3xl border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-xl sm:p-7 lg:col-span-7"
+          className="space-y-4 rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-xl sm:p-7 lg:col-span-7"
         >
           <input type="text" tabIndex={-1} autoComplete="off" className="hidden" {...register('website')} />
 
@@ -234,7 +240,7 @@ export function CheckoutPage() {
               id="address_details"
               rows={3}
               {...register('address_details')}
-              className="w-full rounded-xl border border-[#132238]/20 bg-[#FFFFFF] p-3 text-sm text-[#132238] focus:border-[#132238] focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/50"
+              className="w-full rounded-[2px] border border-[#132238]/20 bg-[#FFFFFF] p-3 text-sm text-[#132238] focus:border-[#132238] focus:outline-none focus:ring-2 focus:ring-[#FF6B1A]/50"
             />
             {errors.address_details?.message && (
               <p className="text-xs font-semibold text-rose-700">
@@ -245,9 +251,9 @@ export function CheckoutPage() {
 
           <Input label={t('checkout.notes')} {...register('notes')} />
 
-          <div className="rounded-2xl border border-[#132238]/15 bg-[#ECE9E0] p-4">
+          <div className="rounded-sm border border-[#132238]/15 bg-[#ECE9E0] p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#132238] text-[#FF6B1A]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[2px] bg-[#132238] text-[#FF6B1A]">
                 <Banknote className="h-5 w-5" />
               </div>
               <div>

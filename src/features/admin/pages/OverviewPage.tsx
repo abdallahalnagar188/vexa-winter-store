@@ -49,7 +49,7 @@ export function OverviewPage() {
       <h1 className="text-2xl font-black text-[#132238]">نظرة عامة</h1>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-2xl bg-[#132238] p-5 text-[#F4F2EC] shadow-md">
+        <div className="rounded-sm bg-[#132238] p-5 text-[#F4F2EC] shadow-md">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-[#FF6B1A]">طلبات جديدة تحتاج تأكيد</span>
             <ShoppingCart className="h-5 w-5 text-[#FF6B1A]" />
@@ -57,7 +57,7 @@ export function OverviewPage() {
           <p className="mt-3 font-display text-3xl font-black">{newOrdersCount}</p>
         </div>
 
-        <div className="rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-xs">
+        <div className="rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold">طلبات اليوم</span>
             <Package className="h-5 w-5" />
@@ -65,7 +65,7 @@ export function OverviewPage() {
           <p className="mt-3 font-display text-3xl font-black">{todaysOrders.length}</p>
         </div>
 
-        <div className="rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-xs">
+        <div className="rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold">مبيعات اليوم (كاش)</span>
             <Banknote className="h-5 w-5" />
@@ -73,7 +73,7 @@ export function OverviewPage() {
           <p className="mt-3 font-display text-2xl font-black">{formatEGP(todaysRevenue, 'ar')}</p>
         </div>
 
-        <div className="rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-xs">
+        <div className="rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-xs">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold">طلبات آخر 7 أيام</span>
             <ShoppingCart className="h-5 w-5" />
@@ -83,7 +83,7 @@ export function OverviewPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-12">
-        <div className="rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 shadow-xs lg:col-span-7">
+        <div className="rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-5 shadow-xs lg:col-span-7">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-base font-extrabold">أحدث 10 طلبات</h2>
             <Link to="/admin/orders" className="text-xs font-bold text-[#FF6B1A] underline">
@@ -125,7 +125,7 @@ export function OverviewPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 shadow-xs lg:col-span-5">
+        <div className="rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-5 shadow-xs lg:col-span-5">
           <div className="mb-4 flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-[#FF6B1A]" />
             <h2 className="text-base font-extrabold">تنبيهات المخزون المنخفض (≤ {lowThreshold})</h2>
@@ -135,13 +135,13 @@ export function OverviewPage() {
               <Link
                 key={variant.id}
                 to={`/admin/products/${product.id}`}
-                className="flex items-center justify-between rounded-xl bg-[#ECE9E0] px-3 py-2 text-xs font-bold hover:bg-[#FF6B1A]/15"
+                className="flex items-center justify-between rounded-[2px] bg-[#ECE9E0] px-3 py-2 text-xs font-bold hover:bg-[#FF6B1A]/15"
               >
                 <span>
                   {product.title_ar} ({variant.size} / {variant.color_name})
                 </span>
                 <span
-                  className={`rounded-full px-2 py-0.5 font-display ${
+                  className={`rounded-[2px] px-2 py-0.5 font-display ${
                     variant.stock === 0 ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-900'
                   }`}
                 >

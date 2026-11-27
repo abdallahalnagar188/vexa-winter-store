@@ -44,9 +44,16 @@
     "sortPriceDesc": "Price: High to Low",
     "newTag": "NEW",
     "soldOut": "Sold Out",
-    "noProducts": "No products found in this category",
+    "noProducts": "No products match the current filters",
     "loadMore": "Load More",
-    "retry": "Retry"
+    "retry": "Retry",
+    "searchPlaceholder": "Search by item name or fabric...",
+    "filters": "Filters",
+    "sizeFilter": "Size",
+    "colorFilter": "Color",
+    "inStockOnly": "In Stock Only",
+    "clearFilters": "Clear Filters",
+    "resultsCount": "{{count}} items"
   },
   "product": {
     "selectColor": "Select Color",
@@ -72,6 +79,8 @@
     "emptySub": "Explore the winter drop and unlock multi-piece discounts.",
     "shopNow": "Browse Shop",
     "originalSubtotal": "Original Subtotal",
+    "bundleDiscount": "Bundle Savings",
+    "couponDiscount": "Promo ({{code}})",
     "discountTotal": "Total Savings",
     "subtotal": "Subtotal",
     "shippingNote": "Shipping calculated at checkout",
@@ -80,7 +89,21 @@
     "checkout": "Checkout (Cash on Delivery)",
     "viewCart": "View Cart",
     "remove": "Remove",
-    "stockAdjusted": "Quantities updated to match available stock"
+    "stockAdjusted": "Quantities updated to match available stock",
+    "couponLabel": "Promo Code",
+    "couponPlaceholder": "Enter promo code...",
+    "couponApply": "Apply",
+    "couponApplied": "Promo {{code}} applied",
+    "couponRemove": "Remove",
+    "couponErrors": {
+      "COUPON_EMPTY": "Please enter a promo code first",
+      "COUPON_NOT_FOUND": "Promo code is not valid",
+      "COUPON_INACTIVE": "This promo code is currently inactive",
+      "COUPON_EXPIRED": "This promo code has expired",
+      "COUPON_USAGE_LIMIT": "This promo code has reached its usage limit",
+      "COUPON_MIN_ORDER": "Minimum order of {{amount}} is required for this code",
+      "COUPON_INVALID": "Promo code is no longer valid"
+    }
   },
   "checkout": {
     "title": "Guest Checkout",
@@ -130,7 +153,12 @@
     "phonePlaceholder": "010xxxxxxxx",
     "submit": "Track",
     "notFound": "No matching order found. Please check your reference and phone number.",
-    "items": "Items"
+    "items": "Items",
+    "breakdownTitle": "Cash on Delivery Breakdown",
+    "subtotal": "Items Subtotal",
+    "bundleDiscount": "Bundle Discount",
+    "couponDiscount": "Promo Code ({{code}})",
+    "shippingFee": "Shipping Fee"
   },
   "footer": {
     "about": "Contemporary winter streetwear tailored for cold Egyptian nights.",

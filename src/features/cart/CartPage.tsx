@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useCartStore } from './cartStore';
 import { useCartPricing } from './useCartPricing';
 import { CartLine } from './CartLine';
+import { CouponBox } from './CouponBox';
 import { PriceSummary } from './PriceSummary';
 import { PageTransition } from '@/shared/components/motion/PageTransition';
 import { EmptyState } from '@/shared/components/ui/EmptyState';
@@ -68,7 +69,7 @@ export function CartPage() {
         />
       ) : (
         <div className="grid gap-6 lg:grid-cols-12">
-          <div className="space-y-3 rounded-2xl border border-[#132238]/12 bg-[#ECE9E0] p-4 lg:col-span-8">
+          <div className="space-y-3 rounded-sm border border-[#132238]/12 bg-[#ECE9E0] p-4 lg:col-span-8">
             {items.map((item) => {
               const pricedLine = priced.lines.find(
                 (l) => l.lineKey === item.cartItemKey || l.variantId === item.variantId,
@@ -93,8 +94,9 @@ export function CartPage() {
             })}
           </div>
 
-          <div className="h-fit rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-lg lg:sticky lg:top-24 lg:col-span-4">
+          <div className="h-fit rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-lg lg:sticky lg:top-24 lg:col-span-4">
             <h2 className="mb-4 text-lg font-extrabold">{t('checkout.summary')}</h2>
+            <CouponBox subtotalAfterBundle={priced.subtotalAfterBundle} />
             <PriceSummary priced={priced} freeShippingThreshold={freeShippingThreshold} />
             <Link to="/checkout" className="mt-5 block">
               <Button variant="primary" size="lg" className="w-full">

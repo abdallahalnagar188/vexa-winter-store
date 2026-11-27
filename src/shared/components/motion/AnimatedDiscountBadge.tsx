@@ -15,7 +15,7 @@ export function AnimatedDiscountBadge({ children, className }: AnimatedDiscountB
       animate={{ scale: [0.85, 1.07, 1], opacity: 1 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
       className={cn(
-        'inline-flex items-center gap-1 rounded-full bg-[#FF6B1A] px-2.5 py-1 text-xs font-extrabold text-white shadow-xs',
+        'inline-flex items-center gap-1 rounded-[2px] bg-[#FF6B1A] px-2.5 py-0.5 text-xs font-extrabold text-white shadow-xs',
         className,
       )}
     >

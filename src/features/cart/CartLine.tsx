@@ -61,11 +61,11 @@ export function CartLine({
   };
 
   return (
-    <div className="flex gap-3 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-3 text-[#132238] shadow-2xs">
+    <div className="flex gap-3 rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-3 text-[#132238] shadow-2xs">
       <img
         src={item.snapshot.imageUrl ?? ''}
         alt={title}
-        className="h-24 w-20 shrink-0 rounded-xl bg-[#ECE9E0] object-contain p-1"
+        className="h-24 w-20 shrink-0 rounded-[2px] bg-[#ECE9E0] object-contain p-1"
       />
       <div className="flex min-w-0 flex-1 flex-col justify-between gap-2">
         <div className="flex items-start justify-between gap-2">
@@ -78,7 +78,7 @@ export function CartLine({
                     aria-label={t('product.selectColor')}
                     value={item.snapshot.colorName}
                     onChange={(e) => handleColorSelect(e.target.value)}
-                    className="h-7 max-w-[110px] cursor-pointer rounded-lg border border-[#132238]/18 bg-[#F4F2EC] px-2 text-xs font-bold text-[#132238] focus:border-[#FF6B1A] focus:outline-none"
+                    className="h-7 max-w-[110px] cursor-pointer rounded-[2px] border border-[#132238]/18 bg-[#F4F2EC] px-2 text-xs font-bold text-[#132238] focus:border-[#FF6B1A] focus:outline-none"
                   >
                     {availableColors.map((color) => (
                       <option key={color} value={color}>
@@ -97,7 +97,7 @@ export function CartLine({
                     aria-label={t('product.selectSize')}
                     value={item.snapshot.size}
                     onChange={(e) => handleSizeSelect(e.target.value)}
-                    className="h-7 cursor-pointer rounded-lg border border-[#132238]/18 bg-[#F4F2EC] px-2 font-display text-xs font-bold text-[#132238] focus:border-[#FF6B1A] focus:outline-none"
+                    className="h-7 cursor-pointer rounded-[2px] border border-[#132238]/18 bg-[#F4F2EC] px-2 font-display text-xs font-bold text-[#132238] focus:border-[#FF6B1A] focus:outline-none"
                   >
                     {sizesForCurrentColor.map((size) => (
                       <option key={size} value={size}>
@@ -124,7 +124,7 @@ export function CartLine({
             type="button"
             onClick={onRemove}
             aria-label={t('cart.remove')}
-            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-lg text-[#132238]/60 hover:bg-rose-100 hover:text-rose-700"
+            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[2px] text-[#132238]/60 hover:bg-rose-100 hover:text-rose-700"
           >
             <Trash2 className="h-4 w-4" />
           </button>

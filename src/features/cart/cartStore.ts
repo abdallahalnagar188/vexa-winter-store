@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { CartItem, CartSnapshot } from '@/shared/types/domain';
+import type { AppliedCoupon, CartItem, CartSnapshot } from '@/shared/types/domain';
 
 function normalizeKeyPart(value: string): string {
   return value.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -12,6 +12,7 @@ export function buildCartItemKey(productId: string, colorName: string, size: str
 
 interface CartState {
   items: CartItem[];
+  coupon: AppliedCoupon | null;
   drawerOpen: boolean;
   add: (
     item: { variantId: string; productId: string; quantity: number; snapshot: CartSnapshot },
@@ -23,6 +24,8 @@ interface CartState {
     next: { variantId: string; snapshot: CartSnapshot },
     maxStock?: number,
   ) => void;
+  setCoupon: (coupon: AppliedCoupon | null) => void;
+  clearCoupon: () => void;
   remove: (cartItemKey: string) => void;
   clear: () => void;
   openDrawer: () => void;
@@ -81,6 +84,7 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      coupon: null,
       drawerOpen: false,
 
       add: (incoming, maxStock) => {
@@ -189,6 +193,9 @@ export const useCartStore = create<CartState>()(
         });
       },
 
+      setCoupon: (coupon) => set({ coupon }),
+      clearCoupon: () => set({ coupon: null }),
+
       remove: (cartItemKey) =>
         set((state) => ({
           items: state.items.filter(
@@ -196,7 +203,7 @@ export const useCartStore = create<CartState>()(
           ),
         })),
 
-      clear: () => set({ items: [] }),
+      clear: () => set({ items: [], coupon: null }),
 
       openDrawer: () => set({ drawerOpen: true }),
       closeDrawer: () => set({ drawerOpen: false }),
@@ -224,12 +231,20 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: 'vexa-cart:v1',
-      partialize: (state) => ({ items: state.items }),
+      partialize: (state) => ({ items: state.items, coupon: state.coupon }),
       merge: (persisted, current) => {
-        const record = (persisted ?? {}) as { items?: unknown };
+        const record = (persisted ?? {}) as { items?: unknown; coupon?: AppliedCoupon | null };
+        const validCoupon =
+          record.coupon &&
+          typeof record.coupon.code === 'string' &&
+          (record.coupon.discountType === 'percent' || record.coupon.discountType === 'fixed') &&
+          typeof record.coupon.discountValue === 'number'
+            ? record.coupon
+            : null;
         return {
           ...current,
           items: sanitizeItems(record.items),
+          coupon: validCoupon,
         };
       },
     },

@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import type { CartItem } from '@/shared/types/domain';
 import type { PricedOutput } from '@/shared/pricing/calculateCart';
+import { CouponBox } from '@/features/cart/CouponBox';
 import { PriceSummary } from '@/features/cart/PriceSummary';
 import { formatEGP } from '@/lib/format';
 import { useDir } from '@/shared/hooks/useDir';
@@ -22,7 +23,7 @@ export function OrderSummary({
   const { lang } = useDir();
 
   return (
-    <div className="rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-lg">
+    <div className="rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-lg">
       <h2 className="mb-4 text-lg font-extrabold">{t('checkout.summary')}</h2>
       <div className="mb-4 space-y-3 border-b border-[#132238]/12 pb-4">
         {items.map((item) => {
@@ -37,7 +38,7 @@ export function OrderSummary({
                 <img
                   src={item.snapshot.imageUrl ?? ''}
                   alt={title}
-                  className="h-12 w-10 shrink-0 rounded-lg bg-[#ECE9E0] object-contain p-0.5"
+                  className="h-12 w-10 shrink-0 rounded-[2px] bg-[#ECE9E0] object-contain p-0.5"
                 />
                 <div className="min-w-0">
                   <p className="truncate font-bold">{title}</p>
@@ -62,6 +63,8 @@ export function OrderSummary({
           );
         })}
       </div>
+
+      <CouponBox subtotalAfterBundle={priced.subtotalAfterBundle} />
 
       <PriceSummary
         priced={priced}

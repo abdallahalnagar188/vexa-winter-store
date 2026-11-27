@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
-import { Download, Plus, Printer } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Download, Plus, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import type { OrderStatus } from '@/shared/types/database';
-import type { OrderRecord } from '@/shared/types/domain';
-import { useAdminOrders } from '@/features/admin/api/useAdminOrders';
+import type { CustomerRiskStat, OrderRecord } from '@/shared/types/domain';
+import { useAdminOrders, useCustomerRiskStats } from '@/features/admin/api/useAdminOrders';
 import { useAdminSettings } from '@/features/admin/api/useAdminSettings';
 import { ORDER_STATUS_META } from '@/shared/constants/orderStatus';
 import { StatusBadge } from '@/features/admin/components/StatusBadge';
@@ -32,7 +32,18 @@ function sanitizeCsvCell(value: unknown): string {
 }
 
 function exportCsv(orders: OrderRecord[]) {
-  const headers = ['Ref', 'Date', 'Customer', 'Phone', 'Governorate', 'Address', 'Items', 'Total COD', 'Status'];
+  const headers = [
+    'Ref',
+    'Date',
+    'Customer',
+    'Phone',
+    'Governorate',
+    'Address',
+    'Items',
+    'Coupon',
+    'Total COD',
+    'Status',
+  ];
   const lines = orders.map((o) => {
     const itemsStr = (o.order_items ?? [])
       .map((i) => `${i.quantity}x ${i.product_title} (${i.size}/${i.color})`)
@@ -45,6 +56,7 @@ function exportCsv(orders: OrderRecord[]) {
       o.governorate_name,
       `${o.city_area} - ${o.address_details}`,
       itemsStr,
+      o.coupon_code ?? '',
       String(o.total_cod),
       o.status,
     ];
@@ -60,6 +72,29 @@ function exportCsv(orders: OrderRecord[]) {
   URL.revokeObjectURL(url);
 }
 
+function CustomerRiskBadge({ stat }: { stat?: CustomerRiskStat }) {
+  if (!stat) return null;
+  if (stat.returned_count >= 1 || stat.cancelled_count >= 2) {
+    return (
+      <span className="mt-1 inline-flex items-center gap-1 rounded-[2px] border border-amber-400 bg-amber-100 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-950">
+        <AlertTriangle className="h-3 w-3 shrink-0 text-amber-700" />
+        <span>
+          تنبيه: {stat.returned_count} مرتجع / {stat.cancelled_count} ملغي
+        </span>
+      </span>
+    );
+  }
+  if (stat.delivered_count >= 2 && stat.returned_count === 0) {
+    return (
+      <span className="mt-1 inline-flex items-center gap-1 rounded-[2px] border border-[#1F7A4D]/30 bg-[#1F7A4D]/10 px-1.5 py-0.5 text-[10px] font-extrabold text-[#1F7A4D]">
+        <CheckCircle2 className="h-3 w-3 shrink-0" />
+        <span>عميل متكرر ({stat.delivered_count} ناجح)</span>
+      </span>
+    );
+  }
+  return null;
+}
+
 export function OrdersPage() {
   useDocumentTitle('الطلبات - الإدارة');
   const [activeTab, setActiveTab] = useState<OrderStatus | 'all'>('all');
@@ -71,6 +106,9 @@ export function OrdersPage() {
   const ordersQuery = useAdminOrders('all');
   const settingsQuery = useAdminSettings();
   const allOrders = useMemo(() => ordersQuery.data ?? [], [ordersQuery.data]);
+  const phonesList = useMemo(() => allOrders.map((o) => o.phone), [allOrders]);
+  const riskQuery = useCustomerRiskStats(phonesList);
+  const riskMap = riskQuery.data ?? {};
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -114,7 +152,7 @@ export function OrdersPage() {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`min-h-10 cursor-pointer rounded-xl px-3.5 text-xs font-extrabold transition-colors ${
+              className={`min-h-10 cursor-pointer rounded-[2px] px-3.5 text-xs font-extrabold transition-colors ${
                 active
                   ? 'bg-[#FF6B1A] text-white shadow-xs'
                   : 'border border-[#132238]/12 bg-[#FFFFFF] text-[#132238] hover:bg-[#132238] hover:text-[#F4F2EC]'
@@ -126,13 +164,13 @@ export function OrdersPage() {
         })}
       </div>
 
-      <div className="rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-4 shadow-xs">
+      <div className="rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-4 shadow-xs">
         <input
           type="search"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="ابحث برقم الأوردر (WNT-...) أو الاسم أو الموبايل..."
-          className="min-h-10 w-full max-w-md rounded-xl border border-[#132238]/20 bg-[#F4F2EC] px-3.5 text-sm"
+          className="min-h-10 w-full max-w-md rounded-[2px] border border-[#132238]/20 bg-[#F4F2EC] px-3.5 text-sm"
         />
       </div>
 
@@ -141,17 +179,20 @@ export function OrdersPage() {
           <div
             key={o.id}
             onClick={() => setSelectedOrderId(o.id)}
-            className="cursor-pointer space-y-2.5 rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] p-4 shadow-xs"
+            className="cursor-pointer space-y-2.5 rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-4 shadow-xs"
           >
             <div className="flex items-center justify-between gap-2">
               <span className="font-display font-black">{o.order_ref}</span>
               <StatusBadge status={o.status} />
             </div>
             <div className="text-sm font-bold">{o.customer_name}</div>
-            <div className="flex items-center justify-between text-xs text-[#132238]/75">
-              <span className="font-display" dir="ltr">
-                {o.phone}
-              </span>
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#132238]/75">
+              <div>
+                <span className="block font-display" dir="ltr">
+                  {o.phone}
+                </span>
+                <CustomerRiskBadge stat={riskMap[o.phone]} />
+              </div>
               <span>{o.governorate_name}</span>
             </div>
             <div className="flex items-center justify-between border-t border-[#132238]/10 pt-2.5">
@@ -180,20 +221,20 @@ export function OrdersPage() {
           </div>
         ))}
         {filtered.length === 0 && (
-          <div className="rounded-2xl bg-[#FFFFFF] p-6 text-center text-sm text-[#132238]/70">
+          <div className="rounded-sm bg-[#FFFFFF] p-6 text-center text-sm text-[#132238]/70">
             لا توجد طلبات مطابقة للبحث
           </div>
         )}
       </div>
 
-      <div className="hidden overflow-x-auto rounded-2xl border border-[#132238]/12 bg-[#FFFFFF] shadow-xs md:block">
+      <div className="hidden overflow-x-auto rounded-sm border border-[#132238]/12 bg-[#FFFFFF] shadow-xs md:block">
         <table className="w-full text-start text-sm">
           <thead className="border-b border-[#132238]/12 bg-[#ECE9E0] text-xs font-extrabold">
             <tr>
               <th className="p-3">المرجع</th>
               <th className="p-3">التاريخ</th>
               <th className="p-3">العميل</th>
-              <th className="p-3">الموبايل</th>
+              <th className="p-3">الموبايل والموثوقية</th>
               <th className="p-3">المحافظة</th>
               <th className="p-3">الإجمالي</th>
               <th className="p-3">الحالة</th>
@@ -210,8 +251,11 @@ export function OrdersPage() {
                 <td className="p-3 font-display font-extrabold">{o.order_ref}</td>
                 <td className="p-3 text-xs">{formatDate(o.created_at, 'ar')}</td>
                 <td className="p-3 font-bold">{o.customer_name}</td>
-                <td className="p-3 font-display text-xs" dir="ltr">
-                  {o.phone}
+                <td className="p-3 text-xs">
+                  <span className="block font-display" dir="ltr">
+                    {o.phone}
+                  </span>
+                  <CustomerRiskBadge stat={riskMap[o.phone]} />
                 </td>
                 <td className="p-3 text-xs">{o.governorate_name}</td>
                 <td className="p-3 font-display font-extrabold">{formatEGP(o.total_cod, 'ar')}</td>
@@ -255,6 +299,7 @@ export function OrdersPage() {
       <OrderDetailDrawer
         order={selectedOrder}
         allOrders={allOrders}
+        riskStat={selectedOrder ? riskMap[selectedOrder.phone] : undefined}
         courierTemplate={settingsQuery.data?.courier_template}
         onPrintWaybill={(ord) => setPrintOrderId(ord.id)}
         onClose={() => setSelectedOrderId(null)}

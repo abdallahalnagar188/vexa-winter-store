@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import type { Json, OrderStatus } from '@/shared/types/database';
-import type { OrderRecord } from '@/shared/types/domain';
+import type { CustomerRiskStat, OrderRecord } from '@/shared/types/domain';
 
 function playPing() {
   try {
@@ -96,6 +96,7 @@ export function useUpdateOrderStatus() {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      void qc.invalidateQueries({ queryKey: ['admin', 'customer-risk'] });
       void qc.invalidateQueries({ queryKey: ['admin', 'products'] });
       void qc.invalidateQueries({ queryKey: ['products'] });
     },
@@ -149,8 +150,30 @@ export function useCreateManualOrder() {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      void qc.invalidateQueries({ queryKey: ['admin', 'customer-risk'] });
       void qc.invalidateQueries({ queryKey: ['admin', 'products'] });
       void qc.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
+}
+
+export function useCustomerRiskStats(phones: string[]) {
+  const uniquePhones = Array.from(new Set(phones.filter(Boolean))).sort();
+  return useQuery({
+    queryKey: ['admin', 'customer-risk', uniquePhones],
+    enabled: uniquePhones.length > 0,
+    staleTime: 30_000,
+    queryFn: async (): Promise<Record<string, CustomerRiskStat>> => {
+      const { data, error } = await supabase.rpc('admin_get_customer_risk_stats', {
+        p_phones: uniquePhones,
+      });
+      if (error) throw error;
+      const rows = (data ?? []) as unknown as CustomerRiskStat[];
+      const map: Record<string, CustomerRiskStat> = {};
+      for (const r of rows) {
+        map[r.phone] = r;
+      }
+      return map;
     },
   });
 }

@@ -8,6 +8,7 @@ import type { ProductVariant, ProductWithDetails } from '@/shared/types/domain';
 
 export function useCartPricing(shippingFee: number | null = null) {
   const items = useCartStore((s) => s.items);
+  const coupon = useCartStore((s) => s.coupon);
   const productIds = useMemo(
     () => Array.from(new Set(items.map((i) => i.productId))).sort(),
     [items],
@@ -57,11 +58,13 @@ export function useCartPricing(shippingFee: number | null = null) {
       tiers: tiersQuery.data ?? [],
       shippingFee,
       freeShippingThreshold: settingsQuery.data?.freeShippingThreshold ?? 0,
+      coupon,
     });
 
     return { priced: result, variantMap: vMap, productMap: productById, staleVariantIds: staleIds };
   }, [
     items,
+    coupon,
     productsQuery.data,
     productsQuery.isFetched,
     productsQuery.isFetching,
@@ -72,6 +75,7 @@ export function useCartPricing(shippingFee: number | null = null) {
 
   return {
     items,
+    coupon,
     priced,
     variantMap,
     productMap,

@@ -61,6 +61,34 @@ export interface DiscountTier {
   is_active: boolean;
 }
 
+export interface Coupon {
+  id: string;
+  code: string;
+  discount_type: DiscountType;
+  discount_value: number;
+  min_order_amount: number;
+  max_uses: number | null;
+  used_count: number;
+  expires_at: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface AppliedCoupon {
+  code: string;
+  discountType: DiscountType;
+  discountValue: number;
+  minOrderAmount: number;
+}
+
+export interface CustomerRiskStat {
+  phone: string;
+  total_orders: number;
+  delivered_count: number;
+  returned_count: number;
+  cancelled_count: number;
+}
+
 export interface GovernorateShipping {
   id: number;
   name_ar: string;
@@ -211,6 +239,8 @@ export interface OrderRecord {
   internal_notes: string | null;
   subtotal_original: number;
   discount_total: number;
+  coupon_code?: string | null;
+  coupon_discount?: number;
   shipping_fee: number;
   total_cod: number;
   stock_restocked: boolean;
@@ -225,6 +255,11 @@ export interface TrackedOrder {
   status: OrderStatus;
   created_at: string;
   governorate: string;
+  subtotal: number;
+  bundle_discount: number;
+  coupon_code: string | null;
+  coupon_discount: number;
+  shipping_fee: number;
   total_cod: number;
   items: {
     title: string;

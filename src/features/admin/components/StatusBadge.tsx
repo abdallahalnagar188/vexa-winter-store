@@ -7,7 +7,7 @@ export function StatusBadge({ status }: { status: OrderStatus }) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-extrabold',
+        'inline-flex items-center rounded-[2px] border px-2.5 py-0.5 text-xs font-extrabold',
         meta.badgeClass,
       )}
     >
