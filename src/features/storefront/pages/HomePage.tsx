@@ -330,9 +330,9 @@ export function HomePage() {
         </div>
 
         {productsQuery.isLoading ? (
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="aspect-4/5 w-full rounded-sm" />
+              <Skeleton key={i} className="aspect-3/4 w-full rounded-[2px]" />
             ))}
           </div>
         ) : productsQuery.isError ? (
@@ -343,7 +343,7 @@ export function HomePage() {
             </Button>
           </div>
         ) : (
-          <StaggerGrid className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <StaggerGrid className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-4">
             {(productsQuery.data ?? []).map((product) => (
               <ProductCard key={product.id} product={product} tiers={tiersQuery.data ?? []} />
             ))}

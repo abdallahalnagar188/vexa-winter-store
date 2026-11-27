@@ -16,7 +16,7 @@ export function TierOfferBanner({ tiers, activeMinQty }: TierOfferBannerProps) {
   if (tiers.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-[#132238]/15 bg-[#ECE9E0] p-4 text-[#132238]">
+    <div className="rounded-sm border border-[#132238]/15 bg-[#ECE9E0] p-4 text-[#132238]">
       <div className="flex items-center gap-2 text-sm font-extrabold">
         <Tag className="h-4 w-4 text-[#FF6B1A]" />
         <span>{t('offers.bannerTitle')}</span>
@@ -26,13 +26,13 @@ export function TierOfferBanner({ tiers, activeMinQty }: TierOfferBannerProps) {
         {tiers.map((tier) => {
           const isActive = activeMinQty === tier.minQty;
           return isActive ? (
-            <AnimatedDiscountBadge key={tier.minQty}>
+            <AnimatedDiscountBadge key={tier.minQty} className="px-3 py-1 font-bold">
               {describeTier(tier, lang)}
             </AnimatedDiscountBadge>
           ) : (
             <span
               key={tier.minQty}
-              className="inline-flex items-center rounded-full border border-[#132238]/20 bg-[#FFFFFF] px-3 py-1 text-xs font-bold text-[#132238]"
+              className="inline-flex items-center rounded-[2px] border border-[#132238]/20 bg-[#FFFFFF] px-3 py-1 text-xs font-bold text-[#132238]"
             >
               {describeTier(tier, lang)}
             </span>
