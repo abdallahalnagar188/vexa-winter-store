@@ -38,7 +38,7 @@ export function ProductGallery({ images, title, selectedColor }: ProductGalleryP
   return (
     <div className="flex flex-col gap-3">
       {/* Main image with seamless studio surface and crossfade on color switch */}
-      <div className="relative aspect-[4/5] overflow-hidden rounded-3xl border border-[#132238]/10 bg-[radial-gradient(circle_at_center,#FFFFFF_0%,#F3F2EE_65%,#EAE6DC_100%)] shadow-md">
+      <div className="relative aspect-[4/5] overflow-hidden rounded-sm border border-[#132238]/10 bg-[radial-gradient(circle_at_center,#FFFFFF_0%,#F3F2EE_65%,#EAE6DC_100%)] shadow-md">
         <AnimatePresence mode="wait">
           {current ? (
             <motion.img

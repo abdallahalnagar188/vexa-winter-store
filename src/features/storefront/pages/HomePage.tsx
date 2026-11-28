@@ -114,79 +114,108 @@ export function HomePage() {
             </Link>
           </div>
 
-          {categoryCards.length > 0 ? (
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.15 }}
-              variants={{
-                hidden: {},
-                visible: { transition: { staggerChildren: 0.06 } },
-              }}
-              className="grid grid-cols-2 gap-4 lg:grid-cols-12"
-            >
-              {categoryCards.map((card, idx) => {
-                const isLead = idx === 0;
-                const cardTitle = isAr ? card.title_ar : card.title_en || card.title_ar;
-                const cardSub = isAr ? card.subtitle_ar : card.subtitle_en || card.subtitle_ar;
-                return (
-                  <motion.div
-                    key={card.id}
-                    variants={{
-                      hidden: { opacity: 0, y: 16 },
-                      visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
-                    }}
-                    className={
-                      isLead
+          {categoryCards.length > 0 ? (() => {
+            const count = categoryCards.length;
+            const gridContainerClass =
+              count === 1
+                ? 'mx-auto grid max-w-3xl grid-cols-1 gap-4 sm:gap-6'
+                : count === 2
+                  ? 'grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6'
+                  : count === 3
+                    ? 'grid grid-cols-1 gap-4 sm:grid-cols-3 sm:gap-6'
+                    : count === 4
+                      ? 'grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-4'
+                      : count === 5
+                        ? 'grid grid-cols-2 gap-4 lg:grid-cols-12'
+                        : 'grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4';
+
+            return (
+              <motion.div
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.15 }}
+                variants={{
+                  hidden: {},
+                  visible: { transition: { staggerChildren: 0.06 } },
+                }}
+                className={gridContainerClass}
+              >
+                {categoryCards.map((card, idx) => {
+                  const isBentoLead = count === 5 && idx === 0;
+                  const cardTitle = isAr ? card.title_ar : card.title_en || card.title_ar;
+                  const cardSub = isAr ? card.subtitle_ar : card.subtitle_en || card.subtitle_ar;
+
+                  const itemSpanClass =
+                    count === 5
+                      ? isBentoLead
                         ? 'col-span-2 lg:col-span-6 lg:row-span-2'
                         : 'col-span-1 lg:col-span-3'
-                    }
-                  >
-                    <Link
-                      to={`/shop?category=${card.category_slug}`}
-                      className={`group relative block h-full overflow-hidden rounded-sm border border-[#132238]/12 bg-[#ECE9E0] shadow-xs transition-all duration-300 hover:border-[#132238]/30 hover:shadow-md ${
-                        isLead
-                          ? 'aspect-4/3 lg:aspect-auto lg:min-h-[380px]'
-                          : 'aspect-4/5 lg:aspect-square'
-                      }`}
+                      : '';
+
+                  const aspectClass =
+                    count === 1
+                      ? 'aspect-[16/9]'
+                      : count === 2
+                        ? 'aspect-[4/3]'
+                        : isBentoLead
+                          ? 'aspect-[4/3] lg:aspect-auto lg:min-h-[380px]'
+                          : count === 5
+                            ? 'aspect-[4/5] lg:aspect-square'
+                            : 'aspect-[4/5]';
+
+                  return (
+                    <motion.div
+                      key={card.id}
+                      variants={{
+                        hidden: { opacity: 0, y: 16 },
+                        visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: EASE } },
+                      }}
+                      className={itemSpanClass}
                     >
-                      <img
-                        src={card.cover_image_url}
-                        alt={cardTitle}
-                        loading="lazy"
-                        decoding="async"
-                        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-linear-to-t from-[#090D16]/90 via-[#090D16]/25 to-transparent" />
-                      <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-4 sm:p-5">
-                        <div className="min-w-0">
-                          {cardSub && (
-                            <p className="mb-1 truncate text-[11px] font-bold tracking-wide text-[#FF6B1A] sm:text-xs">
-                              {cardSub}
-                            </p>
-                          )}
-                          <h3
-                            className={`font-black leading-tight text-[#F4F2EC] ${
-                              isLead ? 'text-xl sm:text-2xl' : 'text-sm sm:text-base'
-                            }`}
-                          >
-                            {cardTitle}
-                          </h3>
+                      <Link
+                        to={`/shop?category=${card.category_slug}`}
+                        className={`group relative block h-full overflow-hidden rounded-[2px] border border-[#132238]/12 bg-[#ECE9E0] shadow-xs transition-all duration-300 hover:border-[#132238]/30 hover:shadow-md ${aspectClass}`}
+                      >
+                        <img
+                          src={card.cover_image_url}
+                          alt={cardTitle}
+                          loading="lazy"
+                          decoding="async"
+                          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-linear-to-t from-[#090D16]/90 via-[#090D16]/25 to-transparent" />
+                        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-4 sm:p-5">
+                          <div className="min-w-0">
+                            {cardSub && (
+                              <p className="mb-1 truncate text-[11px] font-bold tracking-wide text-[#FF6B1A] sm:text-xs">
+                                {cardSub}
+                              </p>
+                            )}
+                            <h3
+                              className={`font-black leading-tight text-[#F4F2EC] ${
+                                count === 1 || count === 2 || isBentoLead
+                                  ? 'text-lg sm:text-2xl'
+                                  : 'text-sm sm:text-base'
+                              }`}
+                            >
+                              {cardTitle}
+                            </h3>
+                          </div>
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[2px] bg-[#FF6B1A] text-white transition-transform duration-200 group-hover:scale-105">
+                            <ArrowIcon
+                              className={`h-4 w-4 transition-transform duration-200 ${
+                                isRtl ? 'group-hover:-translate-x-0.5' : 'group-hover:translate-x-0.5'
+                              }`}
+                            />
+                          </span>
                         </div>
-                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[2px] bg-[#FF6B1A] text-white transition-transform duration-200 group-hover:scale-105">
-                          <ArrowIcon
-                            className={`h-4 w-4 transition-transform duration-200 ${
-                              isRtl ? 'group-hover:-translate-x-0.5' : 'group-hover:translate-x-0.5'
-                            }`}
-                          />
-                        </span>
-                      </div>
-                    </Link>
-                  </motion.div>
-                );
-              })}
-            </motion.div>
-          ) : (
+                      </Link>
+                    </motion.div>
+                  );
+                })}
+              </motion.div>
+            );
+          })() : (
             <div className="flex flex-wrap gap-3">
               {categoriesQuery.data?.map((cat) => (
                 <Link

@@ -24,7 +24,13 @@ export function Header() {
   const headerCategories = categories.filter((c) => c.show_in_header !== false);
   const slideOffset = isRtl ? '100%' : '-100%';
 
+  const closeDrawerCleanly = () => {
+    document.body.style.overflow = '';
+    setMobileOpen(false);
+  };
+
   useEffect(() => {
+    document.body.style.overflow = '';
     setMobileOpen(false);
   }, [pathname, search]);
 
@@ -36,15 +42,17 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    if (!mobileOpen) return;
-    const prevOverflow = document.body.style.overflow;
+    if (!mobileOpen) {
+      document.body.style.overflow = '';
+      return;
+    }
     document.body.style.overflow = 'hidden';
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setMobileOpen(false);
+      if (e.key === 'Escape') closeDrawerCleanly();
     };
     window.addEventListener('keydown', onKeyDown);
     return () => {
-      document.body.style.overflow = prevOverflow;
+      document.body.style.overflow = '';
       window.removeEventListener('keydown', onKeyDown);
     };
   }, [mobileOpen]);
@@ -53,7 +61,7 @@ export function Header() {
     <AnimatePresence>
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-50 flex md:hidden"
+          className="fixed inset-0 z-50 flex lg:hidden"
           role="dialog"
           aria-modal="true"
           aria-label="Mobile Navigation"
@@ -63,7 +71,7 @@ export function Header() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            onClick={() => setMobileOpen(false)}
+            onClick={closeDrawerCleanly}
             className="fixed inset-0 bg-[#0C1626]/80"
           />
           <motion.nav
@@ -77,7 +85,7 @@ export function Header() {
               <VexaLogo variant="dark-bg" className="h-7 w-auto" />
               <button
                 type="button"
-                onClick={() => setMobileOpen(false)}
+                onClick={closeDrawerCleanly}
                 aria-label="Close menu"
                 className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-[2px] text-[#F4F2EC] hover:bg-[#1C314E]"
               >
@@ -89,7 +97,7 @@ export function Header() {
               <NavLink
                 to="/"
                 end
-                onClick={() => setMobileOpen(false)}
+                onClick={closeDrawerCleanly}
                 className={({ isActive }) =>
                   `rounded-[2px] px-3.5 py-2.5 transition-colors ${
                     isActive
@@ -102,7 +110,7 @@ export function Header() {
               </NavLink>
               <NavLink
                 to="/shop"
-                onClick={() => setMobileOpen(false)}
+                onClick={closeDrawerCleanly}
                 className={({ isActive }) =>
                   `rounded-[2px] px-3.5 py-2.5 transition-colors ${
                     isActive && !search
@@ -127,7 +135,7 @@ export function Header() {
                       <Link
                         key={cat.id}
                         to={`/shop?category=${cat.slug}`}
-                        onClick={() => setMobileOpen(false)}
+                        onClick={closeDrawerCleanly}
                         className={`rounded-[2px] px-3.5 py-2.5 transition-colors ${
                           activeCat
                             ? 'bg-[#FF6B1A] text-white'
@@ -145,7 +153,7 @@ export function Header() {
             <div className="mt-auto border-t border-[#F4F2EC]/15 pt-4">
               <Link
                 to="/track"
-                onClick={() => setMobileOpen(false)}
+                onClick={closeDrawerCleanly}
                 className="block rounded-[2px] bg-[#FF6B1A] px-3.5 py-3 text-center font-extrabold text-white shadow-sm transition-colors hover:bg-[#E85A0C]"
               >
                 {t('nav.track')}
@@ -172,7 +180,7 @@ export function Header() {
               type="button"
               onClick={() => setMobileOpen(true)}
               aria-label="Open menu"
-              className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-[2px] text-[#F4F2EC] hover:bg-[#1C314E] md:hidden"
+              className="flex h-11 w-11 cursor-pointer items-center justify-center rounded-[2px] text-[#F4F2EC] hover:bg-[#1C314E] lg:hidden"
             >
               <Menu className="h-5 w-5" />
             </button>
@@ -182,7 +190,7 @@ export function Header() {
             </Link>
           </div>
 
-          <nav className="hidden items-center gap-6 text-sm font-semibold md:flex">
+          <nav className="hidden items-center gap-6 text-sm font-semibold lg:flex">
             <NavLink
               to="/"
               end

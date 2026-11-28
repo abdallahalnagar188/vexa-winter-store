@@ -6,6 +6,7 @@ import { Footer } from './Footer';
 import { WhatsAppButton } from './WhatsAppButton';
 import { envConfigError, isSupabaseConfigured } from '@/lib/supabase';
 import { trackStorefrontEvent } from '@/lib/storefrontTracker';
+import { ScrollToTop } from '@/shared/components/ScrollToTop';
 
 const CartDrawer = lazy(() =>
   import('@/features/cart/CartDrawer').then((m) => ({ default: m.CartDrawer })),
@@ -22,6 +23,7 @@ export function StoreLayout() {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#F4F2EC] text-[#132238]">
+      <ScrollToTop />
       {!isSupabaseConfigured && (
         <div className="bg-[#FF6B1A] px-4 py-2 text-center text-xs font-extrabold text-white">
           <span className="inline-flex items-center gap-1.5">
@@ -31,7 +33,7 @@ export function StoreLayout() {
         </div>
       )}
       <Header />
-      <main className="flex-1">
+      <main className="min-w-0 flex-1 overflow-x-clip">
         <Outlet />
       </main>
       <Footer />

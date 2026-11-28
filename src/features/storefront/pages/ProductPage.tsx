@@ -201,14 +201,14 @@ export function ProductPage() {
   return (
     <PageTransition className="mx-auto max-w-6xl px-4 pb-28 pt-8 sm:px-6 lg:pb-12">
       <div className="grid gap-8 lg:grid-cols-12">
-        <div className="lg:col-span-6">
+        <div className="min-w-0 lg:col-span-6">
           <ProductGallery images={product.product_images} title={title} selectedColor={selectedColor} />
         </div>
 
-        <div className="flex flex-col gap-5 rounded-3xl border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-xl sm:p-7 lg:col-span-6">
+        <div className="flex min-w-0 flex-col gap-5 rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-5 text-[#132238] shadow-xl sm:p-7 lg:col-span-6">
           <div>
             {product.is_new && (
-              <span className="mb-2 inline-block rounded-full bg-[#132238] px-3 py-0.5 text-xs font-extrabold text-[#F4F2EC]">
+              <span className="mb-2 inline-block rounded-[2px] bg-[#132238] px-3 py-0.5 text-xs font-extrabold text-[#F4F2EC]">
                 {t('catalog.newTag')}
               </span>
             )}
@@ -253,7 +253,7 @@ export function ProductPage() {
             />
 
             {pickerError && (
-              <p className="rounded-xl bg-rose-100 px-3 py-2 text-xs font-bold text-rose-800">
+              <p className="rounded-[2px] bg-rose-100 px-3 py-2 text-xs font-bold text-rose-800">
                 {t('product.pickVariantError')}
               </p>
             )}
@@ -292,7 +292,7 @@ export function ProductPage() {
           </div>
 
           {groupPreview && (
-            <div className="rounded-2xl border border-[#132238]/12 bg-[#ECE9E0] p-4">
+            <div className="rounded-sm border border-[#132238]/12 bg-[#ECE9E0] p-4">
               <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-[#132238]/75">
                 <span>
                   {existingProductCartQty > 0

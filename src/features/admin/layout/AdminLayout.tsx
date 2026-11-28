@@ -6,6 +6,7 @@ import { Sidebar } from './Sidebar';
 import { TopBar } from './TopBar';
 import { useAdminOrders, useAdminOrdersRealtime } from '@/features/admin/api/useAdminOrders';
 import { useAdminNotificationStore } from '@/features/admin/store/notificationStore';
+import { ScrollToTop } from '@/shared/components/ScrollToTop';
 
 export function AdminLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -47,6 +48,7 @@ export function AdminLayout() {
 
   return (
     <div dir="rtl" className="flex min-h-screen bg-[#132238] text-[#132238]">
+      <ScrollToTop />
       <div className="hidden shrink-0 border-e border-[#F4F2EC]/15 lg:block">
         <Sidebar />
       </div>
@@ -55,7 +57,7 @@ export function AdminLayout() {
 
       <div className="flex min-w-0 flex-1 flex-col bg-[#F4F2EC]">
         <TopBar onOpenMenu={() => setMobileMenuOpen(true)} />
-        <main className="flex-1 p-4 sm:p-6">
+        <main className="min-w-0 flex-1 overflow-x-clip p-4 sm:p-6">
           <Outlet />
         </main>
       </div>

@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { AlertTriangle, CheckCircle2, Download, Plus, Printer } from 'lucide-react';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Download,
+  Eye,
+  Plus,
+  Printer,
+  Search,
+  ShoppingBag,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import type { OrderStatus } from '@/shared/types/database';
 import type { CustomerRiskStat, OrderRecord } from '@/shared/types/domain';
@@ -15,6 +24,8 @@ import { OrderDetailDrawer } from './OrderDetailDrawer';
 import { formatDate, formatEGP } from '@/lib/format';
 import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
 import { Button } from '@/shared/components/ui/Button';
+import { Skeleton } from '@/shared/components/ui/Skeleton';
+import { cn } from '@/shared/components/ui/cn';
 
 const TABS: (OrderStatus | 'all')[] = [
   'all',
@@ -77,7 +88,7 @@ function CustomerRiskBadge({ stat }: { stat?: CustomerRiskStat }) {
   if (!stat) return null;
   if (stat.returned_count >= 1 || stat.cancelled_count >= 2) {
     return (
-      <span className="mt-1 inline-flex items-center gap-1 rounded-[2px] border border-amber-400 bg-amber-100 px-1.5 py-0.5 text-[10px] font-extrabold text-amber-950">
+      <span className="mt-1 inline-flex items-center gap-1 rounded-[2px] border border-amber-300 bg-amber-50 px-1.5 py-0.5 text-[10px] font-bold text-amber-900">
         <AlertTriangle className="h-3 w-3 shrink-0 text-amber-700" />
         <span>
           تنبيه: {stat.returned_count} مرتجع / {stat.cancelled_count} ملغي
@@ -87,7 +98,7 @@ function CustomerRiskBadge({ stat }: { stat?: CustomerRiskStat }) {
   }
   if (stat.delivered_count >= 2 && stat.returned_count === 0) {
     return (
-      <span className="mt-1 inline-flex items-center gap-1 rounded-[2px] border border-[#1F7A4D]/30 bg-[#1F7A4D]/10 px-1.5 py-0.5 text-[10px] font-extrabold text-[#1F7A4D]">
+      <span className="mt-1 inline-flex items-center gap-1 rounded-[2px] border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
         <CheckCircle2 className="h-3 w-3 shrink-0" />
         <span>عميل متكرر ({stat.delivered_count} ناجح)</span>
       </span>
@@ -137,6 +148,7 @@ export function OrdersPage() {
       setSearchParams(next, { replace: true });
     }
   }, [urlRef, allOrders, searchParams, setSearchParams]);
+
   const phonesList = useMemo(() => allOrders.map((o) => o.phone), [allOrders]);
   const riskQuery = useCustomerRiskStats(phonesList);
   const riskMap = riskQuery.data ?? {};
@@ -159,8 +171,14 @@ export function OrdersPage() {
 
   return (
     <div className="space-y-5">
+      {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-black text-[#132238]">إدارة الطلبات (تحديث مباشر)</h1>
+        <div>
+          <h1 className="text-2xl font-black text-[#132238]">إدارة الطلبات</h1>
+          <p className="mt-0.5 text-xs font-semibold text-[#132238]/65">
+            تحديث لحظي للطلبات، متابعة حالة التحصيل، وبوالص الشحن ({filtered.length} طلب)
+          </p>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="primary" size="sm" onClick={() => setManualOpen(true)}>
             <Plus className="h-4 w-4" />
@@ -168,11 +186,12 @@ export function OrdersPage() {
           </Button>
           <Button variant="secondary" size="sm" onClick={() => exportCsv(filtered)}>
             <Download className="h-4 w-4" />
-            <span>تصدير CSV (Excel)</span>
+            <span>تصدير CSV</span>
           </Button>
         </div>
       </div>
 
+      {/* Status Tabs */}
       <div className="flex flex-wrap gap-2">
         {TABS.map((tab) => {
           const count =
@@ -183,11 +202,12 @@ export function OrdersPage() {
               key={tab}
               type="button"
               onClick={() => setActiveTab(tab)}
-              className={`min-h-10 cursor-pointer rounded-[2px] px-3.5 text-xs font-extrabold transition-colors ${
+              className={cn(
+                'h-9 cursor-pointer rounded-[2px] border px-3 text-xs font-bold transition-colors',
                 active
-                  ? 'bg-[#FF6B1A] text-white shadow-xs'
-                  : 'border border-[#132238]/12 bg-[#FFFFFF] text-[#132238] hover:bg-[#132238] hover:text-[#F4F2EC]'
-              }`}
+                  ? 'border-[#0D1526] bg-[#0D1526] text-white'
+                  : 'border-slate-200 bg-white text-[#0D1526] hover:border-slate-400 hover:bg-slate-50',
+              )}
             >
               {tab === 'all' ? 'الكل' : ORDER_STATUS_META[tab].labelAr} ({count})
             </button>
@@ -195,137 +215,202 @@ export function OrdersPage() {
         })}
       </div>
 
-      <div className="rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-4 shadow-xs">
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="ابحث برقم الأوردر (WNT-...) أو الاسم أو الموبايل..."
-          className="min-h-10 w-full max-w-md rounded-[2px] border border-[#132238]/20 bg-[#F4F2EC] px-3.5 text-sm"
-        />
+      {/* Single-Row Sharp Search & Filter Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-sm border border-slate-200/80 bg-white p-4 shadow-xs">
+        <div className="relative w-full max-w-md min-w-[220px]">
+          <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input
+            type="search"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="ابحث برقم الأوردر (WNT-...) أو الاسم أو الموبايل..."
+            aria-label="بحث في الطلبات"
+            className="h-10 w-full rounded-[2px] border border-slate-200 bg-[#F4F2EC]/50 pe-3 ps-9 text-sm font-medium text-[#0D1526] placeholder:text-slate-400 focus:border-[#0D1526] focus:bg-white focus:outline-none"
+          />
+        </div>
+
+        <span className="text-xs font-bold text-slate-500">
+          عرض {filtered.length} من أصل {allOrders.length}
+        </span>
       </div>
 
-      <div className="space-y-3 md:hidden">
-        {filtered.map((o) => (
-          <div
-            key={o.id}
-            onClick={() => setSelectedOrderId(o.id)}
-            className="cursor-pointer space-y-2.5 rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-4 shadow-xs"
-          >
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-display font-black">{o.order_ref}</span>
-              <StatusBadge status={o.status} />
-            </div>
-            <div className="text-sm font-bold">{o.customer_name}</div>
-            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-[#132238]/75">
-              <div>
-                <span className="block font-display" dir="ltr">
-                  {o.phone}
-                </span>
-                <CustomerRiskBadge stat={riskMap[o.phone]} />
-              </div>
-              <span>{o.governorate_name}</span>
-            </div>
-            <div className="flex items-center justify-between border-t border-[#132238]/10 pt-2.5">
-              <span className="font-display text-base font-black">
-                {formatEGP(o.total_cod, 'ar')}
-              </span>
-              <div className="flex items-center gap-1.5">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  aria-label="طباعة البوليصة"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setPrintOrderId(o.id);
-                  }}
-                >
-                  <Printer className="h-3.5 w-3.5" />
-                </Button>
-                <CopyForCourierButton
-                  order={o}
-                  template={settingsQuery.data?.courier_template}
-                />
-              </div>
-            </div>
-          </div>
-        ))}
-        {filtered.length === 0 && (
-          <div className="rounded-sm bg-[#FFFFFF] p-6 text-center text-sm text-[#132238]/70">
-            لا توجد طلبات مطابقة للبحث
-          </div>
-        )}
-      </div>
-
-      <div className="hidden overflow-x-auto rounded-sm border border-[#132238]/12 bg-[#FFFFFF] shadow-xs md:block">
-        <table className="w-full text-start text-sm">
-          <thead className="border-b border-[#132238]/12 bg-[#ECE9E0] text-xs font-extrabold">
-            <tr>
-              <th className="p-3">المرجع</th>
-              <th className="p-3">التاريخ</th>
-              <th className="p-3">العميل</th>
-              <th className="p-3">الموبايل والموثوقية</th>
-              <th className="p-3">المحافظة</th>
-              <th className="p-3">الإجمالي</th>
-              <th className="p-3">الحالة</th>
-              <th className="p-3">إجراء</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#132238]/10">
+      {ordersQuery.isLoading ? (
+        <div className="space-y-3 rounded-sm border border-slate-200/80 bg-white p-4">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-16 w-full rounded-[2px]" />
+          ))}
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="flex flex-col items-center justify-center gap-3 rounded-sm border border-slate-200/80 bg-white p-12 text-center">
+          <ShoppingBag className="h-10 w-10 text-slate-300" />
+          <p className="text-sm font-bold text-[#0D1526]">لا توجد طلبات مطابقة للبحث</p>
+        </div>
+      ) : (
+        <>
+          {/* Mobile Cards (< md) */}
+          <div className="space-y-3 md:hidden">
             {filtered.map((o) => (
-              <tr
+              <div
                 key={o.id}
                 onClick={() => setSelectedOrderId(o.id)}
-                className="cursor-pointer transition-colors hover:bg-[#F4F2EC]"
+                className="cursor-pointer space-y-3 rounded-sm border border-slate-200/80 bg-white p-4 shadow-xs"
               >
-                <td className="p-3 font-display font-extrabold">{o.order_ref}</td>
-                <td className="p-3 text-xs">{formatDate(o.created_at, 'ar')}</td>
-                <td className="p-3 font-bold">{o.customer_name}</td>
-                <td className="p-3 text-xs">
-                  <span className="block font-display" dir="ltr">
-                    {o.phone}
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-display text-sm font-black text-[#0D1526]">
+                    {o.order_ref}
                   </span>
-                  <CustomerRiskBadge stat={riskMap[o.phone]} />
-                </td>
-                <td className="p-3 text-xs">{o.governorate_name}</td>
-                <td className="p-3 font-display font-extrabold">{formatEGP(o.total_cod, 'ar')}</td>
-                <td className="p-3">
                   <StatusBadge status={o.status} />
-                </td>
-                <td className="p-3">
-                  <div className="flex items-center gap-1.5">
-                    <Button
+                </div>
+
+                <div>
+                  <p className="text-sm font-bold text-[#0D1526]">{o.customer_name}</p>
+                  <div className="mt-1 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600">
+                    <div>
+                      <span className="block font-display" dir="ltr">
+                        {o.phone}
+                      </span>
+                      <CustomerRiskBadge stat={riskMap[o.phone]} />
+                    </div>
+                    <span className="rounded-[2px] bg-slate-100 px-2 py-0.5 font-medium text-slate-700">
+                      {o.governorate_name}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+                  <span className="font-display text-sm font-bold tabular-nums text-[#0D1526]">
+                    {formatEGP(o.total_cod, 'ar')}
+                  </span>
+
+                  <div className="flex items-center justify-end gap-2.5">
+                    <button
                       type="button"
-                      variant="outline"
-                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedOrderId(o.id);
+                      }}
+                      className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-[2px] bg-[#0D1526] px-3 text-xs font-medium text-white transition-colors hover:bg-[#1E293B]"
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                      <span>التفاصيل</span>
+                    </button>
+
+                    <button
+                      type="button"
                       title="طباعة البوليصة"
                       aria-label="طباعة البوليصة"
                       onClick={(e) => {
                         e.stopPropagation();
                         setPrintOrderId(o.id);
                       }}
+                      className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[2px] border border-slate-200 bg-white text-slate-600 transition-colors hover:border-slate-400 hover:text-[#0D1526]"
                     >
                       <Printer className="h-3.5 w-3.5" />
-                    </Button>
+                    </button>
+
                     <CopyForCourierButton
                       order={o}
                       template={settingsQuery.data?.courier_template}
+                      iconOnly
                     />
                   </div>
-                </td>
-              </tr>
+                </div>
+              </div>
             ))}
-            {filtered.length === 0 && (
-              <tr>
-                <td colSpan={8} className="p-8 text-center text-sm text-[#132238]/65">
-                  لا توجد طلبات مطابقة للبحث
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+          </div>
+
+          {/* Desktop Table (>= md) */}
+          <div className="hidden overflow-x-auto rounded-sm border border-slate-200/80 bg-white shadow-xs md:block">
+            <table className="w-full border-collapse text-sm">
+              <thead className="border-b border-slate-200 bg-slate-50/90 text-xs font-extrabold text-[#0D1526]">
+                <tr>
+                  <th className="px-4 py-3.5 text-start">المرجع</th>
+                  <th className="px-4 py-3.5 text-start">التاريخ</th>
+                  <th className="px-4 py-3.5 text-start">العميل والموبايل</th>
+                  <th className="px-4 py-3.5 text-start">المحافظة</th>
+                  <th className="px-4 py-3.5 text-start">الإجمالي</th>
+                  <th className="px-4 py-3.5 text-center">الحالة</th>
+                  <th className="px-4 py-3.5 text-end">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filtered.map((o) => (
+                  <tr
+                    key={o.id}
+                    onClick={() => setSelectedOrderId(o.id)}
+                    className="cursor-pointer transition-colors hover:bg-slate-50/80"
+                  >
+                    <td className="px-4 py-4 text-start font-display font-bold whitespace-nowrap text-[#0D1526]">
+                      {o.order_ref}
+                    </td>
+
+                    <td className="px-4 py-4 text-start text-xs whitespace-nowrap text-slate-600">
+                      {formatDate(o.created_at, 'ar')}
+                    </td>
+
+                    <td className="px-4 py-4 text-start">
+                      <p className="font-bold text-[#0D1526]">{o.customer_name}</p>
+                      <p className="font-display text-xs text-slate-500" dir="ltr">
+                        {o.phone}
+                      </p>
+                      <CustomerRiskBadge stat={riskMap[o.phone]} />
+                    </td>
+
+                    <td className="px-4 py-4 text-start">
+                      <span className="inline-block rounded-[2px] bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                        {o.governorate_name}
+                      </span>
+                    </td>
+
+                    <td className="px-4 py-4 text-start font-display font-bold tabular-nums whitespace-nowrap text-[#0D1526]">
+                      {formatEGP(o.total_cod, 'ar')}
+                    </td>
+
+                    <td className="px-4 py-4 text-center">
+                      <StatusBadge status={o.status} />
+                    </td>
+
+                    <td className="px-4 py-4 text-end">
+                      <div className="flex items-center justify-end gap-2.5">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedOrderId(o.id);
+                          }}
+                          className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-[2px] bg-[#0D1526] px-3 text-xs font-medium whitespace-nowrap text-white transition-colors hover:bg-[#1E293B]"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                          <span>التفاصيل</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          title="طباعة البوليصة"
+                          aria-label="طباعة البوليصة"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setPrintOrderId(o.id);
+                          }}
+                          className="inline-flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[2px] border border-slate-200 bg-white text-slate-600 transition-colors hover:border-slate-400 hover:text-[#0D1526]"
+                        >
+                          <Printer className="h-3.5 w-3.5" />
+                        </button>
+
+                        <CopyForCourierButton
+                          order={o}
+                          template={settingsQuery.data?.courier_template}
+                          iconOnly
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
       <OrderDetailDrawer
         order={selectedOrder}

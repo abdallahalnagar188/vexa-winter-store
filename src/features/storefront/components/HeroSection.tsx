@@ -149,42 +149,43 @@ export function HeroSection({ heroes = [] }: HeroSectionProps) {
             }`}
           />
 
-          {/* Sharp Editorial Dark-Matte Spec Strip (Zero Pills / Zero Pulsing Dots) */}
-          <div className="absolute bottom-5 start-4 z-20 inline-flex items-center gap-3 rounded-[2px] border-s-2 border-[#F97316] bg-[#0B0F19]/95 px-4 py-2.5 text-xs shadow-lg sm:bottom-8 sm:start-8">
-            <span className="font-semibold text-white/85">{floatingTitle}</span>
-            <span className="h-3 w-px bg-white/20" />
-            <span className="font-display font-extrabold tracking-wide text-[#F97316]">
-              {floatingBadge}
-            </span>
-          </div>
-
-          {/* Interactive Lookbook Thumbnail Switcher */}
-          {activeHeroes.length > 1 && (
-            <div className="absolute bottom-5 end-4 z-20 flex items-center gap-1.5 rounded-[2px] border border-white/15 bg-[#090D16]/90 p-1 sm:bottom-8 sm:end-8">
-              {activeHeroes.map((slide, idx) => {
-                const isActive = idx === safeIdx;
-                return (
-                  <button
-                    key={slide.id}
-                    type="button"
-                    onClick={() => setSlideIdx(idx)}
-                    aria-label={`Slide ${idx + 1}`}
-                    className={`h-11 w-9 cursor-pointer overflow-hidden rounded-[2px] border transition-opacity duration-200 ${
-                      isActive ? 'border-[#F97316] opacity-100' : 'border-white/15 opacity-50 hover:opacity-85'
-                    }`}
-                  >
-                    <img
-                      src={slide.hero_image_url}
-                      alt=""
-                      loading="lazy"
-                      decoding="async"
-                      className="h-full w-full object-cover"
-                    />
-                  </button>
-                );
-              })}
+          {/* Bottom Bar: Spec Strip + Slide Switcher (Zero Collision at 375px) */}
+          <div className="absolute inset-x-4 bottom-4 z-20 flex flex-wrap items-end justify-between gap-2 sm:inset-x-8 sm:bottom-8">
+            <div className="inline-flex min-w-0 items-center gap-2.5 rounded-[2px] border-s-2 border-[#F97316] bg-[#0B0F19]/95 px-3 py-2 text-[11px] shadow-lg sm:gap-3 sm:px-4 sm:py-2.5 sm:text-xs">
+              <span className="truncate font-semibold text-white/85">{floatingTitle}</span>
+              <span className="h-3 w-px shrink-0 bg-white/20" />
+              <span className="shrink-0 font-display font-extrabold tracking-wide text-[#F97316]">
+                {floatingBadge}
+              </span>
             </div>
-          )}
+
+            {activeHeroes.length > 1 && (
+              <div className="flex shrink-0 items-center gap-1.5 rounded-[2px] border border-white/15 bg-[#090D16]/90 p-1">
+                {activeHeroes.map((slide, idx) => {
+                  const isActive = idx === safeIdx;
+                  return (
+                    <button
+                      key={slide.id}
+                      type="button"
+                      onClick={() => setSlideIdx(idx)}
+                      aria-label={`Slide ${idx + 1}`}
+                      className={`h-9 w-7 cursor-pointer overflow-hidden rounded-[2px] border transition-opacity duration-200 sm:h-11 sm:w-9 ${
+                        isActive ? 'border-[#F97316] opacity-100' : 'border-white/15 opacity-50 hover:opacity-85'
+                      }`}
+                    >
+                      <img
+                        src={slide.hero_image_url}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-cover"
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Editorial Typography Column */}
