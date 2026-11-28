@@ -59,14 +59,14 @@ export function VariantPicker({
                 type="button"
                 onClick={() => onSelectColor(color.name)}
                 className={cn(
-                  'inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-3.5 text-sm font-bold transition-all',
+                  'inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-[2px] border px-3.5 text-sm font-bold transition-all',
                   active
                     ? 'border-[#132238] bg-[#132238] text-[#F4F2EC] shadow-sm'
                     : 'border-[#132238]/20 bg-[#F4F2EC] text-[#132238] hover:border-[#132238]',
                 )}
               >
                 <span
-                  className="h-4 w-4 rounded-full border border-black/20"
+                  className="h-4 w-4 rounded-[2px] border border-black/20"
                   style={{ backgroundColor: color.hex }}
                 />
                 <span>{color.name}</span>
@@ -90,7 +90,7 @@ export function VariantPicker({
                 disabled={disabled}
                 onClick={() => onSelectSize(size)}
                 className={cn(
-                  'min-h-11 min-w-13 rounded-xl border px-3.5 font-display text-sm font-bold transition-all',
+                  'min-h-11 min-w-13 rounded-[2px] border px-3.5 font-display text-sm font-bold transition-all',
                   disabled
                     ? 'cursor-not-allowed border-[#132238]/12 bg-[#ECE9E0]/60 text-[#132238]/35 line-through'
                     : active

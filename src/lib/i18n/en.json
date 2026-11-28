@@ -21,6 +21,8 @@
     "buyQtySaveFixed": "Buy {{qty}}+ & Save {{val}} EGP",
     "addMorePct": "Add {{qty}} more of this item to save {{val}}%",
     "addMoreFixed": "Add {{qty}} more of this item to save {{val}} EGP",
+    "addOneMoreAnyPct": "Add 1 more in any color or size for {{val}}% off",
+    "addOneMoreAnyFixed": "Add 1 more in any color or size to save {{val}} EGP",
     "youSave": "Saved {{amount}}"
   },
   "trust": {
@@ -70,10 +72,9 @@
     "addedToast": "Added to your cart",
     "addedVariantToast": "Added {{title}} ({{color}} • {{size}}) to cart",
     "addedBtn": "Added ✓",
-    "addedBanner": "Added {{title}} ({{color}} • {{size}})",
     "selectedSubtotal": "Selected subtotal",
-    "livePreview": "Estimated total with items in cart",
-    "includesCart": "You have {{count}} item(s) of this product in cart"
+    "inCartStatus": "Currently in cart: {{count}} item(s) of this product — {{total}}",
+    "inCartStatusSaved": "Currently in cart: {{count}} item(s) of this product — {{total}} (Saved {{saved}})"
   },
   "cart": {
     "title": "Your Cart",

@@ -236,4 +236,51 @@ describe('calculateCart pricing engine', () => {
     expect(res.appliedCoupon).toBeNull();
     expect(res.totalCod).toBe(860);
   });
+
+  it('15. product page local selection stays at 450 EGP while cart state advances from 1 -> 2 items', () => {
+    // 1. Local qty = 1 never combines with in-cart qty
+    const localQty1 = calculateCart({
+      lines: [{ lineKey: '__local__', variantId: 'v1', productId: 'p450', unitPrice: 450, quantity: 1 }],
+      tiers: globalTen,
+      shippingFee: null,
+      freeShippingThreshold: 0,
+    });
+    expect(localQty1.groups.p450?.groupTotal).toBe(450);
+    expect(localQty1.groups.p450?.groupDiscount).toBe(0);
+
+    // 2. Cart with 1 item added: factual in-cart total = 450 EGP, 1 item away from 10%
+    const inCartOne = calculateCart({
+      lines: [{ lineKey: 'v1', variantId: 'v1', productId: 'p450', unitPrice: 450, quantity: 1 }],
+      tiers: globalTen,
+      shippingFee: null,
+      freeShippingThreshold: 0,
+    });
+    expect(inCartOne.groups.p450?.totalQty).toBe(1);
+    expect(inCartOne.groups.p450?.groupTotal).toBe(450);
+    expect(inCartOne.groups.p450?.groupDiscount).toBe(0);
+    expect(inCartOne.groups.p450?.nextTierHint?.addQty).toBe(1);
+    expect(inCartOne.groups.p450?.nextTierHint?.value).toBe(10);
+
+    // 3. Cart with 2nd item added: factual in-cart total = 810 EGP (saved 90 EGP)
+    const inCartTwo = calculateCart({
+      lines: [{ lineKey: 'v1', variantId: 'v1', productId: 'p450', unitPrice: 450, quantity: 2 }],
+      tiers: globalTen,
+      shippingFee: null,
+      freeShippingThreshold: 0,
+    });
+    expect(inCartTwo.groups.p450?.totalQty).toBe(2);
+    expect(inCartTwo.groups.p450?.groupTotal).toBe(810);
+    expect(inCartTwo.groups.p450?.groupDiscount).toBe(90);
+
+    // 4. Local qty = 2 explicitly applies tier to local selection (810 EGP, 900 EGP original)
+    const localQty2 = calculateCart({
+      lines: [{ lineKey: '__local__', variantId: 'v1', productId: 'p450', unitPrice: 450, quantity: 2 }],
+      tiers: globalTen,
+      shippingFee: null,
+      freeShippingThreshold: 0,
+    });
+    expect(localQty2.groups.p450?.groupOriginal).toBe(900);
+    expect(localQty2.groups.p450?.groupTotal).toBe(810);
+    expect(localQty2.groups.p450?.groupDiscount).toBe(90);
+  });
 });

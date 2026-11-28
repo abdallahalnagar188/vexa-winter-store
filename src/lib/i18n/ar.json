@@ -21,6 +21,8 @@
     "buyQtySaveFixed": "اشترِ {{qty}} قطع ووفر {{val}} ج.م",
     "addMorePct": "أضف {{qty}} قطعة أخرى من نفس الموديل لخصم {{val}}%",
     "addMoreFixed": "أضف {{qty}} قطعة أخرى من نفس الموديل لتوفير {{val}} ج.م",
+    "addOneMoreAnyPct": "أضف قطعة أخرى من أي لون أو مقاس لخصم {{val}}%",
+    "addOneMoreAnyFixed": "أضف قطعة أخرى من أي لون أو مقاس لتوفير {{val}} ج.م",
     "youSave": "وفرت {{amount}}"
   },
   "trust": {
@@ -70,10 +72,9 @@
     "addedToast": "تمت إضافة القطعة إلى السلة",
     "addedVariantToast": "تمت إضافة {{title}} ({{color}} • {{size}}) إلى السلة",
     "addedBtn": "تمت الإضافة ✓",
-    "addedBanner": "تمت إضافة {{title}} ({{color}} • {{size}})",
     "selectedSubtotal": "الإجمالي للقطع المختارة",
-    "livePreview": "السعر المتوقع مع القطع في السلة",
-    "includesCart": "لديك {{count}} قطعة في السلة من هذا المنتج"
+    "inCartStatus": "في السلة حالياً: {{count}} قطعة من هذا المنتج — {{total}}",
+    "inCartStatusSaved": "في السلة حالياً: {{count}} قطعة من هذا المنتج — {{total}} (وفرت {{saved}})"
   },
   "cart": {
     "title": "سلة التسوق",

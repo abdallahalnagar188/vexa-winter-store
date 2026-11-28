@@ -68,7 +68,7 @@ export function ProductGallery({ images, title, selectedColor }: ProductGalleryP
               type="button"
               onClick={() => setActiveIdx(idx)}
               className={cn(
-                'h-20 w-16 shrink-0 cursor-pointer overflow-hidden rounded-xl border-2 bg-[#F3F2EE] transition-all',
+                'h-20 w-16 shrink-0 cursor-pointer overflow-hidden rounded-[2px] border-2 bg-[#F3F2EE] transition-all',
                 idx === safeIdx
                   ? 'border-[#FF6B1A] ring-2 ring-[#FF6B1A]/40'
                   : 'border-transparent opacity-70 hover:opacity-100',

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Check, Ruler, ShoppingBag, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -42,11 +42,6 @@ export function ProductPage() {
   const [pickerError, setPickerError] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [addedFlash, setAddedFlash] = useState(false);
-  const [lastAdded, setLastAdded] = useState<{
-    title: string;
-    color: string;
-    size: string;
-  } | null>(null);
   const flashTimerRef = useRef<number | null>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
 
@@ -100,45 +95,52 @@ export function ProductPage() {
     [product, tiersQuery.data],
   );
 
-  const existingProductCartQty = useMemo(
-    () =>
-      product
-        ? cartItems
-            .filter((i) => i.productId === product.id)
-            .reduce((acc, i) => acc + i.quantity, 0)
-        : 0,
+  const productCartItems = useMemo(
+    () => (product ? cartItems.filter((i) => i.productId === product.id) : []),
     [cartItems, product],
   );
 
-  const previewPriced = useMemo(() => {
+  // Strictly reflect ONLY the locally selected quantity (never inCartQty + qty)
+  const localPriced = useMemo(() => {
     if (!product) return null;
-    const simulatedLines = [
-      ...cartItems
-        .filter((i) => i.productId === product.id)
-        .map((i) => ({
-          lineKey: i.cartItemKey,
-          variantId: i.variantId,
+    return calculateCart({
+      lines: [
+        {
+          lineKey: '__local__',
+          variantId: selectedVariant?.id ?? 'local-current',
           productId: product.id,
           unitPrice: product.base_price,
-          quantity: i.quantity,
-        })),
-      {
-        lineKey: '__preview__',
-        variantId: selectedVariant?.id ?? 'preview-current',
-        productId: product.id,
-        unitPrice: product.base_price,
-        quantity: qty,
-      },
-    ];
-    return calculateCart({
-      lines: simulatedLines,
+          quantity: qty,
+        },
+      ],
       tiers: tiersQuery.data ?? [],
       shippingFee: null,
       freeShippingThreshold: 0,
     });
-  }, [product, cartItems, selectedVariant?.id, qty, tiersQuery.data]);
+  }, [product, selectedVariant?.id, qty, tiersQuery.data]);
 
-  const groupPreview = product && previewPriced ? previewPriced.groups[product.id] : undefined;
+  const localGroup = product && localPriced ? localPriced.groups[product.id] : undefined;
+
+  // Strictly reflect ONLY what is actually in the cart right now for this product
+  const inCartPriced = useMemo(() => {
+    if (!product || productCartItems.length === 0) return null;
+    return calculateCart({
+      lines: productCartItems.map((i) => ({
+        lineKey: i.cartItemKey,
+        variantId: i.variantId,
+        productId: product.id,
+        unitPrice: product.base_price,
+        quantity: i.quantity,
+      })),
+      tiers: tiersQuery.data ?? [],
+      shippingFee: null,
+      freeShippingThreshold: 0,
+    });
+  }, [product, productCartItems, tiersQuery.data]);
+
+  const inCartGroup = product && inCartPriced ? inCartPriced.groups[product.id] : undefined;
+  const inCartQty = inCartGroup?.totalQty ?? 0;
+  const cartNextHint = inCartGroup?.nextTierHint ?? null;
 
   const handleAdd = () => {
     if (!product) return;
@@ -180,11 +182,6 @@ export function ProductPage() {
     });
     setQty(1);
     setSelectedSize(null);
-    setLastAdded({
-      title,
-      color: selectedVariant.color_name,
-      size: selectedVariant.size,
-    });
     setAddedFlash(true);
     if (flashTimerRef.current) window.clearTimeout(flashTimerRef.current);
     flashTimerRef.current = window.setTimeout(() => setAddedFlash(false), 1300);
@@ -203,25 +200,6 @@ export function ProductPage() {
       },
     );
   };
-
-  const cartNextHint = useMemo(() => {
-    if (!product || existingProductCartQty === 0) return null;
-    const cartOnly = calculateCart({
-      lines: cartItems
-        .filter((i) => i.productId === product.id)
-        .map((i) => ({
-          lineKey: i.cartItemKey,
-          variantId: i.variantId,
-          productId: product.id,
-          unitPrice: product.base_price,
-          quantity: i.quantity,
-        })),
-      tiers: tiersQuery.data ?? [],
-      shippingFee: null,
-      freeShippingThreshold: 0,
-    });
-    return cartOnly.groups[product.id]?.nextTierHint ?? null;
-  }, [product, existingProductCartQty, cartItems, tiersQuery.data]);
 
   if (productQuery.isLoading) {
     return (
@@ -266,7 +244,7 @@ export function ProductPage() {
 
           <TierOfferBanner
             tiers={productTiers}
-            activeMinQty={groupPreview?.appliedTier?.minQty ?? null}
+            activeMinQty={inCartGroup?.appliedTier?.minQty ?? localGroup?.appliedTier?.minQty ?? null}
           />
 
           <div ref={pickerRef} className="space-y-4">
@@ -337,32 +315,23 @@ export function ProductPage() {
             </button>
           </div>
 
-          {groupPreview && (
-            <div className="rounded-sm border border-[#132238]/12 bg-[#ECE9E0] p-4">
+          {localGroup && (
+            <div className="rounded-[2px] border border-[#132238]/12 bg-[#ECE9E0] p-4">
               <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-[#132238]/75">
-                <span>
-                  {existingProductCartQty > 0
-                    ? t('product.livePreview')
-                    : t('product.selectedSubtotal')}
-                </span>
-                {existingProductCartQty > 0 && (
-                  <span className="text-[#FF6B1A]">
-                    {t('product.includesCart', { count: existingProductCartQty })}
-                  </span>
-                )}
+                <span>{t('product.selectedSubtotal')}</span>
               </div>
               <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
                 <PriceTag
-                  price={groupPreview.groupTotal}
+                  price={localGroup.groupTotal}
                   originalPrice={
-                    groupPreview.groupDiscount > 0 ? groupPreview.groupOriginal : undefined
+                    localGroup.groupDiscount > 0 ? localGroup.groupOriginal : undefined
                   }
                   size="lg"
                 />
-                {groupPreview.groupDiscount > 0 && (
+                {localGroup.groupDiscount > 0 && (
                   <AnimatedDiscountBadge>
                     {t('offers.youSave', {
-                      amount: formatEGP(groupPreview.groupDiscount, lang),
+                      amount: formatEGP(localGroup.groupDiscount, lang),
                     })}
                   </AnimatedDiscountBadge>
                 )}
@@ -380,43 +349,52 @@ export function ProductPage() {
             <span>{addedFlash ? t('product.addedBtn') : t('product.addToCart')}</span>
           </Button>
 
-          {lastAdded && (
-            <div className="space-y-2.5 rounded-sm border border-emerald-200 bg-emerald-50/70 p-3.5 text-xs text-[#132238]">
-              <div className="flex items-center gap-2 font-extrabold text-emerald-800">
-                <Check className="h-4 w-4 shrink-0" />
-                <span>
-                  {t('product.addedBanner', {
-                    title: lastAdded.title,
-                    color: lastAdded.color,
-                    size: lastAdded.size,
-                  })}
-                </span>
-              </div>
-
-              {cartNextHint && (
-                <div className="flex items-center gap-1.5 rounded-[2px] border border-orange-500/20 bg-orange-500/10 px-2.5 py-1.5 font-bold text-orange-700">
-                  <Sparkles className="h-3.5 w-3.5 shrink-0" />
+          {inCartQty > 0 && inCartGroup && (
+            <div className="space-y-2 rounded-[2px] border border-[#132238]/20 bg-[#F4F2EC] p-3.5 text-xs text-[#132238]">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex min-w-0 items-center gap-2 font-extrabold text-[#132238]">
+                  <Check className="h-4 w-4 shrink-0 text-[#FF6B1A]" />
                   <span>
-                    {cartNextHint.type === 'percent'
-                      ? t('offers.addMorePct', { qty: cartNextHint.addQty, val: cartNextHint.value })
-                      : t('offers.addMoreFixed', {
-                          qty: cartNextHint.addQty,
-                          val: formatEGP(cartNextHint.value, lang),
+                    {inCartGroup.groupDiscount > 0
+                      ? t('product.inCartStatusSaved', {
+                          count: inCartQty,
+                          total: formatEGP(inCartGroup.groupTotal, lang),
+                          saved: formatEGP(inCartGroup.groupDiscount, lang),
+                        })
+                      : t('product.inCartStatus', {
+                          count: inCartQty,
+                          total: formatEGP(inCartGroup.groupTotal, lang),
                         })}
                   </span>
                 </div>
-              )}
-
-              <div className="flex flex-wrap items-center gap-2 pt-0.5">
-                <Button type="button" variant="outline" size="sm" onClick={openDrawer} className="flex-1 bg-white">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={openDrawer}
+                  className="shrink-0 bg-white"
+                >
                   {t('cart.viewCart')}
                 </Button>
-                <Link to="/checkout" className="flex-1">
-                  <Button type="button" variant="primary" size="sm" className="w-full">
-                    {t('cart.checkout')}
-                  </Button>
-                </Link>
               </div>
+
+              {cartNextHint && (
+                <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#FF6B1A]">
+                  <Sparkles className="h-3.5 w-3.5 shrink-0" />
+                  <span>
+                    {cartNextHint.type === 'percent'
+                      ? cartNextHint.addQty === 1
+                        ? t('offers.addOneMoreAnyPct', { val: cartNextHint.value })
+                        : t('offers.addMorePct', { qty: cartNextHint.addQty, val: cartNextHint.value })
+                      : cartNextHint.addQty === 1
+                        ? t('offers.addOneMoreAnyFixed', { val: cartNextHint.value })
+                        : t('offers.addMoreFixed', {
+                            qty: cartNextHint.addQty,
+                            val: cartNextHint.value,
+                          })}
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
@@ -435,10 +413,10 @@ export function ProductPage() {
           <div className="min-w-0">
             <p className="truncate text-[11px] font-bold text-[#132238]/70">{title}</p>
             <PriceTag
-              price={groupPreview?.groupTotal ?? product.base_price * qty}
+              price={localGroup?.groupTotal ?? product.base_price * qty}
               originalPrice={
-                groupPreview && groupPreview.groupDiscount > 0
-                  ? groupPreview.groupOriginal
+                localGroup && localGroup.groupDiscount > 0
+                  ? localGroup.groupOriginal
                   : undefined
               }
               size="sm"
