@@ -4,7 +4,7 @@ import { MessageCircle } from 'lucide-react';
 import { usePublicSettings } from '@/features/storefront/api/usePublicSettings';
 import { useCategories } from '@/features/storefront/api/useCategories';
 import { useDir } from '@/shared/hooks/useDir';
-import { VexaLogo } from '@/shared/components/ui/VexaLogo';
+import { BrandLogo } from '@/shared/components/ui/BrandLogo';
 
 export function Footer() {
   const { t } = useTranslation();
@@ -23,8 +23,8 @@ export function Footer() {
         <div className="grid grid-cols-1 gap-10 py-14 sm:grid-cols-2 lg:grid-cols-12">
           {/* Column 1: Brand Identity */}
           <div className="space-y-4 lg:col-span-4">
-            <Link to="/" aria-label="VEXA Home" className="inline-block">
-              <VexaLogo variant="dark-bg" className="h-9 w-auto" />
+            <Link to="/" aria-label="أثر" className="inline-block">
+              <BrandLogo variant="dark-bg" className="h-9 w-auto" />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-slate-400">
               {t('footer.about')}
@@ -145,8 +145,8 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 border-t border-white/10 py-6 text-xs text-slate-400 sm:flex-row">
           <p>
             {isAr
-              ? '© 2026 VEXA Egypt. جميع الحقوق محفوظة.'
-              : '© 2026 VEXA Egypt. All rights reserved.'}
+              ? '© 2026 أثر. جميع الحقوق محفوظة.'
+              : '© 2026 أثر. All rights reserved.'}
           </p>
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-[2px] border border-white/10 px-2.5 py-1 text-[11px] text-slate-400">

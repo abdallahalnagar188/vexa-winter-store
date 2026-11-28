@@ -230,7 +230,7 @@ export const useCartStore = create<CartState>()(
       },
     }),
     {
-      name: 'vexa-cart:v1',
+      name: 'athar-cart:v1',
       partialize: (state) => ({ items: state.items, coupon: state.coupon }),
       merge: (persisted, current) => {
         const record = (persisted ?? {}) as { items?: unknown; coupon?: AppliedCoupon | null };

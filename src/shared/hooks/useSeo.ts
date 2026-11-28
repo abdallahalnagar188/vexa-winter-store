@@ -49,15 +49,15 @@ export function useSeo({
   const { i18n } = useTranslation();
 
   useEffect(() => {
-    const siteName = import.meta.env.VITE_SITE_NAME || 'VEXA';
+    const siteName = import.meta.env.VITE_SITE_NAME || 'أثر';
     const siteUrl = getSiteUrl();
     const isAr = (i18n.language || 'ar').startsWith('ar');
     const resolvedTitle = title.includes(siteName) ? title : `${title} | ${siteName}`;
     const resolvedDesc =
       description?.trim() ||
       (isAr
-        ? 'VEXA Winter Store — أزياء شتوية عصرية بخامات قطنية ثقيلة 480gsm في مصر. خصومات كميات تلقائية حتى 15% والدفع كاش عند الاستلام.'
-        : 'VEXA Winter Store — Heavyweight 480gsm Egyptian winter streetwear. Automatic multi-piece discounts up to 15% with Cash on Delivery across Egypt.');
+        ? 'أثر — أزياء شتوية عصرية بخامات قطنية ثقيلة 480gsm في مصر. خصومات كميات تلقائية حتى 15% والدفع كاش عند الاستلام.'
+        : 'أثر — Heavyweight 480gsm Egyptian winter streetwear. Automatic multi-piece discounts up to 15% with Cash on Delivery across Egypt.');
 
     const canonicalUrl = buildCanonicalUrl(
       canonicalPath ?? pathname,

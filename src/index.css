@@ -63,7 +63,7 @@ body {
   background: #FF6B1A;
 }
 
-@keyframes vexa-marquee-ltr {
+@keyframes athar-marquee-ltr {
   0% {
     transform: translate3d(0, 0, 0);
   }
@@ -72,7 +72,7 @@ body {
   }
 }
 
-@keyframes vexa-marquee-rtl {
+@keyframes athar-marquee-rtl {
   0% {
     transform: translate3d(0, 0, 0);
   }
@@ -82,11 +82,11 @@ body {
 }
 
 .animate-marquee-ltr {
-  animation: vexa-marquee-ltr 32s linear infinite;
+  animation: athar-marquee-ltr 32s linear infinite;
 }
 
 .animate-marquee-rtl {
-  animation: vexa-marquee-rtl 32s linear infinite;
+  animation: athar-marquee-rtl 32s linear infinite;
 }
 
 .marquee-wrapper:hover .animate-marquee-ltr,
@@ -113,13 +113,13 @@ body {
   body * {
     visibility: hidden !important;
   }
-  #vexa-waybill-print-sheet,
-  #vexa-waybill-print-sheet * {
+  #athar-waybill-print-sheet,
+  #athar-waybill-print-sheet * {
     visibility: visible !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
-  #vexa-waybill-print-sheet {
+  #athar-waybill-print-sheet {
     position: fixed !important;
     inset: 0 !important;
     width: 100% !important;

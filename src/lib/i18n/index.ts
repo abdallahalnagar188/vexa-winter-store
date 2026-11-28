@@ -3,7 +3,7 @@ import { initReactI18next } from 'react-i18next';
 import ar from './ar.json';
 import en from './en.json';
 
-const STORAGE_KEY = 'vexa-lang';
+const STORAGE_KEY = 'athar-lang';
 const defaultLang = (import.meta.env.VITE_DEFAULT_LANG as string) === 'en' ? 'en' : 'ar';
 
 function getInitialLang(): 'ar' | 'en' {

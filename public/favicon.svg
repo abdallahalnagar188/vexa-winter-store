@@ -1,9 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
   <rect width="120" height="120" rx="6" fill="#0D1526"/>
-  <g transform="translate(2, 6) scale(0.92)">
-    <polygon points="10,10 39,10 68,84 61,102" fill="#FFFFFF"/>
-    <polygon points="31,10 39,10 68,84 59,75" fill="#CBD5E1"/>
-    <polygon points="88,10 116,10 71,76 63,55" fill="#F26522"/>
-    <polygon points="104,10 116,10 71,76 96,29" fill="#C8430E"/>
-  </g>
+  <polygon points="56,42 71,36 71,98 56,98" fill="#FFFFFF"/>
+  <path d="M77,15 L54,15 L45,25 L64,25 L44,32 L44,38 L80,34 L80,28 L61,28 L69,21 L77,21 Z" fill="#F97316"/>
+  <polygon points="36,78 43,85 36,92 29,85" fill="#F97316"/>
 </svg>

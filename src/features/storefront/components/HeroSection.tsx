@@ -104,7 +104,7 @@ export function HeroSection({ heroes = [] }: HeroSectionProps) {
           className="whitespace-nowrap text-center font-display text-[20vw] font-black uppercase leading-none tracking-tighter text-white/[0.03] lg:text-[15vw]"
           style={{ WebkitTextStroke: '1px rgba(255,255,255,0.04)' }}
         >
-          VEXA WINTER 26
+          أثر • شتاء 26
         </p>
       </div>
 

@@ -18,7 +18,7 @@ export interface OrderNotificationItem {
   read: boolean;
 }
 
-const READ_IDS_KEY = 'vexa-admin-read-notifs';
+const READ_IDS_KEY = 'athar-admin-read-notifs';
 
 function loadReadIds(): Set<string> {
   try {

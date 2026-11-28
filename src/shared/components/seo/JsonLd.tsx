@@ -9,7 +9,7 @@ export function JsonLd({ id, data }: JsonLdProps) {
   const serialized = data ? JSON.stringify(data) : null;
 
   useEffect(() => {
-    const selector = `script[type="application/ld+json"][data-vexa-jsonld="${id}"]`;
+    const selector = `script[type="application/ld+json"][data-athar-jsonld="${id}"]`;
     const existing = document.head.querySelector<HTMLScriptElement>(selector);
 
     if (!serialized) {
@@ -19,7 +19,7 @@ export function JsonLd({ id, data }: JsonLdProps) {
 
     const scriptEl = existing ?? document.createElement('script');
     scriptEl.type = 'application/ld+json';
-    scriptEl.setAttribute('data-vexa-jsonld', id);
+    scriptEl.setAttribute('data-athar-jsonld', id);
     scriptEl.textContent = serialized;
 
     if (!existing) {

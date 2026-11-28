@@ -66,8 +66,8 @@ export function CatalogPage() {
     : t('catalog.title');
   const seoDescription =
     lang === 'ar'
-      ? `${seoTitle} — تسوق منتجات VEXA الشتوية بخامات قطنية ثقيلة 480gsm مع خصم كميات تلقائي وشحن لجميع المحافظات.`
-      : `${seoTitle} — Shop heavyweight 480gsm VEXA winter essentials with automatic bundle discounts and nationwide Cash on Delivery.`;
+      ? `${seoTitle} — تسوق منتجات أثر الشتوية بخامات قطنية ثقيلة 480gsm مع خصم كميات تلقائي وشحن لجميع المحافظات.`
+      : `${seoTitle} — Shop heavyweight 480gsm أثر winter essentials with automatic bundle discounts and nationwide Cash on Delivery.`;
   useSeo({ title: seoTitle, description: seoDescription });
   const productsQuery = useProducts({
     categorySlug: selectedCategory,

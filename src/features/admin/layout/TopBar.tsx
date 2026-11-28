@@ -21,7 +21,7 @@ import {
 } from '@/features/admin/utils/orderSound';
 import { useAdminNotificationStore } from '@/features/admin/store/notificationStore';
 import { Button } from '@/shared/components/ui/Button';
-import { VexaLogo } from '@/shared/components/ui/VexaLogo';
+import { BrandLogo } from '@/shared/components/ui/BrandLogo';
 import { cn } from '@/shared/components/ui/cn';
 
 function formatRelativeAr(iso: string): string {
@@ -109,7 +109,7 @@ export function TopBar({ onOpenMenu }: { onOpenMenu: () => void }) {
         >
           <Menu className="h-5 w-5" />
         </button>
-        <VexaLogo variant="light-bg" className="h-6 w-auto" />
+        <BrandLogo variant="light-bg" className="h-6 w-auto" />
       </div>
 
       <div className="hidden text-sm font-extrabold lg:block">نظام إدارة المبيعات والمخزون</div>

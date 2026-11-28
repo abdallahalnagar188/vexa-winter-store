@@ -49,8 +49,8 @@ export function buildHomeJsonLd(siteUrl = getSiteUrl()): Record<string, unknown>
     {
       '@context': 'https://schema.org',
       '@type': 'Organization',
-      name: 'VEXA',
-      alternateName: 'VEXA Winter Store',
+      name: 'أثر',
+      alternateName: 'متجر أثر',
       url: `${siteUrl}/`,
       logo: `${siteUrl}/og-image.png`,
       areaServed: 'EG',
@@ -58,7 +58,7 @@ export function buildHomeJsonLd(siteUrl = getSiteUrl()): Record<string, unknown>
     {
       '@context': 'https://schema.org',
       '@type': 'WebSite',
-      name: 'VEXA Winter Store',
+      name: 'أثر',
       url: `${siteUrl}/`,
       potentialAction: {
         '@type': 'SearchAction',
@@ -99,7 +99,7 @@ export function buildProductJsonLd(input: ProductJsonLdInput): Record<string, un
     sku: input.sku,
     brand: {
       '@type': 'Brand',
-      name: 'VEXA',
+      name: 'أثر',
     },
     offers: {
       '@type': 'Offer',

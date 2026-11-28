@@ -20,7 +20,7 @@ import { useDir } from '@/shared/hooks/useDir';
 import { formatEGP } from '@/lib/format';
 import { trackPixelEvent } from '@/lib/analytics';
 
-const DRAFT_KEY = 'vexa-checkout-draft:v1';
+const DRAFT_KEY = 'athar-checkout-draft:v1';
 
 function loadDraft(): Partial<CheckoutFormValues> {
   try {

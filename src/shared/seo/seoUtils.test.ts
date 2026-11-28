@@ -12,7 +12,7 @@ describe('seoUtils', () => {
   it('falls back to DEFAULT_SITE_URL when configured URL is placeholder or empty', () => {
     expect(getSiteUrl('')).toBe(DEFAULT_SITE_URL);
     expect(getSiteUrl('https://your-store.vercel.app')).toBe(DEFAULT_SITE_URL);
-    expect(getSiteUrl('https://vexa-custom.com/')).toBe('https://vexa-custom.com');
+    expect(getSiteUrl('https://athar-custom.com/')).toBe('https://athar-custom.com');
   });
 
   it('strips noisy shop filter params from canonical URL while preserving category', () => {
@@ -49,7 +49,7 @@ describe('seoUtils', () => {
     expect(schemas).toHaveLength(2);
     expect(schemas[0]).toMatchObject({
       '@type': 'Organization',
-      name: 'VEXA',
+      name: 'أثر',
       areaServed: 'EG',
     });
     expect(schemas[1]).toMatchObject({
@@ -81,7 +81,7 @@ describe('seoUtils', () => {
       '@type': 'Product',
       name: 'Oversized Heavyweight Hoodie',
       sku: 'HD-BLK-L',
-      brand: { '@type': 'Brand', name: 'VEXA' },
+      brand: { '@type': 'Brand', name: 'أثر' },
       offers: {
         '@type': 'Offer',
         priceCurrency: 'EGP',

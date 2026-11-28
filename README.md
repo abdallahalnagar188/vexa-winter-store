@@ -1,6 +1,6 @@
-# VEXA Winter Store (Egypt COD E-Commerce + Admin Platform)
+# أثر — متجر أزياء شتوية (Egypt COD E-Commerce + Admin Platform)
 
-Modern winter apparel storefront and admin dashboard built for Egypt with Cash on Delivery, dynamic quantity-tiered discounts, 27 governorates shipping, Framer Motion animations, and Supabase backend.
+Modern Egyptian winter apparel storefront (**أثر**) and admin dashboard built for Egypt with Cash on Delivery, dynamic quantity-tiered discounts, 27 governorates shipping, Framer Motion animations, and Supabase backend.
 
 ## Local Setup
 

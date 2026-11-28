@@ -11,7 +11,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import { useAdminOrders } from '@/features/admin/api/useAdminOrders';
-import { VexaLogo } from '@/shared/components/ui/VexaLogo';
+import { BrandLogo } from '@/shared/components/ui/BrandLogo';
 import { cn } from '@/shared/components/ui/cn';
 
 const NAV_ITEMS = [
@@ -31,7 +31,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   return (
     <aside className="flex h-full w-64 flex-col bg-[#132238] p-4 text-[#F4F2EC]">
       <div className="mb-6 flex flex-col gap-1 px-2">
-        <VexaLogo variant="dark-bg" className="h-7 w-auto self-start" />
+        <BrandLogo variant="dark-bg" className="h-7 w-auto self-start" />
         <p className="text-[11px] font-semibold text-[#ECE9E0]/70">إدارة المتجر</p>
       </div>
 

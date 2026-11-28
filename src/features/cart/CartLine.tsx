@@ -44,9 +44,9 @@ export function CartLine({
         ) : (
           <div
             aria-label={title}
-            className="flex h-24 w-20 items-center justify-center rounded-[2px] border border-[#132238]/10 bg-[#ECE9E0] font-display text-[10px] font-bold text-[#132238]/45"
+            className="flex h-24 w-20 items-center justify-center rounded-[2px] border border-[#132238]/10 bg-[#ECE9E0] font-display text-[11px] font-bold text-[#132238]/45"
           >
-            VEXA
+            أثر
           </div>
         )}
       </Link>

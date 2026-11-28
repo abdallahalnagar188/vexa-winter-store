@@ -44,9 +44,9 @@ export function OrderSummary({
                 ) : (
                   <div
                     aria-label={title}
-                    className="flex h-12 w-10 shrink-0 items-center justify-center rounded-[2px] bg-[#ECE9E0] font-display text-[9px] font-bold text-[#132238]/45"
+                    className="flex h-12 w-10 shrink-0 items-center justify-center rounded-[2px] bg-[#ECE9E0] font-display text-[10px] font-bold text-[#132238]/45"
                   >
-                    VEXA
+                    أثر
                   </div>
                 )}
                 <div className="min-w-0">

@@ -55,7 +55,7 @@ export function ProductGallery({ images, title, selectedColor }: ProductGalleryP
             />
           ) : (
             <div className="flex h-full items-center justify-center font-display font-bold text-[#132238]/50">
-              VEXA
+              أثر
             </div>
           )}
         </AnimatePresence>

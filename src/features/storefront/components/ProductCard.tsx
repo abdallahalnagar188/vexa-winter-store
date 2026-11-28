@@ -20,7 +20,7 @@ interface ProductCardProps {
 const FALLBACK_IMG =
   'data:image/svg+xml;utf8,' +
   encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 533"><rect width="400" height="533" fill="#F2F1ED"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#0D1526" font-family="sans-serif" font-size="18" font-weight="bold">VEXA WINTER</text></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 533"><rect width="400" height="533" fill="#F2F1ED"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#0D1526" font-family="sans-serif" font-size="22" font-weight="bold">أثر</text></svg>',
   );
 
 function resolveColorImage(product: ProductWithDetails, colorName: string): string | null {

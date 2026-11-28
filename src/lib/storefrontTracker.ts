@@ -1,6 +1,6 @@
 import { isSupabaseConfigured, supabase } from './supabase';
 
-const SESSION_KEY = 'vexa-sid';
+const SESSION_KEY = 'athar-sid';
 let fallbackSessionId: string | null = null;
 
 export function getStorefrontSessionId(): string {

@@ -4,7 +4,7 @@ import { QRCodeSVG } from 'qrcode.react';
 import type { OrderRecord } from '@/shared/types/domain';
 import { formatDate, formatEGP } from '@/lib/format';
 import { Button } from '@/shared/components/ui/Button';
-import { VexaLogo } from '@/shared/components/ui/VexaLogo';
+import { BrandLogo } from '@/shared/components/ui/BrandLogo';
 
 type PaperFormat = 'a6' | 'a4';
 
@@ -92,7 +92,7 @@ export function WaybillPrintModal({ order, whatsappNumber, onClose }: WaybillPri
         {/* Pure Black & White High-Contrast Printable Sheet */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-6">
           <div
-            id="vexa-waybill-print-sheet"
+            id="athar-waybill-print-sheet"
             dir="rtl"
             className={`mx-auto border-[1.5px] border-black bg-white text-black ${
               isA6 ? 'max-w-[390px] p-3 text-[11px]' : 'max-w-[740px] p-6 text-sm'
@@ -101,11 +101,11 @@ export function WaybillPrintModal({ order, whatsappNumber, onClose }: WaybillPri
             {/* Header */}
             <div className="flex items-start justify-between gap-3 border-b-[1.5px] border-black pb-2.5">
               <div>
-                <VexaLogo
+                <BrandLogo
                   variant="monochrome"
                   className={isA6 ? 'mb-1 h-6 w-auto' : 'mb-1.5 h-8 w-auto'}
                 />
-                <p className="font-bold">متجر فيكسا للأزياء الشتوية</p>
+                <p className="font-bold">متجر أثر للأزياء الشتوية</p>
                 {whatsappNumber && (
                   <p className="font-display font-bold" dir="ltr">
                     CS: {whatsappNumber}

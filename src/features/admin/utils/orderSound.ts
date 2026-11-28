@@ -1,5 +1,5 @@
-const MUTE_KEY = 'vexa-admin-sound-muted';
-const DESKTOP_NOTIF_KEY = 'vexa-admin-desktop-notif';
+const MUTE_KEY = 'athar-admin-sound-muted';
+const DESKTOP_NOTIF_KEY = 'athar-admin-desktop-notif';
 
 let sharedAudioCtx: AudioContext | null = null;
 let unlockBound = false;

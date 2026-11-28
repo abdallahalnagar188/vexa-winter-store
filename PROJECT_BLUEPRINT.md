@@ -1,4 +1,4 @@
-# VEXA Winter Store — Project Blueprint & Technical Architecture
+# أثر — Project Blueprint & Technical Architecture
 
 > **Source of Truth Notice:** Every architecture diagram, database schema, symbol name, route, RLS policy, and discrepancy documented below was verified directly against the current repository codebase and `supabase/schema.sql`.
 
@@ -6,7 +6,7 @@
 
 ## 1. Executive Business Overview
 
-**VEXA Winter Store** is an Egyptian direct-to-consumer (D2C) winter streetwear and apparel e-commerce storefront paired with a dedicated real-time Admin Dashboard and Home Page CMS.
+**أثر** is an Egyptian direct-to-consumer (D2C) winter streetwear and apparel e-commerce storefront paired with a dedicated real-time Admin Dashboard and Home Page CMS.
 
 | Dimension | Implementation Details |
 | :--- | :--- |
@@ -75,7 +75,7 @@ src/
     │   ├── components/            # HeroSection, ProductCard, ProductGallery, VariantPicker, CategoryChips, TierOfferBanner
     │   └── pages/                 # HomePage, CatalogPage, ProductPage, TrackOrderPage, NotFoundPage
     ├── cart/
-    │   ├── cartStore.ts           # Zustand store persisted to `vexa-cart:v1` with buildCartItemKey + changeVariant
+    │   ├── cartStore.ts           # Zustand store persisted to `athar-cart:v1` with buildCartItemKey + changeVariant
     │   ├── cartStore.test.ts      # 4 unit tests for multi-color/size identity, merging, and tier integration
     │   ├── useCartPricing.ts      # Combines cart items with live Supabase products/tiers/settings -> calculateCart
     │   ├── CartDrawer.tsx         # Slide-over cart drawer with live stock sync & next-tier upsell banner
@@ -106,7 +106,7 @@ src/
 flowchart LR
   subgraph Client["React 19 + Vite SPA (Vercel)"]
     UI["Storefront & Admin UI\n(Tailwind CSS v4 + Framer Motion)"]
-    ZQ["Zustand Cart\n(localStorage: vexa-cart:v1)"]
+    ZQ["Zustand Cart\n(localStorage: athar-cart:v1)"]
     TQ["TanStack Query\n(60s staleTime cache)"]
   end
 
@@ -130,7 +130,7 @@ flowchart LR
 ### 3.2 Routing & State Management
 - **Storefront Routes** (eagerly loaded under `StoreLayout`): `/`, `/shop`, `/product/:slug`, `/cart`, `/checkout`, `/order/:ref`, `/track`, `*`.
 - **Admin Routes** (code-split via `React.lazy`, protected by `ProtectedRoute` except `/admin/login`): `/admin`, `/admin/orders`, `/admin/products`, `/admin/products/new`, `/admin/products/:id`, `/admin/homepage`, `/admin/discounts`, `/admin/shipping`, `/admin/settings`.
-- **Cart State (`useCartStore`)**: Persisted in `localStorage` under `vexa-cart:v1`; `sanitizeItems` validates and backfills `cartItemKey` on hydration. Checkout form drafts persist in `sessionStorage` (`vexa-checkout-draft:v1`).
+- **Cart State (`useCartStore`)**: Persisted in `localStorage` under `athar-cart:v1`; `sanitizeItems` validates and backfills `cartItemKey` on hydration. Checkout form drafts persist in `sessionStorage` (`athar-checkout-draft:v1`).
 - **Admin Realtime**: `useAdminOrdersRealtime` subscribes to `postgres_changes` on `public.orders`, invalidates `['admin', 'orders']`, shows a Sonner toast on new `INSERT`s, and plays an 880Hz Web Audio ping.
 
 ### 3.3 Supabase Database Schema, Storage & RLS Summary

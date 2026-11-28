@@ -35,7 +35,7 @@ export function HomePage() {
   const isAr = lang === 'ar';
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
   useSeo({
-    title: isAr ? 'VEXA | أزياء شتوية عصرية - مصر' : 'VEXA | Modern Winter Essentials - Egypt',
+    title: isAr ? 'أثر | أزياء شتوية عصرية - مصر' : 'أثر | Modern Winter Essentials - Egypt',
     description: isAr
       ? 'خامات قطنية وصوفية ثقيلة 480gsm مصممة للشتاء المصري. اشتري أكثر ووفر حتى 15% تلقائياً مع الدفع عند الاستلام لجميع المحافظات.'
       : 'Heavyweight 480gsm Egyptian winter streetwear. Unlock automatic bundle discounts up to 15% with Cash on Delivery across all 27 governorates.',
@@ -389,7 +389,7 @@ export function HomePage() {
         )}
       </section>
 
-      {/* Why VEXA / Bundle How It Works 3-Step Visual Strip */}
+      {/* Why أثر / Bundle How It Works 3-Step Visual Strip */}
       <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 sm:pb-14">
         <div className="rounded-sm bg-[#132238] p-6 text-[#F4F2EC] shadow-md sm:p-8">
           <div className="mb-6 flex flex-wrap items-center justify-between gap-2">

@@ -166,7 +166,7 @@ describe('calculateCart pricing engine', () => {
       shippingFee: 75,
       freeShippingThreshold: 1700,
       coupon: {
-        code: 'VEXA10',
+        code: 'ATHAR10',
         discountType: 'percent',
         discountValue: 10,
         minOrderAmount: 500,
