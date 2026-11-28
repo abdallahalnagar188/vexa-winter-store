@@ -68,7 +68,9 @@
     "description": "التفاصيل والخامة",
     "sizeGuide": "دليل المقاسات",
     "addedToast": "تمت إضافة القطعة إلى السلة",
-    "addedVariantToast": "تمت إضافة {{title}} ({{color}} - {{size}}) إلى السلة",
+    "addedVariantToast": "تمت إضافة {{title}} ({{color}} • {{size}}) إلى السلة",
+    "addedBtn": "تمت الإضافة ✓",
+    "addedBanner": "تمت إضافة {{title}} ({{color}} • {{size}})",
     "selectedSubtotal": "الإجمالي للقطع المختارة",
     "livePreview": "السعر المتوقع مع القطع في السلة",
     "includesCart": "لديك {{count}} قطعة في السلة من هذا المنتج"
@@ -88,6 +90,7 @@
     "freeShippingAway": "أضف {{amount}} للحصول على شحن مجاني",
     "checkout": "إتمام الطلب (كاش عند الاستلام)",
     "viewCart": "عرض السلة",
+    "continueShopping": "متابعة التسوق",
     "remove": "حذف",
     "stockAdjusted": "تم تعديل الكميات حسب المخزون المتاح",
     "couponLabel": "كود الخصم",

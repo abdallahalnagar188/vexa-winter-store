@@ -68,7 +68,9 @@
     "description": "Details & Fabric",
     "sizeGuide": "Size Guide",
     "addedToast": "Added to your cart",
-    "addedVariantToast": "Added {{title}} ({{color}} - {{size}}) to cart",
+    "addedVariantToast": "Added {{title}} ({{color}} • {{size}}) to cart",
+    "addedBtn": "Added ✓",
+    "addedBanner": "Added {{title}} ({{color}} • {{size}})",
     "selectedSubtotal": "Selected subtotal",
     "livePreview": "Estimated total with items in cart",
     "includesCart": "You have {{count}} item(s) of this product in cart"
@@ -88,6 +90,7 @@
     "freeShippingAway": "Add {{amount}} more for free shipping",
     "checkout": "Checkout (Cash on Delivery)",
     "viewCart": "View Cart",
+    "continueShopping": "Continue Shopping",
     "remove": "Remove",
     "stockAdjusted": "Quantities updated to match available stock",
     "couponLabel": "Promo Code",

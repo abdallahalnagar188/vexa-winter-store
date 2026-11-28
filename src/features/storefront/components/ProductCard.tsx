@@ -35,6 +35,7 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
   const { t } = useTranslation();
   const { lang } = useDir();
   const addToCart = useCartStore((s) => s.add);
+  const openDrawer = useCartStore((s) => s.openDrawer);
 
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [hoveredColor, setHoveredColor] = useState<string | null>(null);
@@ -130,6 +131,12 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
         color: variant.color_name,
         size: variant.size,
       }),
+      {
+        action: {
+          label: t('cart.viewCart'),
+          onClick: () => openDrawer(),
+        },
+      },
     );
     trackStorefrontEvent('add_to_cart', {
       productId: product.id,

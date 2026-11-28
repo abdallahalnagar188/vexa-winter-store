@@ -1,6 +1,7 @@
+import { Link } from 'react-router-dom';
 import { Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import type { CartItem, ProductVariant, ProductWithDetails } from '@/shared/types/domain';
+import type { CartItem } from '@/shared/types/domain';
 import type { PricedLineOutput } from '@/shared/pricing/calculateCart';
 import { useDir } from '@/shared/hooks/useDir';
 import { formatEGP } from '@/lib/format';
@@ -10,121 +11,71 @@ import { AnimatedDiscountBadge } from '@/shared/components/motion/AnimatedDiscou
 interface CartLineProps {
   item: CartItem;
   pricedLine?: PricedLineOutput;
-  product?: ProductWithDetails;
   maxStock?: number;
   isStale?: boolean;
   onQuantityChange: (qty: number) => void;
-  onVariantChange?: (variant: ProductVariant) => void;
   onRemove: () => void;
+  onNavigate?: () => void;
 }
 
 export function CartLine({
   item,
   pricedLine,
-  product,
   maxStock = 10,
   isStale,
   onQuantityChange,
-  onVariantChange,
   onRemove,
+  onNavigate,
 }: CartLineProps) {
   const { t } = useTranslation();
   const { lang } = useDir();
   const title = lang === 'ar' ? item.snapshot.titleAr : item.snapshot.titleEn || item.snapshot.titleAr;
-
-  const activeVariants = (product?.product_variants ?? []).filter((v) => v.is_active && v.stock > 0);
-  const availableColors = Array.from(
-    new Map(activeVariants.map((v) => [v.color_name, v.color_name])).values(),
-  );
-  const sizesForCurrentColor = activeVariants
-    .filter((v) => v.color_name === item.snapshot.colorName)
-    .map((v) => v.size);
-  const showVariantControls =
-    Boolean(onVariantChange) && (availableColors.length > 1 || sizesForCurrentColor.length > 1);
-
-  const handleColorSelect = (nextColor: string) => {
-    if (!onVariantChange || nextColor === item.snapshot.colorName) return;
-    const sameSizeMatch = activeVariants.find(
-      (v) => v.color_name === nextColor && v.size === item.snapshot.size,
-    );
-    const firstForColor = activeVariants.find((v) => v.color_name === nextColor);
-    const nextVariant = sameSizeMatch ?? firstForColor;
-    if (nextVariant) onVariantChange(nextVariant);
-  };
-
-  const handleSizeSelect = (nextSize: string) => {
-    if (!onVariantChange || nextSize === item.snapshot.size) return;
-    const match = activeVariants.find(
-      (v) => v.color_name === item.snapshot.colorName && v.size === nextSize,
-    );
-    if (match) onVariantChange(match);
-  };
+  const productPath = `/product/${item.snapshot.slug}`;
 
   return (
     <div className="flex gap-3 rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-3 text-[#132238] shadow-2xs">
-      <img
-        src={item.snapshot.imageUrl ?? ''}
-        alt={title}
-        className="h-24 w-20 shrink-0 rounded-[2px] bg-[#ECE9E0] object-contain p-1"
-      />
+      <Link to={productPath} onClick={onNavigate} className="shrink-0">
+        <img
+          src={item.snapshot.imageUrl ?? ''}
+          alt={title}
+          className="h-24 w-20 rounded-[2px] border border-[#132238]/10 bg-[#ECE9E0] object-cover"
+        />
+      </Link>
+
       <div className="flex min-w-0 flex-1 flex-col justify-between gap-2">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
-            <h4 className="truncate text-sm font-extrabold">{title}</h4>
-            {showVariantControls ? (
-              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
-                {availableColors.length > 1 ? (
-                  <select
-                    aria-label={t('product.selectColor')}
-                    value={item.snapshot.colorName}
-                    onChange={(e) => handleColorSelect(e.target.value)}
-                    className="h-7 max-w-[110px] cursor-pointer rounded-[2px] border border-[#132238]/18 bg-[#F4F2EC] px-2 text-xs font-bold text-[#132238] focus:border-[#FF6B1A] focus:outline-none"
-                  >
-                    {availableColors.map((color) => (
-                      <option key={color} value={color}>
-                        {color}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <span className="text-xs font-semibold text-[#132238]/75">
-                    {item.snapshot.colorName}
-                  </span>
-                )}
+            <Link
+              to={productPath}
+              onClick={onNavigate}
+              className="block truncate text-sm font-extrabold text-[#132238] transition-colors hover:text-[#FF6B1A]"
+            >
+              {title}
+            </Link>
 
-                {sizesForCurrentColor.length > 1 ? (
-                  <select
-                    aria-label={t('product.selectSize')}
-                    value={item.snapshot.size}
-                    onChange={(e) => handleSizeSelect(e.target.value)}
-                    className="h-7 cursor-pointer rounded-[2px] border border-[#132238]/18 bg-[#F4F2EC] px-2 font-display text-xs font-bold text-[#132238] focus:border-[#FF6B1A] focus:outline-none"
-                  >
-                    {sizesForCurrentColor.map((size) => (
-                      <option key={size} value={size}>
-                        {size}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <span className="font-display text-xs font-bold text-[#132238]/75">
-                    {item.snapshot.size}
-                  </span>
-                )}
-              </div>
-            ) : (
-              <p className="mt-0.5 text-xs text-[#132238]/70">
-                {item.snapshot.colorName} • {item.snapshot.size}
-              </p>
-            )}
+            {/* Clean static variant metadata line (no inline dropdown clutter) */}
+            <div className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-[#132238]/75">
+              <span
+                className="h-3 w-3 shrink-0 rounded-full border border-black/20"
+                style={{ backgroundColor: item.snapshot.colorHex ?? '#132238' }}
+              />
+              <span>
+                {item.snapshot.colorName} •{' '}
+                <span className="font-display font-bold">{item.snapshot.size}</span>
+              </span>
+            </div>
+
             {isStale && (
               <p className="mt-1 text-xs font-bold text-rose-700">{t('product.outOfStock')}</p>
             )}
           </div>
+
           <button
             type="button"
             onClick={onRemove}
             aria-label={t('cart.remove')}
-            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[2px] text-[#132238]/60 hover:bg-rose-100 hover:text-rose-700"
+            title={t('cart.remove')}
+            className="flex h-8 w-8 shrink-0 cursor-pointer items-center justify-center rounded-[2px] text-[#132238]/55 transition-colors hover:bg-rose-100 hover:text-rose-700"
           >
             <Trash2 className="h-4 w-4" />
           </button>

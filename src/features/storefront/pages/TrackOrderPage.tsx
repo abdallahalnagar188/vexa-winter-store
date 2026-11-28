@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { CheckCircle2, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { supabase } from '@/lib/supabase';
@@ -18,12 +19,20 @@ export function TrackOrderPage() {
   const { t } = useTranslation();
   const { lang } = useDir();
   useDocumentTitle(t('track.title'));
+  const [searchParams] = useSearchParams();
+  const urlRef = searchParams.get('ref') ?? '';
 
-  const [refInput, setRefInput] = useState('');
+  const [refInput, setRefInput] = useState(urlRef);
   const [phoneInput, setPhoneInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [order, setOrder] = useState<TrackedOrder | null>(null);
+
+  useEffect(() => {
+    if (urlRef) {
+      setRefInput(urlRef);
+    }
+  }, [urlRef]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

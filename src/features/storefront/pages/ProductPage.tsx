@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Ruler, ShoppingBag } from 'lucide-react';
+import { Link, useParams } from 'react-router-dom';
+import { Check, Ruler, ShoppingBag, Sparkles } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { PageTransition } from '@/shared/components/motion/PageTransition';
@@ -41,7 +41,20 @@ export function ProductPage() {
   const [qty, setQty] = useState(1);
   const [pickerError, setPickerError] = useState(false);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [addedFlash, setAddedFlash] = useState(false);
+  const [lastAdded, setLastAdded] = useState<{
+    title: string;
+    color: string;
+    size: string;
+  } | null>(null);
+  const flashTimerRef = useRef<number | null>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    return () => {
+      if (flashTimerRef.current) window.clearTimeout(flashTimerRef.current);
+    };
+  }, []);
 
   const product = productQuery.data;
   const title = product
@@ -167,21 +180,54 @@ export function ProductPage() {
     });
     setQty(1);
     setSelectedSize(null);
+    setLastAdded({
+      title,
+      color: selectedVariant.color_name,
+      size: selectedVariant.size,
+    });
+    setAddedFlash(true);
+    if (flashTimerRef.current) window.clearTimeout(flashTimerRef.current);
+    flashTimerRef.current = window.setTimeout(() => setAddedFlash(false), 1300);
+
     toast.success(
       t('product.addedVariantToast', {
         title,
         color: selectedVariant.color_name,
         size: selectedVariant.size,
       }),
+      {
+        action: {
+          label: t('cart.viewCart'),
+          onClick: () => openDrawer(),
+        },
+      },
     );
-    openDrawer();
   };
+
+  const cartNextHint = useMemo(() => {
+    if (!product || existingProductCartQty === 0) return null;
+    const cartOnly = calculateCart({
+      lines: cartItems
+        .filter((i) => i.productId === product.id)
+        .map((i) => ({
+          lineKey: i.cartItemKey,
+          variantId: i.variantId,
+          productId: product.id,
+          unitPrice: product.base_price,
+          quantity: i.quantity,
+        })),
+      tiers: tiersQuery.data ?? [],
+      shippingFee: null,
+      freeShippingThreshold: 0,
+    });
+    return cartOnly.groups[product.id]?.nextTierHint ?? null;
+  }, [product, existingProductCartQty, cartItems, tiersQuery.data]);
 
   if (productQuery.isLoading) {
     return (
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:px-6 lg:grid-cols-2">
-        <Skeleton className="aspect-4/5 w-full rounded-2xl" />
-        <Skeleton className="h-96 w-full rounded-2xl" />
+        <Skeleton className="aspect-4/5 w-full rounded-sm" />
+        <Skeleton className="h-96 w-full rounded-sm" />
       </div>
     );
   }
@@ -325,14 +371,54 @@ export function ProductPage() {
           )}
 
           <Button
-            variant="primary"
+            variant={addedFlash ? 'secondary' : 'primary'}
             size="lg"
             onClick={handleAdd}
             className="hidden w-full lg:inline-flex"
           >
-            <ShoppingBag className="h-5 w-5" />
-            <span>{t('product.addToCart')}</span>
+            {addedFlash ? <Check className="h-5 w-5 text-[#FF6B1A]" /> : <ShoppingBag className="h-5 w-5" />}
+            <span>{addedFlash ? t('product.addedBtn') : t('product.addToCart')}</span>
           </Button>
+
+          {lastAdded && (
+            <div className="space-y-2.5 rounded-sm border border-emerald-200 bg-emerald-50/70 p-3.5 text-xs text-[#132238]">
+              <div className="flex items-center gap-2 font-extrabold text-emerald-800">
+                <Check className="h-4 w-4 shrink-0" />
+                <span>
+                  {t('product.addedBanner', {
+                    title: lastAdded.title,
+                    color: lastAdded.color,
+                    size: lastAdded.size,
+                  })}
+                </span>
+              </div>
+
+              {cartNextHint && (
+                <div className="flex items-center gap-1.5 rounded-[2px] border border-orange-500/20 bg-orange-500/10 px-2.5 py-1.5 font-bold text-orange-700">
+                  <Sparkles className="h-3.5 w-3.5 shrink-0" />
+                  <span>
+                    {cartNextHint.type === 'percent'
+                      ? t('offers.addMorePct', { qty: cartNextHint.addQty, val: cartNextHint.value })
+                      : t('offers.addMoreFixed', {
+                          qty: cartNextHint.addQty,
+                          val: formatEGP(cartNextHint.value, lang),
+                        })}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                <Button type="button" variant="outline" size="sm" onClick={openDrawer} className="flex-1 bg-white">
+                  {t('cart.viewCart')}
+                </Button>
+                <Link to="/checkout" className="flex-1">
+                  <Button type="button" variant="primary" size="sm" className="w-full">
+                    {t('cart.checkout')}
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          )}
 
           {description && (
             <div className="border-t border-[#132238]/12 pt-4">
@@ -358,9 +444,14 @@ export function ProductPage() {
               size="sm"
             />
           </div>
-          <Button variant="primary" size="md" onClick={handleAdd} className="shrink-0">
-            <ShoppingBag className="h-4 w-4" />
-            <span>{t('product.addToCart')}</span>
+          <Button
+            variant={addedFlash ? 'secondary' : 'primary'}
+            size="md"
+            onClick={handleAdd}
+            className="shrink-0"
+          >
+            {addedFlash ? <Check className="h-4 w-4 text-[#FF6B1A]" /> : <ShoppingBag className="h-4 w-4" />}
+            <span>{addedFlash ? t('product.addedBtn') : t('product.addToCart')}</span>
           </Button>
         </div>
       </div>

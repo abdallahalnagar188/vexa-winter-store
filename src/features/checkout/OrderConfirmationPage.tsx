@@ -31,24 +31,26 @@ export function OrderConfirmationPage() {
     ? `https://wa.me/${digits}?text=${encodeURIComponent(`تأكيد طلب رقم: ${ref ?? ''}`)}`
     : null;
 
+  const trackUrl = ref ? `/track?ref=${encodeURIComponent(ref)}` : '/track';
+
   return (
     <PageTransition className="mx-auto max-w-xl px-4 py-12 sm:px-6">
-      <div className="rounded-3xl border border-[#132238]/12 bg-[#FFFFFF] p-6 text-center text-[#132238] shadow-2xl sm:p-10">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#132238] text-[#FF6B1A]">
+      <div className="rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-6 text-center text-[#132238] shadow-2xl sm:p-10">
+        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[2px] bg-[#132238] text-[#FF6B1A]">
           <CheckCircle2 className="h-9 w-9" />
         </div>
 
         <h1 className="mt-5 text-2xl font-black sm:text-3xl">{t('confirmation.title')}</h1>
         <p className="mt-2 text-sm text-[#132238]/75">{t('confirmation.subtitle')}</p>
 
-        <div className="mt-6 rounded-2xl border border-[#132238]/15 bg-[#ECE9E0] p-4">
+        <div className="mt-6 rounded-sm border border-[#132238]/15 bg-[#ECE9E0] p-4">
           <p className="text-xs font-bold text-[#132238]/70">{t('confirmation.refLabel')}</p>
           <div className="mt-1 flex items-center justify-center gap-3">
             <span className="font-display text-2xl font-black tracking-wider">{ref}</span>
             <button
               type="button"
               onClick={handleCopy}
-              className="inline-flex cursor-pointer items-center gap-1 rounded-lg bg-[#FF6B1A] px-2.5 py-1 text-xs font-extrabold text-white"
+              className="inline-flex cursor-pointer items-center gap-1 rounded-[2px] bg-[#FF6B1A] px-2.5 py-1 text-xs font-extrabold text-white"
             >
               <Copy className="h-3.5 w-3.5" />
               <span>{copied ? t('confirmation.copied') : t('confirmation.copyRef')}</span>
@@ -73,7 +75,7 @@ export function OrderConfirmationPage() {
               </Button>
             </a>
           )}
-          <Link to="/track">
+          <Link to={trackUrl}>
             <Button variant="secondary" size="lg" className="w-full">
               {t('confirmation.trackBtn')}
             </Button>

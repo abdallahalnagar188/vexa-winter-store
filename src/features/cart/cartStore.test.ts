@@ -241,4 +241,48 @@ describe('cartStore multi-color and multi-size line items', () => {
     expect(items[0]?.cartItemKey).toBe('prod-a::black::m');
     expect(items[0]?.quantity).toBe(2);
   });
+
+  it('keeps CartDrawer closed when adding items sequentially and applies tiered bundle savings', () => {
+    const store = useCartStore.getState();
+    store.closeDrawer();
+
+    store.add(
+      {
+        variantId: 'var-black-l',
+        productId: 'hoodie-99',
+        quantity: 1,
+        snapshot: {
+          titleAr: 'هودي',
+          titleEn: 'Hoodie',
+          size: 'L',
+          colorName: 'Black',
+          colorHex: '#000000',
+          imageUrl: null,
+          slug: 'hoodie',
+        },
+      },
+      10,
+    );
+    expect(useCartStore.getState().drawerOpen).toBe(false);
+
+    store.add(
+      {
+        variantId: 'var-white-xl',
+        productId: 'hoodie-99',
+        quantity: 1,
+        snapshot: {
+          titleAr: 'هودي',
+          titleEn: 'Hoodie',
+          size: 'XL',
+          colorName: 'White',
+          colorHex: '#FFFFFF',
+          imageUrl: null,
+          slug: 'hoodie',
+        },
+      },
+      10,
+    );
+    expect(useCartStore.getState().drawerOpen).toBe(false);
+    expect(useCartStore.getState().items).toHaveLength(2);
+  });
 });
