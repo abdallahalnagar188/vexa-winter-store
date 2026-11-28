@@ -35,11 +35,20 @@ export function CartLine({
   return (
     <div className="flex gap-3 rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-3 text-[#132238] shadow-2xs">
       <Link to={productPath} onClick={onNavigate} className="shrink-0">
-        <img
-          src={item.snapshot.imageUrl ?? ''}
-          alt={title}
-          className="h-24 w-20 rounded-[2px] border border-[#132238]/10 bg-[#ECE9E0] object-cover"
-        />
+        {item.snapshot.imageUrl ? (
+          <img
+            src={item.snapshot.imageUrl}
+            alt={`${title} - ${item.snapshot.colorName}`}
+            className="h-24 w-20 rounded-[2px] border border-[#132238]/10 bg-[#ECE9E0] object-cover"
+          />
+        ) : (
+          <div
+            aria-label={title}
+            className="flex h-24 w-20 items-center justify-center rounded-[2px] border border-[#132238]/10 bg-[#ECE9E0] font-display text-[10px] font-bold text-[#132238]/45"
+          >
+            VEXA
+          </div>
+        )}
       </Link>
 
       <div className="flex min-w-0 flex-1 flex-col justify-between gap-2">

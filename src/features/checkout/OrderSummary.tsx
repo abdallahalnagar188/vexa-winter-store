@@ -35,11 +35,20 @@ export function OrderSummary({
           return (
             <div key={item.cartItemKey} className="flex items-center justify-between gap-3 text-sm">
               <div className="flex min-w-0 items-center gap-2.5">
-                <img
-                  src={item.snapshot.imageUrl ?? ''}
-                  alt={title}
-                  className="h-12 w-10 shrink-0 rounded-[2px] bg-[#ECE9E0] object-contain p-0.5"
-                />
+                {item.snapshot.imageUrl ? (
+                  <img
+                    src={item.snapshot.imageUrl}
+                    alt={`${title} - ${item.snapshot.colorName}`}
+                    className="h-12 w-10 shrink-0 rounded-[2px] bg-[#ECE9E0] object-contain p-0.5"
+                  />
+                ) : (
+                  <div
+                    aria-label={title}
+                    className="flex h-12 w-10 shrink-0 items-center justify-center rounded-[2px] bg-[#ECE9E0] font-display text-[9px] font-bold text-[#132238]/45"
+                  >
+                    VEXA
+                  </div>
+                )}
                 <div className="min-w-0">
                   <p className="truncate font-bold">{title}</p>
                   <p className="text-xs text-[#132238]/70">

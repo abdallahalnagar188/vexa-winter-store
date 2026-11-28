@@ -16,7 +16,7 @@ import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
 export function CartPage() {
   const { t } = useTranslation();
   const { lang } = useDir();
-  useDocumentTitle(t('cart.title'));
+  useDocumentTitle(t('cart.title'), { noIndex: true });
   const setQuantity = useCartStore((s) => s.setQuantity);
   const remove = useCartStore((s) => s.remove);
   const { items, priced, variantMap, staleVariantIds, freeShippingThreshold } =

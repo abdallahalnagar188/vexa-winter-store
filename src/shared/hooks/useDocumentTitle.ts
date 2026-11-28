@@ -1,8 +1,12 @@
-import { useEffect } from 'react';
+import { useSeo } from './useSeo';
 
-export function useDocumentTitle(title: string): void {
-  useEffect(() => {
-    const siteName = import.meta.env.VITE_SITE_NAME || 'VEXA';
-    document.title = `${title} | ${siteName}`;
-  }, [title]);
+export function useDocumentTitle(
+  title: string,
+  options?: { description?: string; noIndex?: boolean },
+): void {
+  useSeo({
+    title,
+    description: options?.description,
+    noIndex: options?.noIndex,
+  });
 }

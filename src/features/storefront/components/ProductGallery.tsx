@@ -35,6 +35,8 @@ export function ProductGallery({ images, title, selectedColor }: ProductGalleryP
   const safeIdx = Math.min(activeIdx, filteredImages.length - 1);
   const current = filteredImages[safeIdx]?.url ?? filteredImages[0]?.url;
 
+  const mainAlt = selectedColor ? `${title} - ${selectedColor}` : title;
+
   return (
     <div className="flex flex-col gap-3">
       {/* Main image with seamless studio surface and crossfade on color switch */}
@@ -44,7 +46,7 @@ export function ProductGallery({ images, title, selectedColor }: ProductGalleryP
             <motion.img
               key={current}
               src={current}
-              alt={title}
+              alt={mainAlt}
               initial={{ opacity: 0, scale: 1.03 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}

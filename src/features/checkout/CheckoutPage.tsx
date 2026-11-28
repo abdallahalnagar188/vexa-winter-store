@@ -34,7 +34,7 @@ function loadDraft(): Partial<CheckoutFormValues> {
 export function CheckoutPage() {
   const { t } = useTranslation();
   const { lang } = useDir();
-  useDocumentTitle(t('checkout.title'));
+  useDocumentTitle(t('checkout.title'), { noIndex: true });
   const navigate = useNavigate();
 
   const items = useCartStore((s) => s.items);

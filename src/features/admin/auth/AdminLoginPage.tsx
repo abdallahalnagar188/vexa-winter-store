@@ -10,7 +10,7 @@ import { VexaLogo } from '@/shared/components/ui/VexaLogo';
 import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
 
 export function AdminLoginPage() {
-  useDocumentTitle('تسجيل دخول الإدارة');
+  useDocumentTitle('تسجيل دخول الإدارة', { noIndex: true });
   const navigate = useNavigate();
   const location = useLocation() as { state?: { from?: string } };
   const [email, setEmail] = useState('');
@@ -45,6 +45,7 @@ export function AdminLoginPage() {
       <div className="w-full max-w-md rounded-sm border border-[#132238]/12 bg-[#FFFFFF] p-6 text-[#132238] shadow-xl sm:p-8">
         <div className="mb-6 flex items-center justify-between gap-3 border-b border-[#132238]/10 pb-4">
           <div>
+            <h1 className="sr-only">تسجيل دخول الإدارة</h1>
             <VexaLogo variant="light-bg" className="h-8 w-auto" />
             <p className="mt-1.5 text-xs font-semibold text-[#132238]/70">دخول المشرفين فقط</p>
           </div>

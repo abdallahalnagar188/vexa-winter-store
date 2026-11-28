@@ -19,7 +19,9 @@ import { useCategories } from '@/features/storefront/api/useCategories';
 import { useTiers } from '@/features/storefront/api/useTiers';
 import { useHomepageContent } from '@/features/storefront/api/useHomepageContent';
 import { useDir } from '@/shared/hooks/useDir';
-import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
+import { useSeo } from '@/shared/hooks/useSeo';
+import { JsonLd } from '@/shared/components/seo/JsonLd';
+import { buildHomeJsonLd } from '@/shared/seo/seoUtils';
 import { sanitizeSafeUrl } from '@/shared/validation/url';
 import { Skeleton } from '@/shared/components/ui/Skeleton';
 import { Button } from '@/shared/components/ui/Button';
@@ -32,7 +34,13 @@ export function HomePage() {
   const { lang, isRtl } = useDir();
   const isAr = lang === 'ar';
   const ArrowIcon = isRtl ? ArrowLeft : ArrowRight;
-  useDocumentTitle(t('nav.home'));
+  useSeo({
+    title: isAr ? 'VEXA | أزياء شتوية عصرية - مصر' : 'VEXA | Modern Winter Essentials - Egypt',
+    description: isAr
+      ? 'خامات قطنية وصوفية ثقيلة 480gsm مصممة للشتاء المصري. اشتري أكثر ووفر حتى 15% تلقائياً مع الدفع عند الاستلام لجميع المحافظات.'
+      : 'Heavyweight 480gsm Egyptian winter streetwear. Unlock automatic bundle discounts up to 15% with Cash on Delivery across all 27 governorates.',
+    canonicalPath: '/',
+  });
 
   const cmsQuery = useHomepageContent();
   const productsQuery = useProducts({ sort: 'newest', limit: 8 });
@@ -54,6 +62,7 @@ export function HomePage() {
 
   return (
     <PageTransition>
+      <JsonLd id="home-schema" data={buildHomeJsonLd()} />
       <HeroSection heroes={cmsQuery.data?.heroes} />
 
       {/* Continuous Infinite Brand Marquee Seamlessly Connected to Dark Hero */}
@@ -323,7 +332,7 @@ export function HomePage() {
                 promoBanner
                   ? isAr
                     ? promoBanner.title_ar
-                    : promoBanner.title_en
+                    : promoBanner.title_en || promoBanner.title_ar
                   : t('offers.bannerTitle')
               }
               loading="lazy"

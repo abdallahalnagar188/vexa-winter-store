@@ -14,7 +14,9 @@ import { useCartStore } from '@/features/cart/cartStore';
 import { calculateCart } from '@/shared/pricing/calculateCart';
 import { resolveTiers } from '@/shared/pricing/tiers';
 import { useDir } from '@/shared/hooks/useDir';
-import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
+import { useSeo } from '@/shared/hooks/useSeo';
+import { JsonLd } from '@/shared/components/seo/JsonLd';
+import { buildProductJsonLd } from '@/shared/seo/seoUtils';
 import { formatEGP } from '@/lib/format';
 import { trackPixelEvent } from '@/lib/analytics';
 import { trackStorefrontEvent } from '@/lib/storefrontTracker';
@@ -57,7 +59,31 @@ export function ProductPage() {
       ? product.title_ar
       : product.title_en || product.title_ar
     : t('nav.shop');
-  useDocumentTitle(title);
+  const description = product
+    ? lang === 'ar'
+      ? product.description_ar
+      : product.description_en || product.description_ar
+    : undefined;
+  const primaryImageUrl = product
+    ? product.product_images.find((img) => img.is_primary)?.url ?? product.product_images[0]?.url ?? null
+    : null;
+  const hasActiveStock = product
+    ? product.product_variants.some((v) => v.is_active && v.stock > 0)
+    : false;
+  const categoryName = product?.category
+    ? lang === 'ar'
+      ? product.category.name_ar
+      : product.category.name_en || product.category.name_ar
+    : null;
+
+  useSeo({
+    title,
+    description: description || undefined,
+    canonicalPath: slug ? `/product/${slug}` : undefined,
+    ogImage: primaryImageUrl,
+    ogType: product ? 'product' : 'website',
+    noIndex: !productQuery.isLoading && !product ? true : undefined,
+  });
 
   useEffect(() => {
     if (!product) return;
@@ -213,17 +239,28 @@ export function ProductPage() {
   if (!product) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-12">
-        <EmptyState title={t('catalog.noProducts')} />
+        <EmptyState headingLevel="h1" title={t('catalog.noProducts')} />
       </div>
     );
   }
 
   const maxOrderQty = selectedVariant ? Math.min(10, Math.max(1, selectedVariant.stock)) : 10;
-  const description =
-    lang === 'ar' ? product.description_ar : product.description_en || product.description_ar;
+  const productJsonLd = buildProductJsonLd({
+    slug: product.slug,
+    name: title,
+    description: description || title,
+    images: product.product_images.map((img) => img.url),
+    sku: selectedVariant?.sku || product.product_variants[0]?.sku || product.slug,
+    priceEgp: product.base_price,
+    inStock: hasActiveStock,
+    homeLabel: t('nav.home'),
+    categoryName,
+    categorySlug: product.category?.slug ?? null,
+  });
 
   return (
     <PageTransition className="mx-auto max-w-6xl px-4 pb-28 pt-8 sm:px-6 lg:pb-12">
+      <JsonLd id="product-schema" data={productJsonLd} />
       <div className="grid gap-8 lg:grid-cols-12">
         <div className="min-w-0 lg:col-span-6">
           <ProductGallery images={product.product_images} title={title} selectedColor={selectedColor} />

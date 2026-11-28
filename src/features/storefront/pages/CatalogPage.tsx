@@ -10,7 +10,8 @@ import { useCatalogFacets, useProducts } from '@/features/storefront/api/useProd
 import { useCategories } from '@/features/storefront/api/useCategories';
 import { useTiers } from '@/features/storefront/api/useTiers';
 import { useDebounce } from '@/shared/hooks/useDebounce';
-import { useDocumentTitle } from '@/shared/hooks/useDocumentTitle';
+import { useDir } from '@/shared/hooks/useDir';
+import { useSeo } from '@/shared/hooks/useSeo';
 import { Skeleton } from '@/shared/components/ui/Skeleton';
 import { EmptyState } from '@/shared/components/ui/EmptyState';
 import { Button } from '@/shared/components/ui/Button';
@@ -18,7 +19,7 @@ import { cn } from '@/shared/components/ui/cn';
 
 export function CatalogPage() {
   const { t } = useTranslation();
-  useDocumentTitle(t('catalog.title'));
+  const { lang } = useDir();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const selectedCategory = searchParams.get('category') || 'all';
@@ -56,6 +57,18 @@ export function CatalogPage() {
   const categoriesQuery = useCategories();
   const tiersQuery = useTiers();
   const facetsQuery = useCatalogFacets();
+
+  const activeCategoryObj = (categoriesQuery.data ?? []).find((c) => c.slug === selectedCategory);
+  const seoTitle = activeCategoryObj
+    ? lang === 'ar'
+      ? activeCategoryObj.name_ar
+      : activeCategoryObj.name_en || activeCategoryObj.name_ar
+    : t('catalog.title');
+  const seoDescription =
+    lang === 'ar'
+      ? `${seoTitle} — تسوق منتجات VEXA الشتوية بخامات قطنية ثقيلة 480gsm مع خصم كميات تلقائي وشحن لجميع المحافظات.`
+      : `${seoTitle} — Shop heavyweight 480gsm VEXA winter essentials with automatic bundle discounts and nationwide Cash on Delivery.`;
+  useSeo({ title: seoTitle, description: seoDescription });
   const productsQuery = useProducts({
     categorySlug: selectedCategory,
     search: urlQ || undefined,

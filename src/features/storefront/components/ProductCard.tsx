@@ -150,7 +150,7 @@ export function ProductCard({ product, tiers }: ProductCardProps) {
         <div className="relative aspect-3/4 overflow-hidden rounded-[2px] bg-[#F2F1ED]">
           <img
             src={baseImg}
-            alt={title}
+            alt={activeColorName ? `${title} - ${activeColorName}` : title}
             loading="lazy"
             decoding="async"
             onError={(e) => {

@@ -1,0 +1,18 @@
+# VEXA Winter Store (Egypt)
+
+> VEXA is a contemporary Egyptian direct-to-consumer (D2C) winter streetwear brand specializing in heavyweight 480gsm Egyptian cotton hoodies, outerwear, knitwear, and structured winter pants designed for cold Egyptian nights.
+
+## Store Highlights
+- **Materials & Craft:** Heavyweight 480gsm Egyptian cotton fleece, brushed interior warmth, and sharp architectural cuts built for durability.
+- **Core Collections:** Heavyweight Hoodies, Winter Pants, Knitwear, and Outerwear / Jackets.
+- **Automatic Bundle Discounts:** Customers can mix and match any sizes or colors of the same product in one order and automatically receive tiered bundle savings without a promo code (e.g., Buy 2+ Save 10%, Buy 3+ Save 15%).
+- **Currency:** Egyptian Pound (`EGP`).
+- **Delivery & Payment:** 100% Cash on Delivery (COD) with inspection on delivery across all 27 Egyptian governorates within 2–5 business days.
+- **Return & Exchange Policy:** Flexible 14-day sizing exchange policy.
+- **Languages:** Bilingual Arabic (RTL) and English (LTR) storefront.
+
+## Key URLs
+- [Home](https://vexa-winter-store.vercel.app/): Brand campaign, featured categories, new arrivals, and bundle tiers.
+- [Shop All Winter Essentials](https://vexa-winter-store.vercel.app/shop): Full searchable and filterable winter catalog (size, color, stock, category).
+- [Track Your Order](https://vexa-winter-store.vercel.app/track): Real-time COD order status lookup by order reference and mobile number.
+- [XML Sitemap](https://vexa-winter-store.vercel.app/sitemap.xml): Live index of all active categories and product detail pages.

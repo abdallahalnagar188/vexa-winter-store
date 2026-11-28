@@ -14,7 +14,7 @@ export function OrderConfirmationPage() {
   const { state } = useLocation() as { state?: { total_cod?: number } };
   const { t } = useTranslation();
   const { lang } = useDir();
-  useDocumentTitle(t('confirmation.title'));
+  useDocumentTitle(t('confirmation.title'), { noIndex: true });
 
   const [copied, setCopied] = useState(false);
   const { data: settings } = usePublicSettings();

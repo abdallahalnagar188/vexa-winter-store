@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Allow: /shop
+Allow: /product/
+Disallow: /admin
+Disallow: /admin/
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order/
+Disallow: /track
+
+Sitemap: https://vexa-winter-store.vercel.app/sitemap.xml

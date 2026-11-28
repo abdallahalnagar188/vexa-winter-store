@@ -70,9 +70,9 @@ export function Footer() {
 
           {/* Column 2: Shop Categories */}
           <div className="lg:col-span-3">
-            <h3 className="mb-4 border-b border-white/10 pb-2 text-xs font-bold uppercase tracking-widest text-white/90">
+            <h2 className="mb-4 border-b border-white/10 pb-2 text-xs font-bold uppercase tracking-widest text-white/90">
               {isAr ? 'الأقسام' : 'Shop'}
-            </h3>
+            </h2>
             <ul className="space-y-2.5 text-sm">
               <li>
                 <Link to="/shop" className="text-slate-300 transition-colors hover:text-[#F97316]">
@@ -94,9 +94,9 @@ export function Footer() {
 
           {/* Column 3: Customer Care */}
           <div className="lg:col-span-2">
-            <h3 className="mb-4 border-b border-white/10 pb-2 text-xs font-bold uppercase tracking-widest text-white/90">
+            <h2 className="mb-4 border-b border-white/10 pb-2 text-xs font-bold uppercase tracking-widest text-white/90">
               {isAr ? 'خدمة العملاء' : 'Customer Care'}
-            </h3>
+            </h2>
             <ul className="space-y-2.5 text-sm">
               <li>
                 <Link to="/track" className="text-slate-300 transition-colors hover:text-[#F97316]">
@@ -119,9 +119,9 @@ export function Footer() {
 
           {/* Column 4: Direct Support / WhatsApp */}
           <div className="lg:col-span-3">
-            <h3 className="mb-4 border-b border-white/10 pb-2 text-xs font-bold uppercase tracking-widest text-white/90">
+            <h2 className="mb-4 border-b border-white/10 pb-2 text-xs font-bold uppercase tracking-widest text-white/90">
               {isAr ? 'تواصل معنا' : 'Need Help?'}
-            </h3>
+            </h2>
             <p className="mb-4 text-sm leading-relaxed text-slate-400">
               {isAr
                 ? 'استفسار عن مقاس أو طلب؟ تواصل معنا مباشرة'
@@ -134,7 +134,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 className="flex w-full items-center justify-center gap-2 rounded-[2px] bg-[#F97316] px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-[#EA580C] sm:w-auto"
               >
-                <MessageCircle className="h-4 w-4" />
+                <MessageCircle aria-hidden="true" className="h-4 w-4" />
                 <span>{t('footer.whatsapp')}</span>
               </a>
             )}

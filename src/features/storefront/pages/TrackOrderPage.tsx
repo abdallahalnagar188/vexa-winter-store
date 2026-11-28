@@ -18,7 +18,7 @@ import { cn } from '@/shared/components/ui/cn';
 export function TrackOrderPage() {
   const { t } = useTranslation();
   const { lang } = useDir();
-  useDocumentTitle(t('track.title'));
+  useDocumentTitle(t('track.title'), { noIndex: true });
   const [searchParams] = useSearchParams();
   const urlRef = searchParams.get('ref') ?? '';
 

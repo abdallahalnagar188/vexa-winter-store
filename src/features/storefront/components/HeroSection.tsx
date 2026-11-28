@@ -176,6 +176,7 @@ export function HeroSection({ heroes = [] }: HeroSectionProps) {
                       <img
                         src={slide.hero_image_url}
                         alt=""
+                        aria-hidden="true"
                         loading="lazy"
                         decoding="async"
                         className="h-full w-full object-cover"
